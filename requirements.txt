@@ -1,0 +1,8 @@
+neuprint-python
+navis
+pandas
+networkx
+matplotlib
+plotly
+python-dotenv
+jupyterlab

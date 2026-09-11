@@ -1,0 +1,19 @@
+# Virtual environment
+fly_env/
+__pycache__/
+*.pyc
+
+# Environment variables and secrets
+.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Temporary/test outputs
+test_*.html
+
+# Output generated files (optional)
+# compass_circuit.graphml
+# compass_ring.png
+# compass_3d.html
+
