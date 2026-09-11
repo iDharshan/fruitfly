@@ -19,26 +19,12 @@ The system evaluates topological recurrence without combinatorial cycle explosio
 
 ---
 
-## 📸 Visual Gallery
+### 📸 Visual Gallery
 
-<table align="center" width="100%">
-  <tr>
-    <th width="50%" align="center"><b>2D Dual-Ring Recurrent Topology</b></th>
-    <th width="50%" align="center"><b>Co-Rendered 3D Neuron Morphology</b></th>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="compass_dual_ring.png" alt="Dual Ring Topology" width="100%"/>
-      <br>
-      <em>Concentric circular topology of 92 neurons (50 inner E-PG cyan, 42 outer P-EN magenta). Inter-population edges color-coded: E-PG → P-EN in gold, P-EN → E-PG in lime.</em>
-    </td>
-    <td align="center">
-      <img src="compass_dual_3d_preview.png" alt="3D Dual Skeleton Projection" width="100%"/>
-      <br>
-      <em>3D morphological projection of matched E-PG (electric cyan) and P-EN (neon magenta) neurons showing the lower <b>Ellipsoid Body (EB donut)</b> and upper <b>Protocerebral Bridge (PB handlebar)</b>.</em>
-    </td>
-  </tr>
-</table>
+| 2D Dual-Ring Recurrent Topology | Co-Rendered 3D Neuron Morphology |
+| :---: | :---: |
+| ![Dual Ring](compass_dual_ring.png) | ![Dual 3D](compass_dual_3d_preview.png) |
+| *Concentric circular topology of 92 neurons (50 inner E-PG cyan, 42 outer P-EN magenta).* | *3D projection of matched E-PG (cyan) and P-EN (magenta) neurons across EB and PB.* |
 
 > [!TIP]
 > **Interactive 3D WebGL Viewer:** Open [`compass_dual_3d.html`](compass_dual_3d.html) directly in any web browser to rotate, zoom, and inspect full 3D morphology of both populations in real-time WebGL.
@@ -72,8 +58,8 @@ In the central complex of *Drosophila*, internal heading direction is maintained
 ```
 
 ### Key Anatomical Principles:
-1. **Compass Needle (E-PG):** Each E-PG neuron extends dendrites in an Ellipsoid Body wedge and sends axonal projections to a specific Protocerebral Bridge glomerulus (e.g., PB column L3 or R3), encoding current heading.
-2. **Angular Velocity Modulation (P-EN):** P-EN neurons in the PB receive excitation from E-PGs as well as asymmetrical turn-rate signals from the lateral accessory lobes / noduli.
+1. **Compass Needle (E-PG):** Each E-PG neuron extends dendrites in an Ellipsoid Body wedge and sends axonal projections to a specific Protocerebral Bridge glomerulus (e.g., PB column L3 or R3), encoding current heading azimuth ($\theta$).
+2. **Angular Velocity Modulation (P-EN):** P-EN neurons in the PB receive excitation from E-PGs as well as asymmetrical turn-rate signals from the lateral accessory lobes / noduli representing angular velocity ($\dot{\theta}$).
 3. **Anatomical Phase Shift ($\pm 1$ PB Column / $\pm 45^\circ$ EB Offset):**
    - P-EN neurons originating in the **Left PB** project back to the EB shifted by **1 wedge counter-clockwise** ($\Delta \theta = -45^\circ$).
    - P-EN neurons originating in the **Right PB** project back to the EB shifted by **1 wedge clockwise** ($\Delta \theta = +45^\circ$).
@@ -94,7 +80,7 @@ The full closed-loop attractor network consists of **92 neurons and 2,650 direct
 To verify recurrence with zero risk of memory exhaustion, this pipeline employs mathematically sound linear-time graph theory checks:
 - **Directed Acyclic Graph Check (`nx.is_directed_acyclic_graph`):** Runs topological sort in $O(V + E)$ (~2 ms). Returns `False`, formally proving the existence of recurrent directed loops.
 - **Strongly Connected Components (`nx.strongly_connected_components`):** Identifies recurrent modules in $O(V + E)$ (~2 ms). Proves that **all 92 of 92 neurons (100%)** form a single, unified recurrent core.
-- **Reciprocity Calculation (`nx.reciprocity`):** Computes bidirectional symmetry in $O(E)$ time, revealing an exceptional **85.43% network reciprocity** and **488 inter-population mutual pairs**.
+- **Directed Reciprocity (`nx.reciprocity`):** Computes bidirectional symmetry in $O(E)$ time, revealing an exceptional **85.43%** combined network reciprocity (and E-PG subnetwork reciprocity: **83.78%**), with **488** inter-population mutual pairs (79.41% inter-population reciprocity).
 - **Exemplar Cycle Extraction (`nx.find_cycle`):** Isolates specific directed feedback loops (e.g., `387364605 ⇄ 387023620`) in linear time without exponential state-space traversal.
 
 ---
@@ -122,7 +108,7 @@ To verify recurrence with zero risk of memory exhaustion, this pipeline employs 
 | **Combined Reciprocity** | `83.78%` | `85.43%` | High bidirectional coupling reinforcing state stability |
 | **Inter-Population Reciprocity** | — | `79.41%` (488 mutual pairs) | Tight feedback coupling between needle and shifters |
 | **Unified Recurrent Core Size** | `48 / 50` (96.0%) | **`92 / 92` (100.0%)** | Unbroken closed-loop recurrent core across all neurons |
-| **Feedback / Feedforward Ratio** | — | **`2.09×`** ($21,937 / 10,479$) | Motor shifter feedback exerts dominant driving torque |
+| **$\frac{\text{Feedback}}{\text{Feedforward}}$ Ratio** | — | **`2.09×`** ($21,937 / 10,479$) | Motor shifter feedback exerts dominant driving torque |
 
 ---
 
