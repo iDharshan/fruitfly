@@ -372,6 +372,27 @@ def render_3d_morphology(
     file_size_mb = os.path.getsize(output_html) / (1024 * 1024)
     logger.info(f"Saved interactive 3D viewer to {output_html} ({file_size_mb:.2f} MB).")
 
+    # Render static 2D projection preview for documentation
+    try:
+        preview_png = output_html.replace(".html", "_preview.png")
+        fig2d, ax2d = plt.subplots(figsize=(10, 8), facecolor="#0e1117")
+        ax2d.set_facecolor("#0e1117")
+        navis.plot2d(skeletons, method="2d", view=("x", "-z"), color_by="type", palette="turbo", ax=ax2d)
+        ax2d.set_axis_off()
+        plt.title(
+            "Drosophila E-PG Compass Neurons: 3D Skeleton Projections\n"
+            "(Ellipsoid Body & Protocerebral Bridge)",
+            color="white",
+            fontsize=14,
+            pad=15
+        )
+        plt.tight_layout()
+        plt.savefig(preview_png, dpi=300, facecolor="#0e1117", edgecolor="none")
+        plt.close()
+        logger.info(f"Saved 3D morphology projection preview: {preview_png}")
+    except Exception as exc:
+        logger.warning(f"Could not render 2D projection preview: {exc}")
+
 
 def main() -> None:
     """
