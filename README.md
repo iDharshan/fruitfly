@@ -76,14 +76,15 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
 | :--- | :--- |
 | **`⬅️ / ➡️` or `A / D`** | **Motor Angular Velocity ($\dot{\theta}$):** Injects asymmetric drive into Left ($P\text{-}EN_L$) or Right ($P\text{-}EN_R$) shifter banks, causing $\pm 45^\circ$ shifted feedback torque to rotate the E-PG bump. |
 | **`⬆️ / ⬇️` or `W / S`** | **Forward Throttle:** Accelerate forward or decelerate/brake the 2D fly agent. |
+| **`M`** | **Operating Mode Toggle:** Switches between `MANUAL` (default keyboard control) and `AUTO` (mode toggle with HUD indicator). |
 | **`TAB` or `1 / 2 / 3`** | **View Mode Switcher:** Toggle Panel 2 between `[1] 3D Brain Mesh`, `[2] Dual Ring Attractor`, and `[3] Clean Split View`. |
 | **`H`** | **Cycle HUD Position:** Moves floating cockpit avionics HUD (*Arena Bottom-Right* $\rightarrow$ *Arena Top-Right* $\rightarrow$ *Neural Panel* $\rightarrow$ *Hidden*). |
-| **`Left-Click (Arena)`** | **Drop / Reposition Visual Landmark (Sun):** Places an active visual beacon in the arena. |
-| **`Right-Click (Arena)`** | **Toggle Landmark Cue:** Enables/disables visual retinotopic cue locking without restricting free manual flight. |
+| **`Left-Click (Arena)`** | **Drop / Reposition Visual Landmark (Sun):** Places a visual beacon in the arena. |
+| **`Right-Click (Arena)`** | **Toggle Landmark Cue:** Enables/disables visual retinotopic cue locking without restricting free flight (off by default). |
 | **`T`** | **Toggle Phototaxis:** Optional autonomous beacon homing / target tracking mode. |
 | **`P` / `F12`** | **Direct Screenshot Capture:** Saves high-resolution PNG to `screenshots/` with an on-screen confirmation toast. |
 | **`Space`** | **Pause / Resume:** Freezes ODE integration and kinematics. |
-| **`R`** | **Reset System:** Re-initializes bump to $0^\circ$ and centers the fly agent. |
+| **`R`** | **Reset System:** Re-initializes bump to $0^\circ$, centers the fly agent, resets score/energy, and respawns a fresh food pellet. |
 | **`C`** | **Clear Cue:** Removes the visual landmark from the arena. |
 | **`ESC` / `Q`** | **Quit:** Cleanly closes simulator window. |
 
@@ -93,9 +94,18 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
 
 #### 1. Panel 1: 2-D Flight Arena (Expanded $780\times 794\text{ px}$ Torus)
 - **Vector Drosophila Anatomy:** Rendered with ruby-red compound eyes (radial bloom), segmented thorax and abdomen tergites, delicate fluttering iridescent wings with primary and secondary veins, vibrating halteres (gyroscopic balance organs), and directional laser guidance beam.
+- **Dynamic Food System & Radial Odor Plumes:** Discrete nutrient pellets spawn with continuous Gaussian radial odor fields ($C(d) = \exp(-d^2 / 2\sigma^2)$). Analytical spatial gradients determine local odor concentration and relative heading bearing ($\Psi$).
+- **Foraging & Eating Mechanics:** When the fly approaches within 22 px of a food pellet, it consumes it, triggering a bioluminescent expanding halo ring, outward sparkle particles, a floating `+1` score popup, metabolic energy boost (`+25%`), and immediate pellet respawn at a random distance.
 - **Torus Boundary Wrapping & Particle Wake:** Smooth toroidal edge wrapping with aerodynamic bioluminescent particle exhaust.
-- **Visual Landmark (Sun Beacon):** Multi-layer golden solar corona with 12 radiant flares, pulsing core, and dashed retinotopic sensory beam connecting the Sun to the fly's eye with live egocentric bearing readout ($\Psi$).
-- **Floating Avionics Cockpit HUD ($244\times 148\text{ px}$):** Glassmorphism semi-transparent HUD card with digital heading ($\hat{\theta}$ in degrees and cardinal direction), flight speedometer, digital bump stability progress bar, P-EN differential steering torque meter, and biological torque ratio readout.
+- **Visual Landmark (Sun Beacon):** Multi-layer golden solar corona with 12 radiant flares, pulsing core, and dashed retinotopic sensory beam connecting the Sun to the fly's eye with live egocentric bearing readout ($\Psi$). Completely optional and off by default.
+- **Floating Avionics Cockpit HUD ($250\times 175\text{ px}$):** Glassmorphism semi-transparent HUD card displaying:
+  - **Operating Mode Badge:** `[MANUAL]` (Cyan) or `[AUTO]` (Emerald)
+  - **Digital Heading:** Decoded azimuth $\hat{\theta}$ in degrees with cardinal direction
+  - **Flight Speedometer & Stability:** Current speed with digital CANN bump coherence bar
+  - **P-EN Differential Steering:** Live Left/Right shifter rates with balance deflection meter
+  - **Metabolism & Score:** Consumed food counter with live dynamic energy bar (`NRG: %`)
+  - **Odor Sensor:** Live concentration percentage, egocentric relative bearing ($\Psi$), and distance to nearest pellet
+  - **Biological Torque Ratio:** Fixed $2.09\times$ connectomic driving ratio indicator
 
 #### 2. Panel 2: Central Complex Navigation Subnetwork ($780\times 794\text{ px}$)
 - **Mode 1: 3D Anatomical Brain & VNC Mesh:** 1,920+ connectome nodes covering Optic Lobes, Protocerebrum, Central Complex, and Ventral Nerve Cord (T1 foreleg, T2 wing power, T3 hindleg) with real-time firing dynamics ($0 - 200+\text{ Hz}$) and depth-fog.
@@ -198,6 +208,7 @@ fruitfly/
 │
 ├── screenshots/                     # Verified high-resolution simulator captures
 │   ├── toy_split_view.png           # Split view: 3D brain mesh + dual ring CANN + avionics HUD
+│   ├── toy_eat_event.png            # Foraging eat event: expanding halo, sparkles, +1 score
 │   ├── toy_3d_brain_mode.png        # Full-panel 3D Drosophila brain & VNC mesh (0-200+ Hz)
 │   ├── toy_dual_ring_mode.png       # Full-panel dual ring attractor with 48-bar activity spectrum
 │   └── toy_split_flight.png         # Split view during active manual steering flight
@@ -207,13 +218,15 @@ fruitfly/
 │   ├── config.py                    # Display geometry, CANN parameters, colors, and layout
 │   ├── circuit.py                   # Continuous attractor (CANN) ODE engine (divisive norm, 2.09x torque)
 │   ├── agent.py                     # 2D FlyAgent kinematics, boundary wrapping, and particle wake
+│   ├── food.py                      # FoodSystem, continuous radial odor plumes, & eating collision
 │   ├── brain_cloud.py               # 3D Drosophila CNS point cloud (1,920 nodes, depth-fog, 0-200+ Hz)
 │   ├── renderer.py                  # Hardware-accelerated Pygame renderer with cached bloom glow
 │   └── telemetry.py                 # Real-time telemetry history tracking
 │
 ├── tests/                           # Automated test suite
 │   ├── test_circuit.py              # Mathematical CANN bump stability, torque, & cue locking tests
-│   └── test_agent.py                # FlyAgent translation, boundary wrap, & sensory bearing tests
+│   ├── test_agent.py                # FlyAgent translation, boundary wrap, & sensory bearing tests
+│   └── test_food.py                 # FoodSystem spawning, odor field gradient, & eating mechanics
 │
 ├── compass_dual_ring.png            # High-DPI (300 DPI) 2D dual concentric ring topology
 ├── compass_dual_3d.html             # Standalone interactive 3D WebGL dual skeleton viewer
@@ -272,6 +285,9 @@ echo 'NEUPRINT_APPLICATION_CREDENTIALS="your_actual_token_here"' > .env
 
 # Verify 2D agent kinematics, sensory bearing, and particle wake
 ./fly_env/bin/python tests/test_agent.py
+
+# Verify food system spawning, continuous odor fields, and eating logic
+./fly_env/bin/python tests/test_food.py
 
 # Headless rendering & frame verification test
 ./fly_env/bin/python run_toy.py --headless-test

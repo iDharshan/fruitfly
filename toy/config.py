@@ -31,6 +31,9 @@ COLOR_PEN_RIGHT: Tuple[int, int, int] = (181, 23, 158)  # Deep Violet-Pink for R
 COLOR_GOLD_FORWARD: Tuple[int, int, int] = (255, 209, 102) # #ffd166 E-PG -> P-EN Synapses
 COLOR_LIME_FEEDBACK: Tuple[int, int, int] = (112, 224, 0)  # #70e000 P-EN -> E-PG Feedback
 COLOR_SUN_AMBER: Tuple[int, int, int] = (255, 183, 3)   # #ffb703 Visual Landmark Cue
+COLOR_FOOD_EMERALD: Tuple[int, int, int] = (50, 235, 120)  # #32eb78 Nutrient Pellet (Food)
+COLOR_FOOD_CORE: Tuple[int, int, int] = (200, 255, 220)     # Highlight core
+COLOR_ODOR_AURA: Tuple[int, int, int] = (40, 210, 110)      # Scent plume aura
 
 # UI Accents & Text
 COLOR_TEXT_PRIMARY: Tuple[int, int, int] = (240, 244, 252)
@@ -65,8 +68,8 @@ BTN_MODES_X: int = PANEL_NEURAL_RECT[0] + PANEL_NEURAL_RECT[2] - BTN_MODES_TOTAL
 BTN_MODES_Y: int = CONTENT_TOP + 12
 
 # Compact Floating Stats HUD (Placed in Flight Arena corner for clear cockpit avionics)
-STATS_HUD_W: int = 244
-STATS_HUD_H: int = 148
+STATS_HUD_W: int = 250
+STATS_HUD_H: int = 175
 STATS_HUD_RECT_ARENA_BR = (PANEL_ARENA_RECT[0] + PANEL_ARENA_RECT[2] - STATS_HUD_W - 14,
                            PANEL_ARENA_RECT[1] + PANEL_ARENA_RECT[3] - STATS_HUD_H - 14,
                            STATS_HUD_W, STATS_HUD_H)

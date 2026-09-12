@@ -15,6 +15,7 @@ from .config import (
     COLOR_BG, COLOR_PANEL_BG, COLOR_PANEL_BORDER, COLOR_PANEL_HEADER,
     COLOR_EPG_CYAN, COLOR_PEN_MAGENTA, COLOR_PEN_LEFT, COLOR_PEN_RIGHT,
     COLOR_GOLD_FORWARD, COLOR_LIME_FEEDBACK, COLOR_SUN_AMBER,
+    COLOR_FOOD_EMERALD, COLOR_FOOD_CORE, COLOR_ODOR_AURA,
     COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY, COLOR_TEXT_MUTED,
     COLOR_GRID, COLOR_GAUGE_BG, COLOR_ACTIVE_BORDER,
     PANEL_ARENA_RECT, PANEL_NEURAL_RECT, STATS_HUD_RECT,
@@ -26,6 +27,7 @@ from .circuit import DualRingAttractor, wrap_angle, ang_dist
 from .agent import FlyAgent
 from .telemetry import TelemetryTracker
 from .brain_cloud import BrainPointCloud
+from .food import FoodSystem, FoodPellet, OdorReading
 
 
 class NeonDashboardRenderer:
@@ -128,6 +130,7 @@ class NeonDashboardRenderer:
             COLOR_LIME_FEEDBACK,
             COLOR_SUN_AMBER,
             COLOR_GOLD_FORWARD,
+            COLOR_FOOD_EMERALD,
             (255, 255, 255),
         ]
         radii = [4, 8, 12, 16, 22, 30, 42, 54]
@@ -173,6 +176,8 @@ class NeonDashboardRenderer:
         telemetry: TelemetryTracker,
         fps_actual: float,
         is_paused: bool = False,
+        food_system: Optional[FoodSystem] = None,
+        mode: str = "MANUAL",
     ):
         """Full composite render of expanded arena, neural view, and compact HUD."""
         self.anim_time += dt
@@ -184,17 +189,17 @@ class NeonDashboardRenderer:
         self.screen.fill(COLOR_BG)
 
         # Draw Window Chrome (Header & Footer)
-        self._render_header(fps_actual, is_paused)
+        self._render_header(fps_actual, is_paused, mode)
         self._render_footer()
 
         # Render Left: Expanded Flight Arena
-        self._render_panel_arena(agent)
+        self._render_panel_arena(agent, food_system, mode)
 
         # Render Right: Neural Activity View (3D Brain / Dual Ring / Split)
         self._render_panel_neural(circuit, agent)
 
         # Render Floating Compact Stats HUD
-        self._render_stats_hud(circuit, agent)
+        self._render_stats_hud(circuit, agent, food_system, mode)
 
         # Render Active Toast Notification (e.g. Screenshot Saved)
         if self.toast_timer > 0 and self.toast_msg:
@@ -214,7 +219,7 @@ class NeonDashboardRenderer:
         self.screen.blit(toast_bg, (tx, ty))
         self.screen.blit(t_surf, (tx + 14, ty + 7))
 
-    def _render_header(self, fps: float, is_paused: bool):
+    def _render_header(self, fps: float, is_paused: bool, mode: str = "MANUAL"):
         """Draws top banner."""
         pygame.draw.rect(self.screen, COLOR_PANEL_HEADER, (0, 0, SCREEN_WIDTH, HEADER_HEIGHT))
         pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (0, HEADER_HEIGHT), (SCREEN_WIDTH, HEADER_HEIGHT), 1)
@@ -227,6 +232,11 @@ class NeonDashboardRenderer:
             True, COLOR_TEXT_SECONDARY
         )
         self.screen.blit(sub_surf, (22, 27))
+
+        # Operating Mode badge
+        mode_col = COLOR_EPG_CYAN if mode == "MANUAL" else COLOR_FOOD_EMERALD
+        mode_surf = self.font_mono_bold.render(f"● [{mode}]", True, mode_col)
+        self.screen.blit(mode_surf, (SCREEN_WIDTH - 400, 13))
 
         # Status indicator
         status_text = "PAUSED" if is_paused else "RUNNING"
@@ -246,9 +256,9 @@ class NeonDashboardRenderer:
         controls = [
             ("< / > or A / D", "Steer Shifters"),
             ("^ / v or W / S", "Throttle"),
+            ("M", "Manual/Auto"),
             ("TAB / 1-3", "View Mode"),
             ("H", "HUD Pos"),
-            ("Left-Click", "Drop Sun Cue"),
             ("Right-Click", "Toggle Sun"),
             ("T", "Phototaxis"),
             ("P / F12", "Screenshot"),
@@ -267,8 +277,8 @@ class NeonDashboardRenderer:
             self.screen.blit(desc_surf, (x_cur, y_cur + 1))
             x_cur += desc_surf.get_width() + 14
 
-    def _render_panel_arena(self, agent: FlyAgent):
-        """Renders expanded 2-D flight arena with landmark, sensory beam, particle wake, and fly."""
+    def _render_panel_arena(self, agent: FlyAgent, food_system: Optional[FoodSystem] = None, mode: str = "MANUAL"):
+        """Renders expanded 2-D flight arena with landmark, sensory beam, particle wake, food pellets, and fly."""
         rx, ry, rw, rh = PANEL_ARENA_RECT
         pygame.draw.rect(self.screen, COLOR_PANEL_BG, PANEL_ARENA_RECT, border_radius=6)
         pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, PANEL_ARENA_RECT, width=1, border_radius=6)
@@ -279,8 +289,15 @@ class NeonDashboardRenderer:
         t_surf = self.font_header.render("PANEL 1: 2-D FLIGHT ARENA (WORLD)", True, COLOR_TEXT_PRIMARY)
         self.screen.blit(t_surf, (rx + 12, ry + 6))
 
-        mode_badge = " [PHOTOTAXIS ACTIVE]" if agent.phototaxis_active else " [MANUAL FLIGHT]"
-        sub_surf = self.font_tiny.render(f"EXPANDED {rw}x{rh} TORUS{mode_badge}", True, COLOR_TEXT_MUTED)
+        if agent.phototaxis_active:
+            mode_badge = " [PHOTOTAXIS ACTIVE]"
+        elif mode == "AUTO":
+            mode_badge = " [AUTONOMOUS FLIGHT]"
+        else:
+            mode_badge = " [MANUAL FLIGHT]"
+        food_count = len(food_system.pellets) if food_system else 0
+        pellet_label = "PELLET" if food_count == 1 else "PELLETS"
+        sub_surf = self.font_tiny.render(f"EXPANDED {rw}x{rh} TORUS{mode_badge} · {food_count} {pellet_label}", True, COLOR_TEXT_MUTED)
         self.screen.blit(sub_surf, (rx + rw - sub_surf.get_width() - 12, ry + 8))
 
         # Corner ticks
@@ -309,6 +326,55 @@ class NeonDashboardRenderer:
             (int(agent.min_x), int(agent.min_y), int(agent.max_x - agent.min_x), int(agent.max_y - agent.min_y)),
             width=1
         )
+
+        # Draw Food Pellets & Odor Aura
+        if food_system is not None:
+            for p in food_system.pellets:
+                px, py = int(p.x), int(p.y)
+                pulse = 1.0 + 0.18 * math.sin(self.anim_time * 4.0 + p.pulse_phase)
+
+                # Faint scent plume aura
+                self.draw_glow(px, py, COLOR_FOOD_EMERALD, int(28 * pulse))
+                self.draw_glow(px, py, COLOR_FOOD_CORE, int(12 * pulse))
+
+                # Food pellet core
+                pellet_r = max(4, int(p.radius * (0.92 + 0.12 * math.sin(p.pulse_phase))))
+                pygame.draw.circle(self.screen, COLOR_FOOD_EMERALD, (px, py), pellet_r)
+                pygame.draw.circle(self.screen, COLOR_FOOD_CORE, (px - 1, py - 1), max(2, pellet_r - 2))
+                pygame.draw.circle(self.screen, (255, 255, 255), (px - 2, py - 2), 1)
+
+            # Draw Food Eating Visual Effects
+            for eff in food_system.effects:
+                progress = eff.age / eff.max_age
+                fade_alpha = max(0, min(255, int(255 * (1.0 - progress))))
+                ring_r = int(5 + progress * 32)
+
+                # Expanding bioluminescent halo ring
+                if ring_r > 0 and fade_alpha > 0:
+                    ring_surf = pygame.Surface((ring_r * 2 + 4, ring_r * 2 + 4), pygame.SRCALPHA)
+                    pygame.draw.circle(
+                        ring_surf,
+                        (*COLOR_FOOD_EMERALD, fade_alpha),
+                        (ring_r + 2, ring_r + 2),
+                        ring_r,
+                        width=max(1, int(3 * (1.0 - progress))),
+                    )
+                    self.screen.blit(ring_surf, (int(eff.x - ring_r - 2), int(eff.y - ring_r - 2)), special_flags=pygame.BLEND_ADD)
+
+                # Floating "+1" score popup
+                pop_y = eff.y - 12 - progress * 24
+                pop_surf = self.font_tiny.render("+1", True, (255, 255, 200))
+                pop_surf.set_alpha(fade_alpha)
+                self.screen.blit(pop_surf, (int(eff.x - pop_surf.get_width() // 2), int(pop_y)))
+
+                # Sparkle particles
+                for pt in eff.particles:
+                    p_frac = max(0.0, pt.life / pt.max_life)
+                    p_alpha = max(0, min(255, int(255 * (p_frac ** 1.3))))
+                    pr = max(1, int(pt.radius * p_frac))
+                    p_s = pygame.Surface((pr * 4, pr * 4), pygame.SRCALPHA)
+                    pygame.draw.circle(p_s, (*pt.color, p_alpha), (pr * 2, pr * 2), pr)
+                    self.screen.blit(p_s, (int(pt.x - pr * 2), int(pt.y - pr * 2)), special_flags=pygame.BLEND_ADD)
 
         # Draw Visual Landmark (Sun)
         if agent.landmark_x is not None and agent.landmark_y is not None:
@@ -801,7 +867,13 @@ class NeonDashboardRenderer:
             b_col = (255, 255, 255) if is_peak else COLOR_EPG_CYAN
             pygame.draw.rect(self.screen, b_col, (int(bx), int(by), max(1, int(bar_w - 1)), int(bar_h)))
 
-    def _render_stats_hud(self, circuit: DualRingAttractor, agent: FlyAgent):
+    def _render_stats_hud(
+        self,
+        circuit: DualRingAttractor,
+        agent: FlyAgent,
+        food_system: Optional[FoodSystem] = None,
+        mode: str = "MANUAL",
+    ):
         """Draws compact, floating avionics stats HUD card with responsive placement."""
         hud_box = self.get_hud_rect()
         if hud_box is None:
@@ -810,55 +882,86 @@ class NeonDashboardRenderer:
         rx, ry, rw, rh = hud_box
 
         hud_surf = pygame.Surface((rw, rh), pygame.SRCALPHA)
-        pygame.draw.rect(hud_surf, (12, 16, 25, 230), (0, 0, rw, rh), border_radius=6)
-        pygame.draw.rect(hud_surf, (0, 245, 212, 180), (0, 0, rw, rh), width=1, border_radius=6)
+        pygame.draw.rect(hud_surf, (12, 16, 25, 235), (0, 0, rw, rh), border_radius=6)
+        mode_border_col = COLOR_EPG_CYAN if mode == "MANUAL" else COLOR_FOOD_EMERALD
+        pygame.draw.rect(hud_surf, mode_border_col, (0, 0, rw, rh), width=1, border_radius=6)
 
-        # Micro header
-        hdr_surf = self.font_tiny.render("AVIONICS TELEMETRY  ·  98/165k", True, COLOR_EPG_CYAN)
-        hud_surf.blit(hdr_surf, (12, 6))
-        pygame.draw.line(hud_surf, (30, 44, 62), (10, 20), (rw - 10, 20), 1)
+        # Micro header: Left title, Right mode badge
+        hdr_surf = self.font_tiny.render("AVIONICS TELEMETRY", True, COLOR_EPG_CYAN)
+        hud_surf.blit(hdr_surf, (12, 5))
 
+        mode_txt = self.font_mono_bold.render(f"[{mode}]", True, mode_border_col)
+        hud_surf.blit(mode_txt, (rw - mode_txt.get_width() - 12, 4))
+        pygame.draw.line(hud_surf, (30, 44, 62), (10, 19), (rw - 10, 19), 1)
+
+        # 1. Heading Display
         decoded_h, amp, coh = circuit.decode_heading()
         deg_h = (math.degrees(decoded_h) + 360.0) % 360.0
         cardinals = ["E", "SE", "S", "SW", "W", "NW", "N", "NE"]
         cardinal = cardinals[int(((deg_h + 22.5) % 360.0) // 45.0)]
 
-        # Heading Display
         h_str = f"θ: {deg_h:5.1f}° {cardinal}"
         h_surf = self.font_big_digit.render(h_str, True, COLOR_EPG_CYAN)
-        hud_surf.blit(h_surf, (12, 23))
+        hud_surf.blit(h_surf, (12, 22))
 
-        # Speed & Stability Row
-        sp_str = f"SPEED: {agent.v:4.0f} px/s"
+        # 2. Speed & Stability Row
+        sp_str = f"SPEED: {agent.v:3.0f} px/s"
         sp_surf = self.font_mono.render(sp_str, True, COLOR_TEXT_PRIMARY)
-        hud_surf.blit(sp_surf, (12, 50))
+        hud_surf.blit(sp_surf, (12, 47))
 
-        # Stability micro bar
         coh_clamped = max(0.0, min(1.0, coh))
-        pygame.draw.rect(hud_surf, (24, 34, 48), (145, 53, 85, 9), border_radius=3)
-        pygame.draw.rect(hud_surf, COLOR_EPG_CYAN, (145, 53, int(85 * coh_clamped), 9), border_radius=3)
-        coh_txt = self.font_tiny.render(f"{coh*100:.0f}%", True, (255, 255, 255))
-        hud_surf.blit(coh_txt, (178, 51))
+        pygame.draw.rect(hud_surf, (24, 34, 48), (145, 50, 92, 9), border_radius=3)
+        pygame.draw.rect(hud_surf, COLOR_EPG_CYAN, (145, 50, int(92 * coh_clamped), 9), border_radius=3)
+        coh_txt = self.font_tiny.render(f"C:{coh*100:.0f}%", True, (255, 255, 255))
+        hud_surf.blit(coh_txt, (182, 48))
 
-        # P-EN Shifter rates & Differential Steering Gauge
+        # 3. P-EN Shifter rates & Differential Steering Gauge
         act_l, act_r = circuit.get_shifter_activities()
-        sh_str = f"P-EN: L {act_l:3.1f} | R {act_r:3.1f}"
+        sh_str = f"P-EN: L{act_l:3.1f} | R{act_r:3.1f}"
         sh_surf = self.font_mono.render(sh_str, True, COLOR_PEN_LEFT)
-        hud_surf.blit(sh_surf, (12, 70))
+        hud_surf.blit(sh_surf, (12, 66))
 
-        # Differential Steering Balance meter (Center line with left/right bar)
-        bar_cx = 188
-        bar_y = 75
-        pygame.draw.line(hud_surf, (50, 64, 86), (145, bar_y + 3), (230, bar_y + 3), 1)
+        bar_cx = 191
+        bar_y = 71
+        pygame.draw.line(hud_surf, (50, 64, 86), (145, bar_y + 3), (237, bar_y + 3), 1)
         pygame.draw.line(hud_surf, (255, 255, 255), (bar_cx, bar_y), (bar_cx, bar_y + 6), 1)
         diff = (act_r - act_l) / 30.0
         diff = max(-1.0, min(1.0, diff))
         if diff < 0:
-            pygame.draw.rect(hud_surf, COLOR_PEN_LEFT, (int(bar_cx + diff * 40), bar_y + 1, int(-diff * 40), 5), border_radius=2)
+            pygame.draw.rect(hud_surf, COLOR_PEN_LEFT, (int(bar_cx + diff * 42), bar_y + 1, int(-diff * 42), 5), border_radius=2)
         elif diff > 0:
-            pygame.draw.rect(hud_surf, COLOR_PEN_RIGHT, (bar_cx, bar_y + 1, int(diff * 40), 5), border_radius=2)
+            pygame.draw.rect(hud_surf, COLOR_PEN_RIGHT, (bar_cx, bar_y + 1, int(diff * 42), 5), border_radius=2)
 
-        # Sun landmark status
+        # 4. Food Score & Energy Bar Row
+        sc_str = f"FOOD: {agent.score:2d}"
+        sc_surf = self.font_mono_bold.render(sc_str, True, COLOR_FOOD_EMERALD)
+        hud_surf.blit(sc_surf, (12, 86))
+
+        # Energy bar
+        en_frac = max(0.0, min(1.0, agent.energy / agent.max_energy))
+        en_col = COLOR_FOOD_EMERALD if en_frac > 0.3 else (255, 140, 50)
+        pygame.draw.rect(hud_surf, (24, 34, 48), (120, 89, 117, 9), border_radius=3)
+        pygame.draw.rect(hud_surf, en_col, (120, 89, int(117 * en_frac), 9), border_radius=3)
+        en_txt = self.font_tiny.render(f"NRG:{int(agent.energy)}%", True, (255, 255, 255))
+        hud_surf.blit(en_txt, (155, 87))
+
+        # 5. Odor Sensation Row
+        if food_system is not None:
+            odor = food_system.get_odor_at(agent.x, agent.y, agent.heading)
+            od_bearing_deg = math.degrees(odor.relative_bearing)
+            od_str = f"ODOR: {int(odor.strength * 100):2d}% | Ψ:{od_bearing_deg:+.0f}°"
+            od_col = COLOR_FOOD_EMERALD if odor.strength > 0.25 else COLOR_TEXT_SECONDARY
+            od_surf = self.font_mono.render(od_str, True, od_col)
+            hud_surf.blit(od_surf, (12, 106))
+
+            dist_str = f"d:{int(odor.nearest_dist)}px"
+            dist_surf = self.font_tiny.render(dist_str, True, COLOR_TEXT_MUTED)
+            hud_surf.blit(dist_surf, (rw - dist_surf.get_width() - 12, 107))
+        else:
+            od_surf = self.font_mono.render("ODOR: NO SENSOR", True, COLOR_TEXT_MUTED)
+            hud_surf.blit(od_surf, (12, 106))
+
+        # 6. Sun Landmark Status Row
         mark_bearing = agent.get_landmark_bearing()
         if agent.landmark_active and mark_bearing is not None:
             deg_bearing = math.degrees(mark_bearing)
@@ -866,20 +969,20 @@ class NeonDashboardRenderer:
             sun_str = f"SUN: BEARING {sign}{deg_bearing:.0f}°"
             sun_col = COLOR_SUN_AMBER
         elif agent.landmark_x is not None:
-            sun_str = "SUN: INACTIVE"
+            sun_str = "SUN: OFF (R-Click to arm)"
             sun_col = COLOR_TEXT_MUTED
         else:
             sun_str = "SUN: NONE (Click arena)"
             sun_col = COLOR_TEXT_MUTED
 
-        sun_surf = self.font_mono.render(sun_str, True, sun_col)
-        hud_surf.blit(sun_surf, (12, 92))
+        sun_surf = self.font_tiny.render(sun_str, True, sun_col)
+        hud_surf.blit(sun_surf, (12, 127))
 
-        # Biological ratio & HUD toggle hint
-        ratio_surf = self.font_tiny.render("TORQUE: 2.09x", True, COLOR_LIME_FEEDBACK)
-        hud_surf.blit(ratio_surf, (12, 116))
+        # 7. Biological Ratio & Quick Keys Hints
+        ratio_surf = self.font_tiny.render("2.09x TORQUE", True, COLOR_LIME_FEEDBACK)
+        hud_surf.blit(ratio_surf, (12, 149))
 
-        pos_tip = self.font_tiny.render("[H] Move HUD", True, COLOR_TEXT_MUTED)
-        hud_surf.blit(pos_tip, (rw - pos_tip.get_width() - 12, 116))
+        hints_surf = self.font_tiny.render("[M] Mode  [H] Move", True, COLOR_TEXT_MUTED)
+        hud_surf.blit(hints_surf, (rw - hints_surf.get_width() - 12, 149))
 
         self.screen.blit(hud_surf, (rx, ry))

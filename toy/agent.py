@@ -54,6 +54,12 @@ class FlyAgent:
         self.v: float = cfg.v_base
         self.target_v: float = cfg.v_base
 
+        # Metabolism and scoring
+        self.score: int = 0
+        self.energy: float = 100.0
+        self.max_energy: float = 100.0
+        self.food_eaten: int = 0
+
         # Visual landmark state (World coordinates)
         self.landmark_x: Optional[float] = None
         self.landmark_y: Optional[float] = None
@@ -75,14 +81,23 @@ class FlyAgent:
         self.target_v = self.cfg.v_base
         self.particles.clear()
         self.wing_phase = 0.0
+        self.score = 0
+        self.energy = self.max_energy
+        self.food_eaten = 0
 
-    def set_landmark(self, x: float, y: float):
+    def eat_food(self, energy_gain: float = 25.0, count: int = 1):
+        """Consumes food pellet, boosting score and energy."""
+        self.score += count
+        self.food_eaten += count
+        self.energy = min(self.max_energy, self.energy + energy_gain)
+
+    def set_landmark(self, x: float, y: float, active: bool = True):
         """Places or moves the visual landmark in the arena."""
         clamped_x = max(self.min_x, min(self.max_x, x))
         clamped_y = max(self.min_y, min(self.max_y, y))
         self.landmark_x = clamped_x
         self.landmark_y = clamped_y
-        self.landmark_active = True
+        self.landmark_active = active
 
     def toggle_landmark(self):
         """Toggles active status of landmark."""
@@ -164,6 +179,9 @@ class FlyAgent:
     def update_kinematics(self, decoded_heading: float, dt: float):
         """Steps physical kinematics of the agent."""
         self.heading = decoded_heading
+
+        # Gentle metabolic baseline drain
+        self.energy = max(0.0, self.energy - 1.2 * dt)
 
         # Advance position along heading vector
         self.x += self.v * math.cos(self.heading) * dt
