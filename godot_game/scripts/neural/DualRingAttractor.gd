@@ -290,12 +290,13 @@ func step_pfl3(relative_bearing: float, odor_strength: float, dt: float) -> Dict
 		sum_l += r_pfl3[i]
 		sum_r += r_pfl3[N_PFL3_SIDE + i]
 		
-	var diff: float = (sum_r - sum_l) / float(N_PFL3_TOTAL)
+	# In Godot 3D, turning LEFT is +Y rotation, turning RIGHT is -Y rotation
+	var diff: float = (sum_l - sum_r) / float(N_PFL3_TOTAL)
 	var k_drive: float = 2.8
 	var omega_auto: float = clamp((k_drive * diff) / 4.5, -k_drive, k_drive)
 	
 	var tot: float = sum_l + sum_r
-	var bias: float = (sum_r - sum_l) / tot if tot > 1e-4 else 0.0
+	var bias: float = (sum_l - sum_r) / tot if tot > 1e-4 else 0.0
 	
 	return {
 		"omega_auto": omega_auto,

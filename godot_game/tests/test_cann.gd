@@ -38,11 +38,11 @@ func _init() -> void:
 	print("\nTesting Biological PFL3 Push-Pull Steering...")
 	var pfl3_res_left = attractor.step_pfl3(-PI * 0.5, 0.8, 0.016)
 	print("Odor Left (-90 deg) -> Omega: ", snapped(pfl3_res_left["omega_auto"], 0.01), ", Bias: ", snapped(pfl3_res_left["bias"], 0.01))
-	assert(pfl3_res_left["omega_auto"] < 0, "Odor on left must yield leftward steering (omega < 0)")
+	assert(pfl3_res_left["omega_auto"] > 0, "Odor on left must yield leftward steering (+Y rotation)")
 	
 	var pfl3_res_right = attractor.step_pfl3(PI * 0.5, 0.8, 0.016)
 	print("Odor Right (+90 deg) -> Omega: ", snapped(pfl3_res_right["omega_auto"], 0.01), ", Bias: ", snapped(pfl3_res_right["bias"], 0.01))
-	assert(pfl3_res_right["omega_auto"] > 0, "Odor on right must yield rightward steering (omega > 0)")
+	assert(pfl3_res_right["omega_auto"] < 0, "Odor on right must yield rightward steering (-Y rotation)")
 	
 	print("\n===> ALL CANN CIRCUIT TESTS PASSED SUCCESSFULLY! <===")
 	quit(0)

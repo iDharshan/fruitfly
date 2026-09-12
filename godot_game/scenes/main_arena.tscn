@@ -1,22 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
-[ext_resource type="Environment" path="res://scenes/default_env.tres" id="1_default_env"]
-[ext_resource type="PackedScene" path="res://scenes/fly_agent.tscn" id="2_fly_agent"]
-[ext_resource type="Script" path="res://scripts/flight/FlightCameraController.gd" id="3_camera_controller"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_table"]
-albedo_color = Color(0.24, 0.16, 0.1, 1.0)
-roughness = 0.35
-metallic = 0.05
-
-[sub_resource type="BoxMesh" id="BoxMesh_table"]
-material = SubResource("StandardMaterial3D_table")
-size = Vector3(4.0, 0.1, 4.0)
+[ext_resource type="Script" path="res://scripts/MainArena.gd" id="1_main_arena"]
+[ext_resource type="Environment" path="res://scenes/default_env.tres" id="2_default_env"]
+[ext_resource type="PackedScene" path="res://scenes/MacroTabletop.tscn" id="3_macro_tabletop"]
+[ext_resource type="PackedScene" path="res://scenes/SunBeacon3D.tscn" id="4_sun_beacon"]
+[ext_resource type="PackedScene" path="res://scenes/fly_agent.tscn" id="5_fly_agent"]
+[ext_resource type="Script" path="res://scripts/flight/FlightCameraController.gd" id="6_camera_controller"]
 
 [node name="MainArena" type="Node3D"]
+script = ExtResource("1_main_arena")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("1_default_env")
+environment = ExtResource("2_default_env")
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 5, 0)
@@ -27,15 +22,15 @@ directional_shadow_mode = 1
 directional_shadow_split_1 = 0.1
 directional_shadow_blend_splits = true
 
-[node name="TableMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
-mesh = SubResource("BoxMesh_table")
+[node name="SunBeacon3D" parent="." instance=ExtResource("4_sun_beacon")]
 
-[node name="FlyAgent" parent="." instance=ExtResource("2_fly_agent")]
+[node name="MacroTabletop" parent="." instance=ExtResource("3_macro_tabletop")]
+
+[node name="FlyAgent" parent="." instance=ExtResource("5_fly_agent")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="FlightCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target_agent")]
 transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.05, 1.35)
 current = true
-script = ExtResource("3_camera_controller")
+script = ExtResource("6_camera_controller")
 target_agent = NodePath("../FlyAgent")
