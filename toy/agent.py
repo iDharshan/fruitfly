@@ -85,6 +85,17 @@ class FlyAgent:
         self.energy = self.max_energy
         self.food_eaten = 0
 
+    def set_arena_rect(self, arena_rect: Tuple[int, int, int, int]):
+        """Updates the flight arena bounds when screen resolution changes."""
+        self.arena_rect = arena_rect
+        pad = self.cfg.arena_padding
+        self.min_x = float(arena_rect[0] + pad)
+        self.max_x = float(arena_rect[0] + arena_rect[2] - pad)
+        self.min_y = float(arena_rect[1] + pad)
+        self.max_y = float(arena_rect[1] + arena_rect[3] - pad)
+        self.x = max(self.min_x, min(self.max_x, self.x))
+        self.y = max(self.min_y, min(self.max_y, self.y))
+
     def eat_food(self, energy_gain: float = 25.0, count: int = 1):
         """Consumes food pellet, boosting score and energy."""
         self.score += count

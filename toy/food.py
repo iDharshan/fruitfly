@@ -104,6 +104,19 @@ class FoodSystem:
         # Spawn initial food pellets
         self.spawn_initial_pellets()
 
+    def set_arena_rect(self, arena_rect: Tuple[int, int, int, int], arena_padding: int = 36):
+        """Updates the food spawning boundaries when arena size changes."""
+        self.arena_rect = arena_rect
+        self.min_x = float(arena_rect[0] + arena_padding)
+        self.max_x = float(arena_rect[0] + arena_rect[2] - arena_padding)
+        self.min_y = float(arena_rect[1] + arena_padding + 16)
+        self.max_y = float(arena_rect[1] + arena_rect[3] - arena_padding)
+        self.span_x = self.max_x - self.min_x
+        self.span_y = self.max_y - self.min_y
+        for p in self.pellets:
+            p.x = max(self.min_x, min(self.max_x, p.x))
+            p.y = max(self.min_y, min(self.max_y, p.y))
+
     def spawn_initial_pellets(self):
         """Spawns the initial set of food pellets spaced throughout the arena."""
         self.pellets.clear()

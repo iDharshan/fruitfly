@@ -34,7 +34,12 @@ def parse_args():
         description="Drosophila Closed-Loop Compass Attractor Simulator Toy"
     )
     parser.add_argument("--fps", type=int, default=FPS, help="Target frames per second (default: 60)")
-    parser.add_argument("--fullscreen", action="store_true", help="Launch in fullscreen mode")
+    parser.add_argument("-f", "--fullscreen", action="store_true", help="Launch in fullscreen mode (fits native monitor screen)")
+    parser.add_argument("-W", "--width", type=int, default=None, help="Window width in pixels (default: 1600 or native in fullscreen)")
+    parser.add_argument("-H", "--height", type=int, default=None, help="Window height in pixels (default: 900 or native in fullscreen)")
+    parser.add_argument("-r", "--resolution", type=str, default=None, help="Window resolution formatted as WxH (e.g. 1920x1080)")
+    parser.add_argument("--fit-screen", "--maximized", dest="fit_screen", action="store_true", help="Auto-detect monitor resolution and size window to fit monitor")
+    parser.add_argument("--borderless", action="store_true", help="Launch in borderless windowed mode at desktop resolution (optimal for OBS / streaming)")
     parser.add_argument("--headless-test", action="store_true", help="Run 120 frames headlessly to verify stability and exit")
     parser.add_argument("--substeps", type=int, default=8, help="Neural ODE substeps per frame (default: 8)")
     parser.add_argument("--auto", action="store_true", help="Launch directly in autonomous PFL3 steering mode")
@@ -45,6 +50,10 @@ def parse_args():
 def run_simulation():
     args = parse_args()
 
+    # Prevent SDL from disabling desktop compositing when entering fullscreen on Linux X11/GNOME
+    # (Fixes OBS Studio, Discord, and PipeWire/Xcomposite screen recording black screens)
+    os.environ.setdefault("SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR", "0")
+
     # Headless test mode setup
     if args.headless_test:
         os.environ["SDL_VIDEODRIVER"] = "dummy"
@@ -54,27 +63,76 @@ def run_simulation():
     pygame.init()
     pygame.display.set_caption(WINDOW_TITLE)
 
-    flags = pygame.DOUBLEBUF | pygame.HWSURFACE
-    if args.fullscreen:
+    # Detect native monitor resolution
+    desktop_w, desktop_h = SCREEN_WIDTH, SCREEN_HEIGHT
+    try:
+        desktop_sizes = pygame.display.get_desktop_sizes() if hasattr(pygame.display, 'get_desktop_sizes') else None
+        if desktop_sizes and len(desktop_sizes) > 0:
+            desktop_w, desktop_h = desktop_sizes[0]
+        else:
+            info = pygame.display.Info()
+            if info.current_w > 0 and info.current_h > 0:
+                desktop_w, desktop_h = info.current_w, info.current_h
+    except Exception:
+        pass
+
+    target_w = SCREEN_WIDTH
+    target_h = SCREEN_HEIGHT
+
+    if args.resolution:
+        try:
+            parts = args.resolution.lower().split("x")
+            target_w = int(parts[0])
+            target_h = int(parts[1])
+        except Exception:
+            print(f"[WARN] Invalid resolution string '{args.resolution}'. Using default {SCREEN_WIDTH}x{SCREEN_HEIGHT}.")
+
+    if args.width is not None:
+        target_w = args.width
+    if args.height is not None:
+        target_h = args.height
+
+    if args.fit_screen or args.borderless:
+        target_w = desktop_w
+        target_h = desktop_h
+
+    is_fullscreen = args.fullscreen
+    windowed_size = (target_w, target_h)
+
+    # Pygame display flags: Enable RESIZABLE by default so the window can be maximized or resized
+    flags = pygame.DOUBLEBUF | pygame.RESIZABLE
+    if args.borderless:
+        flags = pygame.NOFRAME
+    elif is_fullscreen:
         flags |= pygame.FULLSCREEN
+        if args.width is None and args.height is None and args.resolution is None:
+            target_w = desktop_w
+            target_h = desktop_h
 
     try:
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
+        screen = pygame.display.set_mode((target_w, target_h), flags)
     except pygame.error as e:
         print(f"[WARN] Hardware surface request failed ({e}), falling back to default surface...")
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        flags = pygame.RESIZABLE
+        if is_fullscreen:
+            flags |= pygame.FULLSCREEN
+        screen = pygame.display.set_mode((target_w, target_h), flags)
 
+    actual_w, actual_h = screen.get_size()
     clock = pygame.time.Clock()
 
     # Core Components
     circuit_cfg = CIRCUIT_CFG
     circuit_cfg.substeps_per_frame = args.substeps
     circuit = DualRingAttractor(circuit_cfg)
-    agent = FlyAgent(AGENT_CFG, PANEL_ARENA_RECT)
-    food_system = FoodSystem(PANEL_ARENA_RECT, num_pellets=1)
-    telemetry = TelemetryTracker(history_len=240)
+
     renderer = NeonDashboardRenderer(screen)
     renderer.set_view_mode(args.view_mode)
+
+    # Initialize agent and food arena with renderer's dynamically computed panel rect
+    agent = FlyAgent(AGENT_CFG, renderer.panel_arena_rect)
+    food_system = FoodSystem(renderer.panel_arena_rect, num_pellets=1)
+    telemetry = TelemetryTracker(history_len=240)
 
     simulation_mode = "AUTO" if args.auto else "MANUAL"
     running = True
@@ -83,7 +141,7 @@ def run_simulation():
     print("================================================================================")
     print(" DROSOPHILA CENTRAL COMPLEX COMPASS SIMULATOR ACTIVE")
     print("================================================================================")
-    print(f" Target Resolution: {SCREEN_WIDTH}x{SCREEN_HEIGHT} | Target FPS: {args.fps}")
+    print(f" Current Window Resolution: {actual_w}x{actual_h} (Detected Monitor Native: {desktop_w}x{desktop_h}) | Target FPS: {args.fps}")
     print(f" Neural Populations: {circuit.n_epg} E-PG Compass Nodes + {circuit.n_pen_total} P-EN Shifters + {circuit.n_pfl3} PFL3 Comparators")
     print(f" 3D Brain Cloud: 1,920+ anatomical nodes with 0-200+ Hz live neural activations")
     print(f" Synaptic Torque Ratio: {circuit_cfg.w_pe_ratio:.2f}x (P-EN feedback vs E-PG forward)")
@@ -94,6 +152,7 @@ def run_simulation():
     print("   [ ^ / v or W / S ]  Accelerate / Decelerate Forward Velocity")
     print("   [ M ]               Toggle Mode (MANUAL ↔ AUTO)")
     print("   [ TAB or 1 / 2 / 3] Switch View: 1=3D Brain, 2=Dual Ring, 3=Split View")
+    print("   [ F11 or Alt+Enter] Toggle Fullscreen (Fits your monitor screen)")
     print("   [ L ]               Toggle 3D Anatomical Callout Badges (On / Off)")
     print("   [ Left Click ]      Drop / Move Visual Sun Landmark in Arena")
     print("   [ Right Click ]     Toggle Sun Landmark Cue On / Off (Off by default)")
@@ -127,9 +186,37 @@ def run_simulation():
             if event.type == pygame.QUIT:
                 running = False
 
+            elif event.type == pygame.VIDEORESIZE:
+                if not is_fullscreen:
+                    new_size = (event.w, event.h)
+                    windowed_size = new_size
+                    screen = pygame.display.set_mode(new_size, pygame.RESIZABLE | pygame.DOUBLEBUF | pygame.HWSURFACE)
+                    renderer.set_screen(screen)
+                    agent.set_arena_rect(renderer.panel_arena_rect)
+                    food_system.set_arena_rect(renderer.panel_arena_rect)
+
             elif event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_ESCAPE, pygame.K_q):
                     running = False
+                elif event.key == pygame.K_F11 or (event.key == pygame.K_RETURN and (pygame.key.get_mods() & pygame.KMOD_ALT)):
+                    is_fullscreen = not is_fullscreen
+                    if is_fullscreen:
+                        windowed_size = screen.get_size()
+                        fs_flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.RESIZABLE
+                        screen = pygame.display.set_mode((desktop_w, desktop_h), fs_flags)
+                        renderer.set_screen(screen)
+                        agent.set_arena_rect(renderer.panel_arena_rect)
+                        food_system.set_arena_rect(renderer.panel_arena_rect)
+                        renderer.show_toast(f"FULLSCREEN: {desktop_w}x{desktop_h}")
+                        print(f"[DISPLAY] Switched to Fullscreen ({desktop_w}x{desktop_h})")
+                    else:
+                        win_flags = pygame.RESIZABLE | pygame.DOUBLEBUF
+                        screen = pygame.display.set_mode(windowed_size, win_flags)
+                        renderer.set_screen(screen)
+                        agent.set_arena_rect(renderer.panel_arena_rect)
+                        food_system.set_arena_rect(renderer.panel_arena_rect)
+                        renderer.show_toast(f"WINDOWED: {windowed_size[0]}x{windowed_size[1]}")
+                        print(f"[DISPLAY] Switched to Windowed ({windowed_size[0]}x{windowed_size[1]})")
                 elif event.key == pygame.K_SPACE:
                     is_paused = not is_paused
                 elif event.key == pygame.K_TAB:
@@ -178,8 +265,8 @@ def run_simulation():
                 if event.button == 1 and renderer.handle_click(mx, my):
                     pass
                 else:
-                    rx_a, ry_a, rw_a, rh_a = PANEL_ARENA_RECT
-                    rx_n, ry_n, rw_n, rh_n = PANEL_NEURAL_RECT
+                    rx_a, ry_a, rw_a, rh_a = renderer.panel_arena_rect
+                    rx_n, ry_n, rw_n, rh_n = renderer.panel_neural_rect
 
                     # Check click inside Arena (Left Panel)
                     if rx_a <= mx <= rx_a + rw_a and ry_a <= my <= ry_a + rh_a:

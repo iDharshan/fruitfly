@@ -22,7 +22,8 @@ from .config import (
     PANEL_ARENA_RECT, PANEL_NEURAL_RECT, STATS_HUD_RECT,
     STATS_HUD_RECT_ARENA_BR, STATS_HUD_RECT_ARENA_TR, STATS_HUD_W, STATS_HUD_H,
     BTN_MODES_X, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT, BTN_MODE_SPACING,
-    RADIUS_EPG, RADIUS_PEN, HEADER_HEIGHT, FOOTER_HEIGHT, CONTENT_TOP
+    RADIUS_EPG, RADIUS_PEN, HEADER_HEIGHT, FOOTER_HEIGHT, CONTENT_TOP,
+    compute_layout
 )
 from .circuit import DualRingAttractor, wrap_angle, ang_dist
 from .agent import FlyAgent
@@ -76,14 +77,32 @@ class NeonDashboardRenderer:
 
         # HUD Position: 0 = Arena Bottom-Right (Default), 1 = Arena Top-Right, 2 = Neural Top-Right, 3 = Hidden
         self.hud_pos_index: int = 0
-        self.hud_rect_current: Optional[Tuple[int, int, int, int]] = STATS_HUD_RECT_ARENA_BR
 
-        # Pre-calculate View Mode button hitboxes
-        self.mode_buttons: List[Tuple[int, pygame.Rect, str]] = [
-            (1, pygame.Rect(BTN_MODES_X, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "3D BRAIN"),
-            (2, pygame.Rect(BTN_MODES_X + BTN_MODE_WIDTH + BTN_MODE_SPACING, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "DUAL RING"),
-            (3, pygame.Rect(BTN_MODES_X + (BTN_MODE_WIDTH + BTN_MODE_SPACING) * 2, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "SPLIT"),
+        # Pre-calculate layout and button hitboxes dynamically
+        self.update_layout()
+
+    def update_layout(self, width: Optional[int] = None, height: Optional[int] = None):
+        """Re-computes dashboard panel dimensions and UI positions dynamically for current resolution."""
+        if width is None or height is None:
+            width, height = self.screen.get_size()
+
+        self.layout = compute_layout(width, height)
+        self.panel_arena_rect = self.layout["panel_arena"]
+        self.panel_neural_rect = self.layout["panel_neural"]
+        self.content_top = self.layout["content_top"]
+
+        btn_x = self.layout["btn_modes_x"]
+        btn_y = self.layout["btn_modes_y"]
+        self.mode_buttons = [
+            (1, pygame.Rect(btn_x, btn_y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "3D BRAIN"),
+            (2, pygame.Rect(btn_x + BTN_MODE_WIDTH + BTN_MODE_SPACING, btn_y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "DUAL RING"),
+            (3, pygame.Rect(btn_x + (BTN_MODE_WIDTH + BTN_MODE_SPACING) * 2, btn_y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "SPLIT"),
         ]
+
+    def set_screen(self, screen: pygame.Surface):
+        """Updates the active screen surface and re-computes panel layout for the new resolution."""
+        self.screen = screen
+        self.update_layout(*screen.get_size())
 
     def toggle_callouts(self) -> bool:
         """Toggles floating anatomical 3D callout badges on/off."""
@@ -101,11 +120,11 @@ class NeonDashboardRenderer:
     def get_hud_rect(self) -> Optional[Tuple[int, int, int, int]]:
         """Returns the current bounds tuple (x, y, w, h) for the stats HUD, or None if hidden."""
         if self.hud_pos_index == 0:
-            return STATS_HUD_RECT_ARENA_BR
+            return self.layout["stats_hud_arena_br"]
         elif self.hud_pos_index == 1:
-            return STATS_HUD_RECT_ARENA_TR
+            return self.layout["stats_hud_arena_tr"]
         elif self.hud_pos_index == 2:
-            return (PANEL_NEURAL_RECT[0] + PANEL_NEURAL_RECT[2] - STATS_HUD_W - 16, CONTENT_TOP + 86, STATS_HUD_W, STATS_HUD_H)
+            return self.layout["stats_hud_neural_tr"]
         else:
             return None
 
@@ -244,7 +263,7 @@ class NeonDashboardRenderer:
         """Renders floating glowing confirmation toast banner."""
         t_surf = self.font_mono_bold.render(msg, True, COLOR_EPG_CYAN)
         tw, th = t_surf.get_width() + 28, t_surf.get_height() + 14
-        tx = SCREEN_WIDTH // 2 - tw // 2
+        tx = self.screen.get_width() // 2 - tw // 2
         ty = 56
 
         toast_bg = pygame.Surface((tw, th), pygame.SRCALPHA)
@@ -255,8 +274,9 @@ class NeonDashboardRenderer:
 
     def _render_header(self, fps: float, is_paused: bool, mode: str = "MANUAL"):
         """Draws top banner."""
-        pygame.draw.rect(self.screen, COLOR_PANEL_HEADER, (0, 0, SCREEN_WIDTH, HEADER_HEIGHT))
-        pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (0, HEADER_HEIGHT), (SCREEN_WIDTH, HEADER_HEIGHT), 1)
+        sw = self.screen.get_width()
+        pygame.draw.rect(self.screen, COLOR_PANEL_HEADER, (0, 0, sw, HEADER_HEIGHT))
+        pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (0, HEADER_HEIGHT), (sw, HEADER_HEIGHT), 1)
 
         title_surf = self.font_title.render("DROSOPHILA CENTRAL COMPLEX COMPASS SIMULATOR", True, COLOR_EPG_CYAN)
         self.screen.blit(title_surf, (20, 8))
@@ -270,31 +290,34 @@ class NeonDashboardRenderer:
         # Operating Mode badge
         mode_col = COLOR_EPG_CYAN if mode == "MANUAL" else COLOR_FOOD_EMERALD
         mode_surf = self.font_mono_bold.render(f"● [{mode}]", True, mode_col)
-        self.screen.blit(mode_surf, (SCREEN_WIDTH - 400, 13))
+        self.screen.blit(mode_surf, (sw - 400, 13))
 
         # Status indicator
         status_text = "PAUSED" if is_paused else "RUNNING"
         status_col = COLOR_SUN_AMBER if is_paused else COLOR_LIME_FEEDBACK
         status_surf = self.font_mono_bold.render(f"● {status_text}", True, status_col)
-        self.screen.blit(status_surf, (SCREEN_WIDTH - 270, 13))
+        self.screen.blit(status_surf, (sw - 270, 13))
 
         fps_surf = self.font_mono.render(f"{fps:4.1f} FPS (GPU ACCEL)", True, COLOR_TEXT_PRIMARY)
-        self.screen.blit(fps_surf, (SCREEN_WIDTH - 165, 14))
+        self.screen.blit(fps_surf, (sw - 165, 14))
 
     def _render_footer(self):
         """Draws bottom controls cheat-sheet."""
-        foot_y = SCREEN_HEIGHT - FOOTER_HEIGHT
-        pygame.draw.rect(self.screen, COLOR_PANEL_HEADER, (0, foot_y, SCREEN_WIDTH, FOOTER_HEIGHT))
-        pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (0, foot_y), (SCREEN_WIDTH, foot_y), 1)
+        sw = self.screen.get_width()
+        sh = self.screen.get_height()
+        foot_y = sh - FOOTER_HEIGHT
+        pygame.draw.rect(self.screen, COLOR_PANEL_HEADER, (0, foot_y, sw, FOOTER_HEIGHT))
+        pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (0, foot_y), (sw, foot_y), 1)
 
         controls = [
-            ("< / > or A / D", "Steer Shifters"),
+            ("< / > or A / D", "Steer"),
             ("^ / v or W / S", "Throttle"),
-            ("M", "Manual/Auto"),
-            ("TAB / 1-3", "View Mode"),
+            ("M", "Auto/Manual"),
+            ("TAB / 1-3", "View"),
+            ("F11", "Fullscreen"),
             ("L", "Labels"),
             ("H", "HUD Pos"),
-            ("Right-Click", "Toggle Sun"),
+            ("R-Click", "Toggle Sun"),
             ("T", "Phototaxis"),
             ("P / F12", "Screenshot"),
             ("Space", "Pause"),
@@ -314,9 +337,9 @@ class NeonDashboardRenderer:
 
     def _render_panel_arena(self, agent: FlyAgent, food_system: Optional[FoodSystem] = None, mode: str = "MANUAL"):
         """Renders expanded 2-D flight arena with landmark, sensory beam, particle wake, food pellets, and fly."""
-        rx, ry, rw, rh = PANEL_ARENA_RECT
-        pygame.draw.rect(self.screen, COLOR_PANEL_BG, PANEL_ARENA_RECT, border_radius=6)
-        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, PANEL_ARENA_RECT, width=1, border_radius=6)
+        rx, ry, rw, rh = self.panel_arena_rect
+        pygame.draw.rect(self.screen, COLOR_PANEL_BG, self.panel_arena_rect, border_radius=6)
+        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, self.panel_arena_rect, width=1, border_radius=6)
 
         # Header bar
         header_h = 28
@@ -515,7 +538,7 @@ class NeonDashboardRenderer:
         # Translucent fluttering wings with wing veins
         wing_flap = math.sin(agent.wing_phase) * 0.45
         wing_len = agent.cfg.wing_span
-        wing_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        wing_surf = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
 
         # Left wing
         w_l_pts = [
@@ -582,9 +605,9 @@ class NeonDashboardRenderer:
         mode: str = "MANUAL",
     ):
         """Renders Panel 2 with scientifically accurate text and clean vertical partitioning."""
-        rx, ry, rw, rh = PANEL_NEURAL_RECT
-        pygame.draw.rect(self.screen, COLOR_PANEL_BG, PANEL_NEURAL_RECT, border_radius=6)
-        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, PANEL_NEURAL_RECT, width=1, border_radius=6)
+        rx, ry, rw, rh = self.panel_neural_rect
+        pygame.draw.rect(self.screen, COLOR_PANEL_BG, self.panel_neural_rect, border_radius=6)
+        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, self.panel_neural_rect, width=1, border_radius=6)
 
         # Corner ticks
         tick_len = 10
@@ -625,10 +648,11 @@ class NeonDashboardRenderer:
             # Full 3D Brain Mesh Mode (Fills panel with rich high-definition connectome)
             center_x = rx + rw // 2
             center_y = ry + rh // 2 + 10
+            scale = 2.35 * self.brain_cloud.user_scale * min(rw / 780.0, rh / 794.0)
             self._render_brain_cloud(
                 center_x,
                 center_y,
-                scale=2.35 * self.brain_cloud.user_scale,
+                scale=scale,
                 is_full_view=True,
                 circuit=circuit,
                 agent=agent,
@@ -640,8 +664,9 @@ class NeonDashboardRenderer:
         elif self.view_mode == 2:
             # Full Dual Ring Attractor Mode
             center_x = rx + rw // 2
-            center_y = ry + rh // 2 + 10
-            self._render_dual_ring(circuit, center_x, center_y, scale=1.0)
+            center_y = ry + (rh - 120) // 2 + 30
+            scale = min(1.4, max(0.7, min(rw / 780.0, rh / 794.0)))
+            self._render_dual_ring(circuit, center_x, center_y, scale=scale)
             self._render_spectrum_bar(circuit, rx + 24, ry + rh - 110, rw - 48, 75)
 
         else:
@@ -666,9 +691,10 @@ class NeonDashboardRenderer:
         prev_clip = self.screen.get_clip()
 
         # ======================================================================
-        # 1. UPPER SECTION: 3D Anatomical Brain (y: 126 to 466, height: 340px)
+        # 1. UPPER SECTION: 3D Anatomical Brain
         # ======================================================================
-        upper_box = pygame.Rect(rx + 12, ry + 76, rw - 24, 340)
+        upper_h = max(180, int((rh - 86) * 0.46))
+        upper_box = pygame.Rect(rx + 12, ry + 76, rw - 24, upper_h)
         pygame.draw.rect(self.screen, (14, 18, 26), upper_box, border_radius=5)
         pygame.draw.rect(self.screen, (28, 38, 54), upper_box, width=1, border_radius=5)
 
@@ -677,16 +703,16 @@ class NeonDashboardRenderer:
         self.screen.blit(lbl_sec1, (rx + 22, ry + 84))
 
         # Strict clipping for upper 3D brain
-        clip_upper = pygame.Rect(rx + 14, ry + 78, rw - 28, 336)
+        clip_upper = pygame.Rect(rx + 14, ry + 78, rw - 28, upper_h - 4)
         self.screen.set_clip(clip_upper)
 
         # Center and project 3D brain with proportional scale (stays strictly inside upper box)
         cloud_cx = rx + rw // 2
-        cloud_cy = ry + 240
+        cloud_cy = ry + 76 + upper_h // 2
         self._render_brain_cloud(
             cloud_cx,
             cloud_cy,
-            scale=1.52 * self.brain_cloud.user_scale,
+            scale=1.52 * self.brain_cloud.user_scale * (upper_h / 340.0),
             is_full_view=False,
             circuit=circuit,
             agent=agent,
@@ -699,40 +725,44 @@ class NeonDashboardRenderer:
         lbl_cx = self.font_tiny.render("[CENTRAL COMPLEX (EB/PB)]", True, COLOR_EPG_CYAN)
         lbl_vnc = self.font_tiny.render("[VNC MOTOR CORD (T1-T3)]", True, (140, 170, 200))
 
-        self.screen.blit(lbl_opt_l, (cloud_cx - 200, cloud_cy - 48))
-        self.screen.blit(lbl_opt_r, (cloud_cx + 145, cloud_cy - 48))
-        self.screen.blit(lbl_cx, (cloud_cx - lbl_cx.get_width() // 2, cloud_cy - 105))
-        self.screen.blit(lbl_vnc, (cloud_cx - lbl_vnc.get_width() // 2, cloud_cy + 112))
+        scale_badges = upper_h / 340.0
+        self.screen.blit(lbl_opt_l, (cloud_cx - int(200 * scale_badges), cloud_cy - int(48 * scale_badges)))
+        self.screen.blit(lbl_opt_r, (cloud_cx + int(145 * scale_badges), cloud_cy - int(48 * scale_badges)))
+        self.screen.blit(lbl_cx, (cloud_cx - lbl_cx.get_width() // 2, cloud_cy - int(105 * scale_badges)))
+        self.screen.blit(lbl_vnc, (cloud_cx - lbl_vnc.get_width() // 2, cloud_cy + int(112 * scale_badges)))
 
         # Bottom activity legend inside upper box
-        self._render_activity_legend(rx + 22, ry + 386)
+        self._render_activity_legend(rx + 22, ry + 76 + upper_h - 30)
 
         # Reset clip
         self.screen.set_clip(prev_clip)
 
         # Divider bar
-        div_y = ry + 424
+        div_y = ry + 76 + upper_h + 8
         pygame.draw.line(self.screen, COLOR_PANEL_BORDER, (rx + 12, div_y), (rx + rw - 12, div_y), 1)
 
         # ======================================================================
-        # 2. LOWER SECTION: Dual-Ring CANN (y: 432 to 836, height: 404px)
+        # 2. LOWER SECTION: Dual-Ring CANN
         # ======================================================================
-        lower_box = pygame.Rect(rx + 12, div_y + 8, rw - 24, rh - (div_y - ry) - 16)
+        lower_h = rh - (div_y - ry) - 12
+        lower_box = pygame.Rect(rx + 12, div_y + 8, rw - 24, lower_h)
         pygame.draw.rect(self.screen, (14, 18, 26), lower_box, border_radius=5)
         pygame.draw.rect(self.screen, (28, 38, 54), lower_box, width=1, border_radius=5)
 
         # Lower section header
-        lbl_sec2 = self.font_tiny.render("LIVE CANN DYNAMICS: 50 E-PG COMPASS ⇄ 48 P-EN SHIFTERS (2.09x TORQUE)", True, (160, 180, 205))
+        lbl_sec2 = self.font_tiny.render("LIVE CANN DYNAMICS: 48 E-PG COMPASS ⇄ 48 P-EN SHIFTERS (2.09x TORQUE)", True, (160, 180, 205))
         self.screen.blit(lbl_sec2, (rx + 22, div_y + 14))
 
         # Clip for lower section
-        clip_lower = pygame.Rect(rx + 14, div_y + 10, rw - 28, lower_box.height - 4)
+        clip_lower = pygame.Rect(rx + 14, div_y + 10, rw - 28, lower_h - 4)
         self.screen.set_clip(clip_lower)
 
         # Center of Dual Ring in lower section with balanced margins
         ring_cx = rx + rw // 2
-        ring_cy = div_y + 158
-        self._render_dual_ring(circuit, ring_cx, ring_cy, scale=0.58, legend_y=div_y + 306)
+        ring_scale = min(0.85, max(0.42, 0.58 * (lower_h / 404.0)))
+        ring_cy = div_y + 8 + (lower_h - 40) // 2
+        legend_y = div_y + 8 + lower_h - 26
+        self._render_dual_ring(circuit, ring_cx, ring_cy, scale=ring_scale, legend_y=legend_y)
 
         self.screen.set_clip(prev_clip)
 
@@ -839,7 +869,7 @@ class NeonDashboardRenderer:
         if not self.show_callouts:
             return
 
-        rx, ry, rw, rh = PANEL_NEURAL_RECT
+        rx, ry, rw, rh = self.panel_neural_rect
         odor = food_system.get_odor_at(agent.x, agent.y, agent.heading) if food_system else None
 
         bump_deg = math.degrees(circuit.decode_heading()[0])
@@ -1025,7 +1055,7 @@ class NeonDashboardRenderer:
 
         # Synaptic torque arcs (P-EN -> E-PG feedback)
         active_arcs = circuit.get_active_synaptic_arcs(threshold_ratio=0.30)
-        arc_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        arc_surf = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
 
         for arc_type, pen_idx, pen_ang, epg_idx, epg_ang, intensity in active_arcs:
             px = cx + r_pen * math.cos(pen_ang)

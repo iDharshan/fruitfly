@@ -51,39 +51,95 @@ COLOR_ACTIVE_BORDER: Tuple[int, int, int] = (0, 245, 212)
 # ==============================================================================
 HEADER_HEIGHT: int = 44
 FOOTER_HEIGHT: int = 50
-CONTENT_TOP: int = HEADER_HEIGHT + 6
-CONTENT_BOTTOM: int = SCREEN_HEIGHT - FOOTER_HEIGHT - 6
-CONTENT_HEIGHT: int = CONTENT_BOTTOM - CONTENT_TOP
 
-# 2 Main Panels:
-# Panel 1: 2D Fly Arena (Left - Expanded to 780px wide)
-PANEL_ARENA_RECT = (14, CONTENT_TOP, 780, CONTENT_HEIGHT)
-
-# Panel 2: Live Neural Activity & Brain View (Right - 780px wide)
-PANEL_NEURAL_RECT = (806, CONTENT_TOP, 780, CONTENT_HEIGHT)
-
-# View Mode Selector Buttons Layout (Panel 2 Header Right)
+# Mode button geometry
 BTN_MODE_WIDTH: int = 86
 BTN_MODE_HEIGHT: int = 24
 BTN_MODE_SPACING: int = 6
 BTN_MODES_TOTAL_W: int = 3 * BTN_MODE_WIDTH + 2 * BTN_MODE_SPACING  # 270px
-BTN_MODES_X: int = PANEL_NEURAL_RECT[0] + PANEL_NEURAL_RECT[2] - BTN_MODES_TOTAL_W - 16
-BTN_MODES_Y: int = CONTENT_TOP + 12
 
-# Compact Floating Stats HUD (Placed in Flight Arena corner for clear cockpit avionics)
+# Compact Floating Stats HUD dimensions
 STATS_HUD_W: int = 250
 STATS_HUD_H: int = 198
-STATS_HUD_RECT_ARENA_BR = (PANEL_ARENA_RECT[0] + PANEL_ARENA_RECT[2] - STATS_HUD_W - 14,
-                           PANEL_ARENA_RECT[1] + PANEL_ARENA_RECT[3] - STATS_HUD_H - 14,
-                           STATS_HUD_W, STATS_HUD_H)
-STATS_HUD_RECT_ARENA_TR = (PANEL_ARENA_RECT[0] + PANEL_ARENA_RECT[2] - STATS_HUD_W - 14,
-                           PANEL_ARENA_RECT[1] + 36,
-                           STATS_HUD_W, STATS_HUD_H)
-STATS_HUD_RECT = STATS_HUD_RECT_ARENA_BR
 
-# Centers for Visualizations inside Panel 2
-NEURAL_CENTER_X: int = PANEL_NEURAL_RECT[0] + PANEL_NEURAL_RECT[2] // 2
-NEURAL_CENTER_Y: int = PANEL_NEURAL_RECT[1] + PANEL_NEURAL_RECT[3] // 2 + 10
+
+def compute_layout(width: int = SCREEN_WIDTH, height: int = SCREEN_HEIGHT):
+    """
+    Computes dashboard panel dimensions and UI positions dynamically for any resolution.
+    Returns a dictionary of computed layout geometry.
+    """
+    content_top = HEADER_HEIGHT + 6
+    content_bottom = height - FOOTER_HEIGHT - 6
+    content_height = max(100, content_bottom - content_top)
+
+    margin = 14
+    gap = 12
+    panel_w = max(100, (width - margin * 2 - gap) // 2)
+
+    panel_arena = (margin, content_top, panel_w, content_height)
+    panel_neural = (margin + panel_w + gap, content_top, panel_w, content_height)
+
+    btn_modes_x = panel_neural[0] + panel_neural[2] - BTN_MODES_TOTAL_W - 16
+    btn_modes_y = content_top + 12
+
+    stats_hud_arena_br = (
+        panel_arena[0] + panel_arena[2] - STATS_HUD_W - 14,
+        panel_arena[1] + panel_arena[3] - STATS_HUD_H - 14,
+        STATS_HUD_W,
+        STATS_HUD_H,
+    )
+    stats_hud_arena_tr = (
+        panel_arena[0] + panel_arena[2] - STATS_HUD_W - 14,
+        panel_arena[1] + 36,
+        STATS_HUD_W,
+        STATS_HUD_H,
+    )
+    stats_hud_neural_tr = (
+        panel_neural[0] + panel_neural[2] - STATS_HUD_W - 16,
+        content_top + 86,
+        STATS_HUD_W,
+        STATS_HUD_H,
+    )
+
+    neural_cx = panel_neural[0] + panel_neural[2] // 2
+    neural_cy = panel_neural[1] + panel_neural[3] // 2 + 10
+
+    return {
+        "width": width,
+        "height": height,
+        "content_top": content_top,
+        "content_bottom": content_bottom,
+        "content_height": content_height,
+        "panel_arena": panel_arena,
+        "panel_neural": panel_neural,
+        "btn_modes_x": btn_modes_x,
+        "btn_modes_y": btn_modes_y,
+        "stats_hud_arena_br": stats_hud_arena_br,
+        "stats_hud_arena_tr": stats_hud_arena_tr,
+        "stats_hud_neural_tr": stats_hud_neural_tr,
+        "neural_cx": neural_cx,
+        "neural_cy": neural_cy,
+    }
+
+
+# Initialize default layout constants for SCREEN_WIDTH x SCREEN_HEIGHT
+_DEFAULT_LAYOUT = compute_layout(SCREEN_WIDTH, SCREEN_HEIGHT)
+CONTENT_TOP: int = _DEFAULT_LAYOUT["content_top"]
+CONTENT_BOTTOM: int = _DEFAULT_LAYOUT["content_bottom"]
+CONTENT_HEIGHT: int = _DEFAULT_LAYOUT["content_height"]
+
+PANEL_ARENA_RECT: Tuple[int, int, int, int] = _DEFAULT_LAYOUT["panel_arena"]
+PANEL_NEURAL_RECT: Tuple[int, int, int, int] = _DEFAULT_LAYOUT["panel_neural"]
+
+BTN_MODES_X: int = _DEFAULT_LAYOUT["btn_modes_x"]
+BTN_MODES_Y: int = _DEFAULT_LAYOUT["btn_modes_y"]
+
+STATS_HUD_RECT_ARENA_BR: Tuple[int, int, int, int] = _DEFAULT_LAYOUT["stats_hud_arena_br"]
+STATS_HUD_RECT_ARENA_TR: Tuple[int, int, int, int] = _DEFAULT_LAYOUT["stats_hud_arena_tr"]
+STATS_HUD_RECT: Tuple[int, int, int, int] = STATS_HUD_RECT_ARENA_BR
+
+NEURAL_CENTER_X: int = _DEFAULT_LAYOUT["neural_cx"]
+NEURAL_CENTER_Y: int = _DEFAULT_LAYOUT["neural_cy"]
 
 RADIUS_EPG: float = 130.0   # Inner ring (E-PG azimuth)
 RADIUS_PEN: float = 195.0   # Outer ring (P-EN shifters)
