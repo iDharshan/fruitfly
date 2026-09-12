@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://c6f3q1k4n2p0m"]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Environment" path="res://scenes/default_env.tres" id="1_default_env"]
+[ext_resource type="PackedScene" path="res://scenes/fly_agent.tscn" id="2_fly_agent"]
+[ext_resource type="Script" path="res://scripts/flight/FlightCameraController.gd" id="3_camera_controller"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_table"]
 albedo_color = Color(0.24, 0.16, 0.1, 1.0)
@@ -28,3 +30,12 @@ directional_shadow_blend_splits = true
 [node name="TableMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 mesh = SubResource("BoxMesh_table")
+
+[node name="FlyAgent" parent="." instance=ExtResource("2_fly_agent")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="FlightCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target_agent")]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.05, 1.35)
+current = true
+script = ExtResource("3_camera_controller")
+target_agent = NodePath("../FlyAgent")
