@@ -1,0 +1,3076 @@
+[
+  {
+    "bodyId": 851493896,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L1_C3",
+    "side": "L",
+    "pb_column": "L1",
+    "fb_column": "C3",
+    "pre": 336,
+    "post": 3272,
+    "roiInfo": {
+      "CX": {
+        "pre": 5,
+        "post": 3170,
+        "downstream": 18,
+        "upstream": 3170,
+        "mito": 77,
+        "dark": 71,
+        "light": 5,
+        "medium": 1
+      },
+      "PB": {
+        "pre": 2,
+        "post": 283,
+        "downstream": 5,
+        "upstream": 283,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(L1)": {
+        "pre": 2,
+        "post": 254,
+        "downstream": 5,
+        "upstream": 254,
+        "mito": 8,
+        "dark": 8
+      },
+      "FB": {
+        "pre": 3,
+        "post": 2887,
+        "downstream": 13,
+        "upstream": 2887,
+        "mito": 69,
+        "dark": 63,
+        "light": 5,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 115,
+        "upstream": 115
+      },
+      "FB-column3": {
+        "pre": 2,
+        "post": 2432,
+        "downstream": 6,
+        "upstream": 2432,
+        "mito": 62,
+        "dark": 59,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl5": {
+        "post": 1282,
+        "upstream": 1282,
+        "mito": 24,
+        "dark": 23,
+        "light": 1
+      },
+      "PB(R1)": {
+        "post": 27,
+        "upstream": 27
+      },
+      "PB(L2)": {
+        "post": 2,
+        "upstream": 2
+      },
+      "FBl4": {
+        "pre": 3,
+        "post": 970,
+        "downstream": 13,
+        "upstream": 970,
+        "mito": 32,
+        "dark": 28,
+        "light": 3,
+        "medium": 1
+      },
+      "FBl3": {
+        "post": 46,
+        "upstream": 46,
+        "mito": 3,
+        "dark": 2,
+        "light": 1
+      },
+      "LX(R)": {
+        "pre": 331,
+        "post": 100,
+        "downstream": 2429,
+        "upstream": 100,
+        "mito": 52,
+        "dark": 52
+      },
+      "BU(R)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl2": {
+        "post": 266,
+        "upstream": 266,
+        "mito": 6,
+        "dark": 6
+      },
+      "LAL(R)": {
+        "pre": 331,
+        "post": 99,
+        "downstream": 2429,
+        "upstream": 99,
+        "mito": 50,
+        "dark": 50
+      },
+      "LAL(-GA)(R)": {
+        "pre": 331,
+        "post": 99,
+        "downstream": 2429,
+        "upstream": 99,
+        "mito": 50,
+        "dark": 50
+      },
+      "FBl1": {
+        "post": 208,
+        "upstream": 208,
+        "mito": 4,
+        "dark": 4
+      }
+    }
+  },
+  {
+    "bodyId": 944262351,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L1_C3",
+    "side": "L",
+    "pb_column": "L1",
+    "fb_column": "C3",
+    "pre": 332,
+    "post": 2736,
+    "roiInfo": {
+      "CX": {
+        "pre": 3,
+        "post": 2621,
+        "downstream": 14,
+        "upstream": 2621,
+        "mito": 92,
+        "dark": 90,
+        "light": 1,
+        "medium": 1
+      },
+      "PB": {
+        "post": 232,
+        "upstream": 232,
+        "mito": 4,
+        "dark": 4
+      },
+      "PB(L1)": {
+        "post": 199,
+        "upstream": 199,
+        "mito": 4,
+        "dark": 4
+      },
+      "FB": {
+        "pre": 3,
+        "post": 2389,
+        "downstream": 14,
+        "upstream": 2389,
+        "mito": 88,
+        "dark": 86,
+        "light": 1,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 158,
+        "upstream": 158,
+        "mito": 2,
+        "dark": 2
+      },
+      "FB-column3": {
+        "pre": 3,
+        "post": 1598,
+        "downstream": 14,
+        "upstream": 1598,
+        "mito": 61,
+        "dark": 61
+      },
+      "FBl5": {
+        "post": 1129,
+        "upstream": 1129,
+        "mito": 37,
+        "dark": 35,
+        "light": 1,
+        "medium": 1
+      },
+      "PB(R1)": {
+        "post": 33,
+        "upstream": 33
+      },
+      "FBl4": {
+        "pre": 3,
+        "post": 764,
+        "downstream": 14,
+        "upstream": 764,
+        "mito": 33,
+        "dark": 33
+      },
+      "FBl3": {
+        "post": 56,
+        "upstream": 56,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl2": {
+        "post": 203,
+        "upstream": 203,
+        "mito": 7,
+        "dark": 7
+      },
+      "LX(R)": {
+        "pre": 329,
+        "post": 110,
+        "downstream": 2445,
+        "upstream": 110,
+        "mito": 56,
+        "dark": 55,
+        "medium": 1
+      },
+      "LAL(R)": {
+        "pre": 329,
+        "post": 110,
+        "downstream": 2445,
+        "upstream": 110,
+        "mito": 55,
+        "dark": 54,
+        "medium": 1
+      },
+      "LAL(-GA)(R)": {
+        "pre": 329,
+        "post": 110,
+        "downstream": 2445,
+        "upstream": 110,
+        "mito": 55,
+        "dark": 54,
+        "medium": 1
+      },
+      "FBl1": {
+        "post": 79,
+        "upstream": 79,
+        "mito": 7,
+        "dark": 7
+      }
+    }
+  },
+  {
+    "bodyId": 1258073453,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L1_C8_irreg",
+    "side": "L",
+    "pb_column": "L1",
+    "fb_column": "C8",
+    "pre": 6,
+    "post": 2164,
+    "roiInfo": {
+      "CX": {
+        "pre": 6,
+        "post": 2154,
+        "downstream": 25,
+        "upstream": 2154,
+        "mito": 101,
+        "dark": 97,
+        "light": 1,
+        "medium": 3
+      },
+      "PB": {
+        "pre": 1,
+        "post": 322,
+        "downstream": 4,
+        "upstream": 322,
+        "mito": 10,
+        "dark": 10
+      },
+      "PB(L1)": {
+        "pre": 1,
+        "post": 279,
+        "downstream": 4,
+        "upstream": 279,
+        "mito": 10,
+        "dark": 10
+      },
+      "PB(R1)": {
+        "post": 43,
+        "upstream": 43
+      },
+      "FB": {
+        "pre": 5,
+        "post": 1832,
+        "downstream": 21,
+        "upstream": 1832,
+        "mito": 91,
+        "dark": 87,
+        "light": 1,
+        "medium": 3
+      },
+      "FBl6": {
+        "post": 60,
+        "upstream": 60,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl5": {
+        "pre": 5,
+        "post": 868,
+        "downstream": 21,
+        "upstream": 868,
+        "mito": 47,
+        "dark": 44,
+        "light": 1,
+        "medium": 2
+      },
+      "FBl4": {
+        "post": 474,
+        "upstream": 474,
+        "mito": 27,
+        "dark": 27
+      },
+      "FBl2": {
+        "post": 188,
+        "upstream": 188,
+        "mito": 8,
+        "dark": 8
+      },
+      "FBl3": {
+        "post": 6,
+        "upstream": 6,
+        "mito": 3,
+        "dark": 2,
+        "medium": 1
+      },
+      "mALT(L)": {
+        "post": 4,
+        "upstream": 4,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl1": {
+        "post": 236,
+        "upstream": 236,
+        "mito": 4,
+        "dark": 4
+      }
+    }
+  },
+  {
+    "bodyId": 1258686925,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L2_C4",
+    "side": "L",
+    "pb_column": "L2",
+    "fb_column": "C4",
+    "pre": 481,
+    "post": 2916,
+    "roiInfo": {
+      "CX": {
+        "pre": 13,
+        "post": 2784,
+        "downstream": 55,
+        "upstream": 2784,
+        "mito": 101,
+        "dark": 96,
+        "light": 4,
+        "medium": 1
+      },
+      "FB": {
+        "pre": 12,
+        "post": 2285,
+        "downstream": 51,
+        "upstream": 2285,
+        "mito": 92,
+        "dark": 87,
+        "light": 4,
+        "medium": 1
+      },
+      "FBl6": {
+        "pre": 1,
+        "post": 140,
+        "downstream": 7,
+        "upstream": 140,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB": {
+        "pre": 1,
+        "post": 499,
+        "downstream": 4,
+        "upstream": 499,
+        "mito": 9,
+        "dark": 9
+      },
+      "PB(L3)": {
+        "post": 26,
+        "upstream": 26,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl5": {
+        "pre": 4,
+        "post": 1312,
+        "downstream": 16,
+        "upstream": 1312,
+        "mito": 51,
+        "dark": 49,
+        "light": 1,
+        "medium": 1
+      },
+      "PB(L2)": {
+        "post": 300,
+        "upstream": 300,
+        "mito": 8,
+        "dark": 8
+      },
+      "FB-column3": {
+        "pre": 3,
+        "post": 814,
+        "downstream": 17,
+        "upstream": 814,
+        "mito": 17,
+        "dark": 16,
+        "light": 1
+      },
+      "PB(L1)": {
+        "pre": 1,
+        "post": 173,
+        "downstream": 4,
+        "upstream": 173
+      },
+      "FBl4": {
+        "pre": 7,
+        "post": 650,
+        "downstream": 28,
+        "upstream": 650,
+        "mito": 30,
+        "dark": 27,
+        "light": 3
+      },
+      "INP": {
+        "post": 1,
+        "upstream": 1
+      },
+      "ATL(L)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FBl3": {
+        "post": 44,
+        "upstream": 44,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl2": {
+        "post": 63,
+        "upstream": 63,
+        "mito": 5,
+        "dark": 5
+      },
+      "FBl1": {
+        "post": 76,
+        "upstream": 76,
+        "mito": 4,
+        "dark": 4
+      },
+      "LX(R)": {
+        "pre": 468,
+        "post": 126,
+        "downstream": 3484,
+        "upstream": 126,
+        "mito": 70,
+        "dark": 70
+      },
+      "LAL(R)": {
+        "pre": 468,
+        "post": 126,
+        "downstream": 3484,
+        "upstream": 126,
+        "mito": 70,
+        "dark": 70
+      },
+      "LAL(-GA)(R)": {
+        "pre": 468,
+        "post": 126,
+        "downstream": 3484,
+        "upstream": 126,
+        "mito": 70,
+        "dark": 70
+      }
+    }
+  },
+  {
+    "bodyId": 757694775,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L2_C9_irreg",
+    "side": "L",
+    "pb_column": "L2",
+    "fb_column": "C9",
+    "pre": 12,
+    "post": 2257,
+    "roiInfo": {
+      "CX": {
+        "pre": 12,
+        "post": 2249,
+        "downstream": 56,
+        "upstream": 2249,
+        "mito": 94,
+        "dark": 91,
+        "light": 2,
+        "medium": 1
+      },
+      "PB": {
+        "post": 559,
+        "upstream": 559,
+        "mito": 11,
+        "dark": 11
+      },
+      "PB(L2)": {
+        "post": 326,
+        "upstream": 326,
+        "mito": 5,
+        "dark": 5
+      },
+      "PB(L3)": {
+        "post": 23,
+        "upstream": 23
+      },
+      "PB(L1)": {
+        "post": 210,
+        "upstream": 210,
+        "mito": 6,
+        "dark": 6
+      },
+      "INP": {
+        "post": 3,
+        "upstream": 3,
+        "mito": 1,
+        "dark": 1
+      },
+      "ATL(L)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "IB": {
+        "post": 2,
+        "upstream": 2
+      },
+      "FB": {
+        "pre": 12,
+        "post": 1690,
+        "downstream": 56,
+        "upstream": 1690,
+        "mito": 83,
+        "dark": 80,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 84,
+        "upstream": 84,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl5": {
+        "pre": 7,
+        "post": 660,
+        "downstream": 26,
+        "upstream": 660,
+        "mito": 40,
+        "dark": 39,
+        "light": 1
+      },
+      "LX(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "BU(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl4": {
+        "pre": 4,
+        "post": 459,
+        "downstream": 27,
+        "upstream": 459,
+        "mito": 21,
+        "dark": 19,
+        "light": 1,
+        "medium": 1
+      },
+      "FBl3": {
+        "post": 73,
+        "upstream": 73,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl2": {
+        "post": 127,
+        "upstream": 127,
+        "mito": 8,
+        "dark": 8
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 287,
+        "downstream": 3,
+        "upstream": 287,
+        "mito": 10,
+        "dark": 10
+      }
+    }
+  },
+  {
+    "bodyId": 850855138,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L3_C5",
+    "side": "L",
+    "pb_column": "L3",
+    "fb_column": "C5",
+    "pre": 440,
+    "post": 2495,
+    "roiInfo": {
+      "CX": {
+        "pre": 7,
+        "post": 2399,
+        "downstream": 22,
+        "upstream": 2399,
+        "mito": 112,
+        "dark": 107,
+        "light": 3,
+        "medium": 2
+      },
+      "PB": {
+        "pre": 1,
+        "post": 641,
+        "downstream": 5,
+        "upstream": 641,
+        "mito": 13,
+        "dark": 12,
+        "medium": 1
+      },
+      "PB(L4)": {
+        "post": 340,
+        "upstream": 340,
+        "mito": 9,
+        "dark": 9
+      },
+      "PB(L5)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "PB(L3)": {
+        "pre": 1,
+        "post": 300,
+        "downstream": 5,
+        "upstream": 300,
+        "mito": 4,
+        "dark": 3,
+        "medium": 1
+      },
+      "INP": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 1,
+        "dark": 1
+      },
+      "ATL(L)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 1,
+        "dark": 1
+      },
+      "FB": {
+        "pre": 6,
+        "post": 1758,
+        "downstream": 17,
+        "upstream": 1758,
+        "mito": 99,
+        "dark": 95,
+        "light": 3,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 86,
+        "upstream": 86,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl5": {
+        "pre": 1,
+        "post": 905,
+        "downstream": 4,
+        "upstream": 905,
+        "mito": 47,
+        "dark": 44,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl4": {
+        "pre": 5,
+        "post": 528,
+        "downstream": 13,
+        "upstream": 528,
+        "mito": 28,
+        "dark": 27,
+        "light": 1
+      },
+      "mALT(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl3": {
+        "post": 34,
+        "upstream": 34,
+        "mito": 8,
+        "dark": 8
+      },
+      "FBl2": {
+        "post": 129,
+        "upstream": 129,
+        "mito": 8,
+        "dark": 8
+      },
+      "FBl1": {
+        "post": 76,
+        "upstream": 76,
+        "mito": 6,
+        "dark": 6
+      },
+      "LX(R)": {
+        "pre": 433,
+        "post": 93,
+        "downstream": 3203,
+        "upstream": 93,
+        "mito": 57,
+        "dark": 57
+      },
+      "LAL(R)": {
+        "pre": 433,
+        "post": 93,
+        "downstream": 3203,
+        "upstream": 93,
+        "mito": 57,
+        "dark": 57
+      },
+      "LAL(-GA)(R)": {
+        "pre": 433,
+        "post": 93,
+        "downstream": 3203,
+        "upstream": 93,
+        "mito": 57,
+        "dark": 57
+      }
+    }
+  },
+  {
+    "bodyId": 912925080,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L3_C5",
+    "side": "L",
+    "pb_column": "L3",
+    "fb_column": "C5",
+    "pre": 442,
+    "post": 2624,
+    "roiInfo": {
+      "CX": {
+        "pre": 7,
+        "post": 2507,
+        "downstream": 40,
+        "upstream": 2507,
+        "mito": 106,
+        "dark": 104,
+        "light": 2
+      },
+      "PB": {
+        "pre": 1,
+        "post": 633,
+        "downstream": 1,
+        "upstream": 633,
+        "mito": 17,
+        "dark": 17
+      },
+      "PB(L4)": {
+        "post": 18,
+        "upstream": 18,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB(L3)": {
+        "pre": 1,
+        "post": 598,
+        "downstream": 1,
+        "upstream": 598,
+        "mito": 16,
+        "dark": 16
+      },
+      "FB": {
+        "pre": 6,
+        "post": 1871,
+        "downstream": 39,
+        "upstream": 1871,
+        "mito": 85,
+        "dark": 84,
+        "light": 1
+      },
+      "FBl6": {
+        "post": 94,
+        "upstream": 94,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl5": {
+        "pre": 4,
+        "post": 973,
+        "downstream": 29,
+        "upstream": 973,
+        "mito": 41,
+        "dark": 41
+      },
+      "PB(L2)": {
+        "post": 17,
+        "upstream": 17
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 456,
+        "downstream": 10,
+        "upstream": 456,
+        "mito": 19,
+        "dark": 18,
+        "light": 1
+      },
+      "mALT(L)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FB-column3": {
+        "post": 42,
+        "upstream": 42
+      },
+      "FBl3": {
+        "post": 59,
+        "upstream": 59,
+        "mito": 3,
+        "dark": 3
+      },
+      "EB": {
+        "post": 3,
+        "upstream": 3,
+        "mito": 4,
+        "dark": 3,
+        "light": 1
+      },
+      "EBr2r4": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 4,
+        "dark": 3,
+        "light": 1
+      },
+      "EBr6": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FBl2": {
+        "post": 156,
+        "upstream": 156,
+        "mito": 13,
+        "dark": 13
+      },
+      "FBl1": {
+        "post": 133,
+        "upstream": 133,
+        "mito": 7,
+        "dark": 7
+      },
+      "LX(R)": {
+        "pre": 435,
+        "post": 112,
+        "downstream": 3078,
+        "upstream": 112,
+        "mito": 55,
+        "dark": 55
+      },
+      "LAL(R)": {
+        "pre": 435,
+        "post": 112,
+        "downstream": 3078,
+        "upstream": 112,
+        "mito": 55,
+        "dark": 55
+      },
+      "LAL(-GA)(R)": {
+        "pre": 435,
+        "post": 112,
+        "downstream": 3078,
+        "upstream": 112,
+        "mito": 55,
+        "dark": 55
+      }
+    }
+  },
+  {
+    "bodyId": 789130596,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L4_C6",
+    "side": "L",
+    "pb_column": "L4",
+    "fb_column": "C6",
+    "pre": 454,
+    "post": 2851,
+    "roiInfo": {
+      "CX": {
+        "pre": 6,
+        "post": 2706,
+        "downstream": 26,
+        "upstream": 2706,
+        "mito": 117,
+        "dark": 113,
+        "light": 2,
+        "medium": 2
+      },
+      "PB": {
+        "pre": 1,
+        "post": 582,
+        "downstream": 6,
+        "upstream": 582,
+        "mito": 14,
+        "dark": 13,
+        "medium": 1
+      },
+      "PB(L5)": {
+        "post": 11,
+        "upstream": 11
+      },
+      "PB(L4)": {
+        "pre": 1,
+        "post": 568,
+        "downstream": 6,
+        "upstream": 568,
+        "mito": 14,
+        "dark": 13,
+        "medium": 1
+      },
+      "PB(L3)": {
+        "post": 3,
+        "upstream": 3
+      },
+      "INP": {
+        "pre": 26,
+        "post": 20,
+        "downstream": 260,
+        "upstream": 20,
+        "mito": 9,
+        "dark": 5,
+        "medium": 4
+      },
+      "ATL(L)": {
+        "post": 4,
+        "upstream": 4,
+        "mito": 1,
+        "dark": 1
+      },
+      "FB": {
+        "pre": 5,
+        "post": 2124,
+        "downstream": 20,
+        "upstream": 2124,
+        "mito": 102,
+        "dark": 99,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl6": {
+        "pre": 1,
+        "post": 56,
+        "downstream": 8,
+        "upstream": 56,
+        "mito": 2,
+        "dark": 1,
+        "light": 1
+      },
+      "FBl5": {
+        "pre": 3,
+        "post": 1063,
+        "downstream": 11,
+        "upstream": 1063,
+        "mito": 52,
+        "dark": 50,
+        "light": 1,
+        "medium": 1
+      },
+      "ICL(L)": {
+        "pre": 26,
+        "post": 16,
+        "downstream": 260,
+        "upstream": 16,
+        "mito": 8,
+        "dark": 4,
+        "medium": 4
+      },
+      "FBl7": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl4": {
+        "pre": 1,
+        "post": 664,
+        "downstream": 1,
+        "upstream": 664,
+        "mito": 24,
+        "dark": 24
+      },
+      "mALT(L)": {
+        "pre": 1,
+        "post": 1,
+        "downstream": 1,
+        "upstream": 1,
+        "mito": 7,
+        "dark": 6,
+        "medium": 1
+      },
+      "FBl3": {
+        "post": 50,
+        "upstream": 50,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl2": {
+        "post": 179,
+        "upstream": 179,
+        "mito": 8,
+        "dark": 8
+      },
+      "LX(R)": {
+        "pre": 419,
+        "post": 122,
+        "downstream": 3010,
+        "upstream": 122,
+        "mito": 51,
+        "dark": 50,
+        "medium": 1
+      },
+      "LAL(R)": {
+        "pre": 419,
+        "post": 122,
+        "downstream": 3010,
+        "upstream": 122,
+        "mito": 51,
+        "dark": 50,
+        "medium": 1
+      },
+      "LAL(-GA)(R)": {
+        "pre": 419,
+        "post": 122,
+        "downstream": 3010,
+        "upstream": 122,
+        "mito": 51,
+        "dark": 50,
+        "medium": 1
+      },
+      "FBl1": {
+        "post": 111,
+        "upstream": 111,
+        "mito": 8,
+        "dark": 8
+      }
+    }
+  },
+  {
+    "bodyId": 880875927,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L5_C7",
+    "side": "L",
+    "pb_column": "L5",
+    "fb_column": "C7",
+    "pre": 307,
+    "post": 2110,
+    "roiInfo": {
+      "CX": {
+        "pre": 3,
+        "post": 2038,
+        "downstream": 8,
+        "upstream": 2038,
+        "mito": 66,
+        "dark": 61,
+        "light": 3,
+        "medium": 2
+      },
+      "PB": {
+        "pre": 2,
+        "post": 429,
+        "downstream": 4,
+        "upstream": 429,
+        "mito": 7,
+        "dark": 7
+      },
+      "PB(L5)": {
+        "pre": 1,
+        "post": 276,
+        "downstream": 3,
+        "upstream": 276,
+        "mito": 6,
+        "dark": 6
+      },
+      "PB(L4)": {
+        "post": 153,
+        "upstream": 153,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB(L6)": {
+        "pre": 1,
+        "downstream": 1
+      },
+      "FB": {
+        "pre": 1,
+        "post": 1609,
+        "downstream": 4,
+        "upstream": 1609,
+        "mito": 59,
+        "dark": 54,
+        "light": 3,
+        "medium": 2
+      },
+      "FBl6": {
+        "post": 82,
+        "upstream": 82,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl7": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "light": 3
+      },
+      "FBl5": {
+        "pre": 1,
+        "post": 820,
+        "downstream": 4,
+        "upstream": 820,
+        "mito": 30,
+        "dark": 29,
+        "medium": 1
+      },
+      "FBl4": {
+        "post": 367,
+        "upstream": 367,
+        "mito": 9,
+        "dark": 9
+      },
+      "FBl3": {
+        "post": 25,
+        "upstream": 25,
+        "mito": 3,
+        "dark": 3
+      },
+      "LX(R)": {
+        "pre": 304,
+        "post": 71,
+        "downstream": 2236,
+        "upstream": 71,
+        "mito": 50,
+        "dark": 49,
+        "light": 1
+      },
+      "LAL(R)": {
+        "pre": 304,
+        "post": 71,
+        "downstream": 2236,
+        "upstream": 71,
+        "mito": 50,
+        "dark": 49,
+        "light": 1
+      },
+      "LAL(-GA)(R)": {
+        "pre": 304,
+        "post": 71,
+        "downstream": 2236,
+        "upstream": 71,
+        "mito": 50,
+        "dark": 49,
+        "light": 1
+      },
+      "FBl2": {
+        "post": 122,
+        "upstream": 122,
+        "mito": 7,
+        "dark": 6,
+        "medium": 1
+      },
+      "FBl1": {
+        "post": 192,
+        "upstream": 192,
+        "mito": 6,
+        "dark": 6
+      }
+    }
+  },
+  {
+    "bodyId": 911569552,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L5_C7",
+    "side": "L",
+    "pb_column": "L5",
+    "fb_column": "C7",
+    "pre": 338,
+    "post": 2113,
+    "roiInfo": {
+      "CX": {
+        "pre": 9,
+        "post": 2029,
+        "downstream": 47,
+        "upstream": 2029,
+        "mito": 95,
+        "dark": 93,
+        "light": 2
+      },
+      "PB": {
+        "pre": 1,
+        "post": 307,
+        "downstream": 3,
+        "upstream": 307,
+        "mito": 13,
+        "dark": 13
+      },
+      "PB(L5)": {
+        "pre": 1,
+        "post": 272,
+        "downstream": 3,
+        "upstream": 272,
+        "mito": 12,
+        "dark": 12
+      },
+      "PB(L6)": {
+        "post": 4,
+        "upstream": 4,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB(L4)": {
+        "post": 31,
+        "upstream": 31
+      },
+      "FB": {
+        "pre": 8,
+        "post": 1722,
+        "downstream": 44,
+        "upstream": 1722,
+        "mito": 81,
+        "dark": 79,
+        "light": 2
+      },
+      "FBl6": {
+        "post": 99,
+        "upstream": 99,
+        "mito": 5,
+        "dark": 4,
+        "light": 1
+      },
+      "FBl5": {
+        "pre": 5,
+        "post": 869,
+        "downstream": 23,
+        "upstream": 869,
+        "mito": 43,
+        "dark": 43
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 370,
+        "downstream": 15,
+        "upstream": 370,
+        "mito": 15,
+        "dark": 15
+      },
+      "FBl3": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl2": {
+        "post": 172,
+        "upstream": 172,
+        "mito": 6,
+        "dark": 6
+      },
+      "LX(R)": {
+        "pre": 328,
+        "post": 81,
+        "downstream": 2443,
+        "upstream": 81,
+        "mito": 48,
+        "dark": 48
+      },
+      "LAL(R)": {
+        "pre": 328,
+        "post": 81,
+        "downstream": 2443,
+        "upstream": 81,
+        "mito": 48,
+        "dark": 48
+      },
+      "LAL(-GA)(R)": {
+        "pre": 328,
+        "post": 81,
+        "downstream": 2443,
+        "upstream": 81,
+        "mito": 48,
+        "dark": 48
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 210,
+        "downstream": 6,
+        "upstream": 210,
+        "mito": 10,
+        "dark": 10
+      }
+    }
+  },
+  {
+    "bodyId": 941939879,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L6_C8",
+    "side": "L",
+    "pb_column": "L6",
+    "fb_column": "C8",
+    "pre": 485,
+    "post": 2359,
+    "roiInfo": {
+      "CX": {
+        "pre": 8,
+        "post": 2246,
+        "downstream": 40,
+        "upstream": 2246,
+        "mito": 101,
+        "dark": 96,
+        "light": 4,
+        "medium": 1
+      },
+      "PB": {
+        "pre": 2,
+        "post": 374,
+        "downstream": 8,
+        "upstream": 374,
+        "mito": 13,
+        "dark": 13
+      },
+      "PB(L5)": {
+        "post": 92,
+        "upstream": 92
+      },
+      "PB(L6)": {
+        "pre": 2,
+        "post": 270,
+        "downstream": 8,
+        "upstream": 270,
+        "mito": 13,
+        "dark": 13
+      },
+      "PB(L7)": {
+        "post": 12,
+        "upstream": 12
+      },
+      "FB": {
+        "pre": 6,
+        "post": 1872,
+        "downstream": 32,
+        "upstream": 1872,
+        "mito": 88,
+        "dark": 83,
+        "light": 4,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 65,
+        "upstream": 65,
+        "mito": 3,
+        "dark": 1,
+        "light": 2
+      },
+      "FBl5": {
+        "pre": 4,
+        "post": 910,
+        "downstream": 23,
+        "upstream": 910,
+        "mito": 44,
+        "dark": 42,
+        "light": 2
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 441,
+        "downstream": 9,
+        "upstream": 441,
+        "mito": 23,
+        "dark": 22,
+        "medium": 1
+      },
+      "FBl2": {
+        "post": 190,
+        "upstream": 190,
+        "mito": 10,
+        "dark": 10
+      },
+      "FBl3": {
+        "post": 25,
+        "upstream": 25,
+        "mito": 2,
+        "dark": 2
+      },
+      "LX(R)": {
+        "pre": 477,
+        "post": 106,
+        "downstream": 3511,
+        "upstream": 106,
+        "mito": 72,
+        "dark": 72
+      },
+      "LAL(R)": {
+        "pre": 477,
+        "post": 106,
+        "downstream": 3511,
+        "upstream": 106,
+        "mito": 72,
+        "dark": 72
+      },
+      "LAL(-GA)(R)": {
+        "pre": 477,
+        "post": 106,
+        "downstream": 3511,
+        "upstream": 106,
+        "mito": 72,
+        "dark": 72
+      },
+      "FBl1": {
+        "post": 241,
+        "upstream": 241,
+        "mito": 6,
+        "dark": 6
+      }
+    }
+  },
+  {
+    "bodyId": 1004700437,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_L7_C9",
+    "side": "L",
+    "pb_column": "L7",
+    "fb_column": "C9",
+    "pre": 513,
+    "post": 2588,
+    "roiInfo": {
+      "CX": {
+        "pre": 6,
+        "post": 2468,
+        "downstream": 31,
+        "upstream": 2468,
+        "mito": 134,
+        "dark": 125,
+        "light": 7,
+        "medium": 2
+      },
+      "PB": {
+        "post": 298,
+        "upstream": 298,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(L6)": {
+        "post": 17,
+        "upstream": 17
+      },
+      "PB(L7)": {
+        "post": 279,
+        "upstream": 279,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(L8)": {
+        "post": 2,
+        "upstream": 2
+      },
+      "FB": {
+        "pre": 6,
+        "post": 2170,
+        "downstream": 31,
+        "upstream": 2170,
+        "mito": 126,
+        "dark": 117,
+        "light": 7,
+        "medium": 2
+      },
+      "FBl6": {
+        "post": 110,
+        "upstream": 110,
+        "mito": 6,
+        "dark": 4,
+        "light": 2
+      },
+      "FBl5": {
+        "pre": 3,
+        "post": 993,
+        "downstream": 16,
+        "upstream": 993,
+        "mito": 62,
+        "dark": 56,
+        "light": 5,
+        "medium": 1
+      },
+      "FBl4": {
+        "pre": 3,
+        "post": 516,
+        "downstream": 15,
+        "upstream": 516,
+        "mito": 32,
+        "dark": 32
+      },
+      "LX(R)": {
+        "pre": 504,
+        "post": 107,
+        "downstream": 3854,
+        "upstream": 107,
+        "mito": 88,
+        "dark": 88
+      },
+      "LAL(R)": {
+        "pre": 504,
+        "post": 107,
+        "downstream": 3854,
+        "upstream": 107,
+        "mito": 88,
+        "dark": 88
+      },
+      "LAL(-GA)(R)": {
+        "pre": 504,
+        "post": 107,
+        "downstream": 3854,
+        "upstream": 107,
+        "mito": 88,
+        "dark": 88
+      },
+      "FBl3": {
+        "post": 70,
+        "upstream": 70,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl2": {
+        "post": 229,
+        "upstream": 229,
+        "mito": 11,
+        "dark": 11
+      },
+      "FBl1": {
+        "post": 252,
+        "upstream": 252,
+        "mito": 11,
+        "dark": 10,
+        "medium": 1
+      }
+    }
+  },
+  {
+    "bodyId": 666308023,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R1_C2_irreg",
+    "side": "R",
+    "pb_column": "R1",
+    "fb_column": "C2",
+    "pre": 423,
+    "post": 2985,
+    "roiInfo": {
+      "CX": {
+        "pre": 10,
+        "post": 2875,
+        "downstream": 33,
+        "upstream": 2875,
+        "mito": 89,
+        "dark": 86,
+        "light": 3
+      },
+      "PB": {
+        "post": 306,
+        "upstream": 306,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(R1)": {
+        "post": 282,
+        "upstream": 282,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(R2)": {
+        "post": 21,
+        "upstream": 21
+      },
+      "PB(L1)": {
+        "post": 3,
+        "upstream": 3
+      },
+      "FB": {
+        "pre": 10,
+        "post": 2569,
+        "downstream": 33,
+        "upstream": 2569,
+        "mito": 81,
+        "dark": 78,
+        "light": 3
+      },
+      "FBl6": {
+        "post": 66,
+        "upstream": 66
+      },
+      "FBl5": {
+        "pre": 6,
+        "post": 1355,
+        "downstream": 17,
+        "upstream": 1355,
+        "mito": 46,
+        "dark": 45,
+        "light": 1
+      },
+      "FB-column3": {
+        "pre": 2,
+        "post": 211,
+        "downstream": 5,
+        "upstream": 211,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 654,
+        "downstream": 5,
+        "upstream": 654,
+        "mito": 17,
+        "dark": 15,
+        "light": 2
+      },
+      "FBl3": {
+        "post": 51,
+        "upstream": 51,
+        "mito": 8,
+        "dark": 8
+      },
+      "LX(R)": {
+        "pre": 413,
+        "post": 104,
+        "downstream": 3115,
+        "upstream": 104,
+        "mito": 57,
+        "dark": 57
+      },
+      "LAL(R)": {
+        "pre": 413,
+        "post": 104,
+        "downstream": 3115,
+        "upstream": 104,
+        "mito": 57,
+        "dark": 57
+      },
+      "LAL(-GA)(R)": {
+        "pre": 413,
+        "post": 104,
+        "downstream": 3115,
+        "upstream": 104,
+        "mito": 57,
+        "dark": 57
+      },
+      "FBl2": {
+        "post": 221,
+        "upstream": 221,
+        "mito": 4,
+        "dark": 4
+      },
+      "mALT(R)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl1": {
+        "pre": 2,
+        "post": 222,
+        "downstream": 11,
+        "upstream": 222,
+        "mito": 6,
+        "dark": 6
+      }
+    }
+  },
+  {
+    "bodyId": 787374226,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R1_C7",
+    "side": "R",
+    "pb_column": "R1",
+    "fb_column": "C7",
+    "pre": 18,
+    "post": 2464,
+    "roiInfo": {
+      "CX": {
+        "pre": 18,
+        "post": 2462,
+        "downstream": 75,
+        "upstream": 2462,
+        "mito": 88,
+        "dark": 82,
+        "light": 4,
+        "medium": 2
+      },
+      "PB": {
+        "post": 341,
+        "upstream": 341,
+        "mito": 5,
+        "dark": 5
+      },
+      "PB(R1)": {
+        "post": 330,
+        "upstream": 330,
+        "mito": 5,
+        "dark": 5
+      },
+      "FB": {
+        "pre": 18,
+        "post": 2121,
+        "downstream": 75,
+        "upstream": 2121,
+        "mito": 83,
+        "dark": 77,
+        "light": 4,
+        "medium": 2
+      },
+      "FBl6": {
+        "pre": 4,
+        "post": 100,
+        "downstream": 9,
+        "upstream": 100,
+        "mito": 2,
+        "dark": 2
+      },
+      "PB(R2)": {
+        "post": 10,
+        "upstream": 10
+      },
+      "FBl5": {
+        "pre": 5,
+        "post": 1079,
+        "downstream": 18,
+        "upstream": 1079,
+        "mito": 44,
+        "dark": 44
+      },
+      "PB(L1)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FBl4": {
+        "pre": 8,
+        "post": 496,
+        "downstream": 44,
+        "upstream": 496,
+        "mito": 25,
+        "dark": 20,
+        "light": 3,
+        "medium": 2
+      },
+      "FBl3": {
+        "post": 6,
+        "upstream": 6,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl2": {
+        "post": 156,
+        "upstream": 156,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 284,
+        "downstream": 4,
+        "upstream": 284,
+        "mito": 7,
+        "dark": 6,
+        "light": 1
+      }
+    }
+  },
+  {
+    "bodyId": 1134253374,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R1_C7",
+    "side": "R",
+    "pb_column": "R1",
+    "fb_column": "C7",
+    "pre": 2,
+    "post": 2066,
+    "roiInfo": {
+      "CX": {
+        "pre": 2,
+        "post": 2063,
+        "downstream": 12,
+        "upstream": 2063,
+        "mito": 79,
+        "dark": 76,
+        "light": 2,
+        "medium": 1
+      },
+      "FB": {
+        "pre": 2,
+        "post": 1826,
+        "downstream": 12,
+        "upstream": 1826,
+        "mito": 72,
+        "dark": 69,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 39,
+        "upstream": 39,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB": {
+        "post": 237,
+        "upstream": 237,
+        "mito": 7,
+        "dark": 7
+      },
+      "PB(R1)": {
+        "post": 232,
+        "upstream": 232,
+        "mito": 7,
+        "dark": 7
+      },
+      "FBl5": {
+        "pre": 1,
+        "post": 840,
+        "downstream": 4,
+        "upstream": 840,
+        "mito": 31,
+        "dark": 30,
+        "light": 1
+      },
+      "PB(L1)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "PB(R2)": {
+        "post": 4,
+        "upstream": 4
+      },
+      "FBl4": {
+        "pre": 1,
+        "post": 507,
+        "downstream": 8,
+        "upstream": 507,
+        "mito": 23,
+        "dark": 21,
+        "light": 1,
+        "medium": 1
+      },
+      "FBl3": {
+        "post": 10,
+        "upstream": 10,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl2": {
+        "post": 217,
+        "upstream": 217,
+        "mito": 7,
+        "dark": 7
+      },
+      "FBl1": {
+        "post": 213,
+        "upstream": 213,
+        "mito": 7,
+        "dark": 7
+      }
+    }
+  },
+  {
+    "bodyId": 666994301,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R2_C1_irreg",
+    "side": "R",
+    "pb_column": "R2",
+    "fb_column": "C1",
+    "pre": 482,
+    "post": 2935,
+    "roiInfo": {
+      "CX": {
+        "pre": 4,
+        "post": 2827,
+        "downstream": 15,
+        "upstream": 2827,
+        "mito": 109,
+        "dark": 108,
+        "medium": 1
+      },
+      "PB": {
+        "post": 316,
+        "upstream": 316,
+        "mito": 12,
+        "dark": 12
+      },
+      "PB(R3)": {
+        "post": 6,
+        "upstream": 6
+      },
+      "PB(R2)": {
+        "post": 264,
+        "upstream": 264,
+        "mito": 11,
+        "dark": 11
+      },
+      "PB(R1)": {
+        "post": 46,
+        "upstream": 46,
+        "mito": 1,
+        "dark": 1
+      },
+      "FB": {
+        "pre": 4,
+        "post": 2511,
+        "downstream": 15,
+        "upstream": 2511,
+        "mito": 97,
+        "dark": 96,
+        "medium": 1
+      },
+      "FBl6": {
+        "post": 110,
+        "upstream": 110,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl5": {
+        "pre": 2,
+        "post": 1280,
+        "downstream": 9,
+        "upstream": 1280,
+        "mito": 50,
+        "dark": 50
+      },
+      "FBl4": {
+        "post": 686,
+        "upstream": 686,
+        "mito": 18,
+        "dark": 17,
+        "medium": 1
+      },
+      "LX(R)": {
+        "pre": 452,
+        "post": 96,
+        "downstream": 3316,
+        "upstream": 96,
+        "mito": 91,
+        "dark": 89,
+        "light": 1,
+        "medium": 1
+      },
+      "LAL(R)": {
+        "pre": 452,
+        "post": 96,
+        "downstream": 3316,
+        "upstream": 96,
+        "mito": 91,
+        "dark": 89,
+        "light": 1,
+        "medium": 1
+      },
+      "LAL(-GA)(R)": {
+        "pre": 452,
+        "post": 96,
+        "downstream": 3316,
+        "upstream": 96,
+        "mito": 91,
+        "dark": 89,
+        "light": 1,
+        "medium": 1
+      },
+      "FBl3": {
+        "pre": 1,
+        "post": 110,
+        "downstream": 1,
+        "upstream": 110,
+        "mito": 6,
+        "dark": 6
+      },
+      "mALT(R)": {
+        "post": 2,
+        "upstream": 2
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 200,
+        "downstream": 5,
+        "upstream": 200,
+        "mito": 9,
+        "dark": 9
+      },
+      "FBl2": {
+        "post": 125,
+        "upstream": 125,
+        "mito": 11,
+        "dark": 11
+      },
+      "VLNP(R)": {
+        "pre": 26,
+        "post": 6,
+        "downstream": 202,
+        "upstream": 6,
+        "mito": 5,
+        "dark": 5
+      },
+      "WED(R)": {
+        "pre": 26,
+        "post": 6,
+        "downstream": 202,
+        "upstream": 6,
+        "mito": 5,
+        "dark": 5
+      }
+    }
+  },
+  {
+    "bodyId": 1097718659,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R2_C6",
+    "side": "R",
+    "pb_column": "R2",
+    "fb_column": "C6",
+    "pre": 11,
+    "post": 3393,
+    "roiInfo": {
+      "CX": {
+        "pre": 11,
+        "post": 3392,
+        "downstream": 66,
+        "upstream": 3392,
+        "mito": 118,
+        "dark": 114,
+        "light": 4
+      },
+      "FB": {
+        "pre": 11,
+        "post": 2936,
+        "downstream": 66,
+        "upstream": 2936,
+        "mito": 108,
+        "dark": 105,
+        "light": 3
+      },
+      "FBl6": {
+        "pre": 6,
+        "post": 181,
+        "downstream": 42,
+        "upstream": 181,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl7": {
+        "post": 3,
+        "upstream": 3
+      },
+      "FBl5": {
+        "pre": 2,
+        "post": 1314,
+        "downstream": 8,
+        "upstream": 1314,
+        "mito": 52,
+        "dark": 51,
+        "light": 1
+      },
+      "PB": {
+        "post": 456,
+        "upstream": 456,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(R3)": {
+        "post": 12,
+        "upstream": 12
+      },
+      "PB(R2)": {
+        "post": 375,
+        "upstream": 375,
+        "mito": 7,
+        "dark": 7
+      },
+      "PB(R1)": {
+        "post": 69,
+        "upstream": 69,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl4": {
+        "pre": 1,
+        "post": 940,
+        "downstream": 7,
+        "upstream": 940,
+        "mito": 34,
+        "dark": 32,
+        "light": 2
+      },
+      "FBl2": {
+        "post": 284,
+        "upstream": 284,
+        "mito": 10,
+        "dark": 10
+      },
+      "FBl3": {
+        "pre": 1,
+        "post": 24,
+        "downstream": 4,
+        "upstream": 24,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 190,
+        "downstream": 5,
+        "upstream": 190,
+        "mito": 7,
+        "dark": 7
+      }
+    }
+  },
+  {
+    "bodyId": 912488890,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R3_C5",
+    "side": "R",
+    "pb_column": "R3",
+    "fb_column": "C5",
+    "pre": 2,
+    "post": 3035,
+    "roiInfo": {
+      "CX": {
+        "pre": 2,
+        "post": 3032,
+        "downstream": 3,
+        "upstream": 3032,
+        "mito": 115,
+        "dark": 113,
+        "light": 2
+      },
+      "PB": {
+        "pre": 1,
+        "post": 688,
+        "downstream": 2,
+        "upstream": 688,
+        "mito": 10,
+        "dark": 10
+      },
+      "PB(R3)": {
+        "pre": 1,
+        "post": 640,
+        "downstream": 2,
+        "upstream": 640,
+        "mito": 10,
+        "dark": 10
+      },
+      "FB": {
+        "pre": 1,
+        "post": 2344,
+        "downstream": 1,
+        "upstream": 2344,
+        "mito": 105,
+        "dark": 103,
+        "light": 2
+      },
+      "FBl6": {
+        "post": 130,
+        "upstream": 130,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl5": {
+        "pre": 1,
+        "post": 1160,
+        "downstream": 1,
+        "upstream": 1160,
+        "mito": 49,
+        "dark": 47,
+        "light": 2
+      },
+      "PB(R4)": {
+        "post": 9,
+        "upstream": 9
+      },
+      "PB(R2)": {
+        "post": 39,
+        "upstream": 39
+      },
+      "FBl4": {
+        "post": 552,
+        "upstream": 552,
+        "mito": 30,
+        "dark": 30
+      },
+      "FBl3": {
+        "post": 66,
+        "upstream": 66,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl2": {
+        "post": 254,
+        "upstream": 254,
+        "mito": 15,
+        "dark": 15
+      },
+      "FBl1": {
+        "post": 182,
+        "upstream": 182,
+        "mito": 7,
+        "dark": 7
+      }
+    }
+  },
+  {
+    "bodyId": 1008028537,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R3_C5",
+    "side": "R",
+    "pb_column": "R3",
+    "fb_column": "C5",
+    "pre": 8,
+    "post": 1979,
+    "roiInfo": {
+      "CX": {
+        "pre": 5,
+        "post": 1975,
+        "downstream": 30,
+        "upstream": 1975,
+        "mito": 105,
+        "dark": 99,
+        "light": 4,
+        "medium": 2
+      },
+      "PB": {
+        "post": 703,
+        "upstream": 703,
+        "mito": 13,
+        "dark": 12,
+        "medium": 1
+      },
+      "PB(R4)": {
+        "post": 258,
+        "upstream": 258,
+        "mito": 8,
+        "dark": 8
+      },
+      "FB": {
+        "pre": 5,
+        "post": 1272,
+        "downstream": 30,
+        "upstream": 1272,
+        "mito": 92,
+        "dark": 87,
+        "light": 4,
+        "medium": 1
+      },
+      "FBl6": {
+        "pre": 1,
+        "post": 29,
+        "downstream": 8,
+        "upstream": 29,
+        "mito": 4,
+        "dark": 2,
+        "light": 2
+      },
+      "FBl5": {
+        "pre": 4,
+        "post": 711,
+        "downstream": 22,
+        "upstream": 711,
+        "mito": 41,
+        "dark": 41
+      },
+      "PB(R3)": {
+        "post": 444,
+        "upstream": 444,
+        "mito": 5,
+        "dark": 4,
+        "medium": 1
+      },
+      "INP": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 5,
+        "dark": 5
+      },
+      "ATL(R)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl4": {
+        "post": 271,
+        "upstream": 271,
+        "mito": 26,
+        "dark": 23,
+        "light": 2,
+        "medium": 1
+      },
+      "PB(R2)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FB-column3": {
+        "post": 42,
+        "upstream": 42,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl3": {
+        "post": 56,
+        "upstream": 56,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl2": {
+        "post": 112,
+        "upstream": 112,
+        "mito": 8,
+        "dark": 8
+      },
+      "FBl1": {
+        "post": 93,
+        "upstream": 93,
+        "mito": 9,
+        "dark": 9
+      },
+      "LX(L)": {
+        "pre": 2,
+        "downstream": 6,
+        "mito": 10,
+        "dark": 10
+      },
+      "LAL(L)": {
+        "pre": 2,
+        "downstream": 6,
+        "mito": 10,
+        "dark": 10
+      }
+    }
+  },
+  {
+    "bodyId": 942172835,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R4_C4",
+    "side": "R",
+    "pb_column": "R4",
+    "fb_column": "C4",
+    "pre": 5,
+    "post": 2327,
+    "roiInfo": {
+      "CX": {
+        "pre": 5,
+        "post": 2324,
+        "downstream": 23,
+        "upstream": 2324,
+        "mito": 114,
+        "dark": 105,
+        "light": 6,
+        "medium": 3
+      },
+      "PB": {
+        "pre": 1,
+        "post": 406,
+        "downstream": 5,
+        "upstream": 406,
+        "mito": 13,
+        "dark": 13
+      },
+      "PB(R4)": {
+        "pre": 1,
+        "post": 361,
+        "downstream": 5,
+        "upstream": 361,
+        "mito": 11,
+        "dark": 11
+      },
+      "PB(R5)": {
+        "post": 10,
+        "upstream": 10,
+        "mito": 2,
+        "dark": 2
+      },
+      "FB": {
+        "pre": 4,
+        "post": 1918,
+        "downstream": 18,
+        "upstream": 1918,
+        "mito": 101,
+        "dark": 92,
+        "light": 6,
+        "medium": 3
+      },
+      "FBl9": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 4,
+        "dark": 2,
+        "light": 2
+      },
+      "PB(R3)": {
+        "post": 35,
+        "upstream": 35
+      },
+      "FBl6": {
+        "post": 79,
+        "upstream": 79,
+        "mito": 8,
+        "dark": 5,
+        "light": 2,
+        "medium": 1
+      },
+      "FB-column3": {
+        "pre": 1,
+        "post": 580,
+        "downstream": 6,
+        "upstream": 580,
+        "mito": 19,
+        "dark": 19
+      },
+      "FBl5": {
+        "pre": 1,
+        "post": 1083,
+        "downstream": 8,
+        "upstream": 1083,
+        "mito": 46,
+        "dark": 46
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 489,
+        "downstream": 7,
+        "upstream": 489,
+        "mito": 19,
+        "dark": 19
+      },
+      "INP": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 1,
+        "dark": 1
+      },
+      "ICL(R)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl3": {
+        "post": 30,
+        "upstream": 30,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl2": {
+        "pre": 1,
+        "post": 108,
+        "downstream": 3,
+        "upstream": 108,
+        "mito": 11,
+        "dark": 11
+      },
+      "LX(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "LAL(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl1": {
+        "post": 128,
+        "upstream": 128,
+        "mito": 6,
+        "dark": 6
+      }
+    }
+  },
+  {
+    "bodyId": 910447181,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R5_C3",
+    "side": "R",
+    "pb_column": "R5",
+    "fb_column": "C3",
+    "pre": 15,
+    "post": 3671,
+    "roiInfo": {
+      "CX": {
+        "pre": 11,
+        "post": 3659,
+        "downstream": 60,
+        "upstream": 3659,
+        "mito": 77,
+        "dark": 69,
+        "light": 4,
+        "medium": 4
+      },
+      "PB": {
+        "pre": 1,
+        "post": 432,
+        "downstream": 4,
+        "upstream": 432,
+        "mito": 8,
+        "dark": 8
+      },
+      "PB(R5)": {
+        "pre": 1,
+        "post": 422,
+        "downstream": 4,
+        "upstream": 422,
+        "mito": 7,
+        "dark": 7
+      },
+      "PB(R4)": {
+        "post": 2,
+        "upstream": 2
+      },
+      "PB(R6)": {
+        "post": 7,
+        "upstream": 7,
+        "mito": 1,
+        "dark": 1
+      },
+      "FB": {
+        "pre": 10,
+        "post": 3227,
+        "downstream": 56,
+        "upstream": 3227,
+        "mito": 68,
+        "dark": 60,
+        "light": 4,
+        "medium": 4
+      },
+      "FBl8": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 2,
+        "medium": 2
+      },
+      "FB-column3": {
+        "pre": 9,
+        "post": 2834,
+        "downstream": 51,
+        "upstream": 2834,
+        "mito": 62,
+        "dark": 56,
+        "light": 4,
+        "medium": 2
+      },
+      "FBl7": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 2,
+        "dark": 1,
+        "medium": 1
+      },
+      "PB(R7)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FBl6": {
+        "pre": 1,
+        "post": 277,
+        "downstream": 2,
+        "upstream": 277,
+        "mito": 6,
+        "dark": 4,
+        "light": 2
+      },
+      "FBl5": {
+        "pre": 2,
+        "post": 1218,
+        "downstream": 9,
+        "upstream": 1218,
+        "mito": 24,
+        "dark": 21,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl4": {
+        "pre": 4,
+        "post": 1153,
+        "downstream": 29,
+        "upstream": 1153,
+        "mito": 17,
+        "dark": 17
+      },
+      "INP": {
+        "post": 3,
+        "upstream": 3,
+        "mito": 4,
+        "dark": 4
+      },
+      "ICL(R)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "mALT(R)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 4,
+        "dark": 4
+      },
+      "CRE(L)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 4,
+        "dark": 4
+      },
+      "CRE(-RUB)(L)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 4,
+        "dark": 4
+      },
+      "FBl3": {
+        "post": 73,
+        "upstream": 73,
+        "mito": 2,
+        "dark": 2
+      },
+      "LX(L)": {
+        "pre": 4,
+        "post": 5,
+        "downstream": 15,
+        "upstream": 5,
+        "mito": 9,
+        "dark": 9
+      },
+      "LAL(L)": {
+        "pre": 4,
+        "post": 5,
+        "downstream": 15,
+        "upstream": 5,
+        "mito": 9,
+        "dark": 9
+      },
+      "FBl2": {
+        "pre": 1,
+        "post": 299,
+        "downstream": 5,
+        "upstream": 299,
+        "mito": 6,
+        "dark": 6
+      },
+      "FBl1": {
+        "pre": 2,
+        "post": 203,
+        "downstream": 11,
+        "upstream": 203,
+        "mito": 9,
+        "dark": 9
+      }
+    }
+  },
+  {
+    "bodyId": 911134017,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R5_C3",
+    "side": "R",
+    "pb_column": "R5",
+    "fb_column": "C3",
+    "pre": 11,
+    "post": 3081,
+    "roiInfo": {
+      "CX": {
+        "pre": 11,
+        "post": 3074,
+        "downstream": 41,
+        "upstream": 3074,
+        "mito": 80,
+        "dark": 77,
+        "light": 1,
+        "medium": 2
+      },
+      "PB": {
+        "post": 318,
+        "upstream": 318,
+        "mito": 7,
+        "dark": 7
+      },
+      "PB(R5)": {
+        "post": 260,
+        "upstream": 260,
+        "mito": 6,
+        "dark": 6
+      },
+      "PB(R4)": {
+        "post": 58,
+        "upstream": 58,
+        "mito": 1,
+        "dark": 1
+      },
+      "FB": {
+        "pre": 11,
+        "post": 2756,
+        "downstream": 41,
+        "upstream": 2756,
+        "mito": 73,
+        "dark": 70,
+        "light": 1,
+        "medium": 2
+      },
+      "FBl6": {
+        "post": 121,
+        "upstream": 121
+      },
+      "FB-column3": {
+        "pre": 9,
+        "post": 2091,
+        "downstream": 33,
+        "upstream": 2091,
+        "mito": 60,
+        "dark": 57,
+        "light": 1,
+        "medium": 2
+      },
+      "FBl5": {
+        "pre": 7,
+        "post": 1371,
+        "downstream": 27,
+        "upstream": 1371,
+        "mito": 36,
+        "dark": 35,
+        "light": 1
+      },
+      "mALT(R)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 2,
+        "dark": 2
+      },
+      "FBl4": {
+        "pre": 1,
+        "post": 869,
+        "downstream": 4,
+        "upstream": 869,
+        "mito": 21,
+        "dark": 19,
+        "medium": 2
+      },
+      "INP": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 2,
+        "dark": 2
+      },
+      "ICL(R)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl3": {
+        "post": 44,
+        "upstream": 44,
+        "mito": 2,
+        "dark": 2
+      },
+      "LX(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "LAL(L)": {
+        "post": 1,
+        "upstream": 1,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl2": {
+        "post": 231,
+        "upstream": 231,
+        "mito": 7,
+        "dark": 7
+      },
+      "FBl1": {
+        "pre": 3,
+        "post": 120,
+        "downstream": 10,
+        "upstream": 120,
+        "mito": 7,
+        "dark": 7
+      }
+    }
+  },
+  {
+    "bodyId": 941132430,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R6_C2",
+    "side": "R",
+    "pb_column": "R6",
+    "fb_column": "C2",
+    "pre": 8,
+    "post": 3284,
+    "roiInfo": {
+      "CX": {
+        "pre": 7,
+        "post": 3280,
+        "downstream": 39,
+        "upstream": 3280,
+        "mito": 109,
+        "dark": 106,
+        "light": 3
+      },
+      "PB": {
+        "post": 732,
+        "upstream": 732,
+        "mito": 16,
+        "dark": 16
+      },
+      "PB(R5)": {
+        "post": 79,
+        "upstream": 79,
+        "mito": 2,
+        "dark": 2
+      },
+      "PB(R6)": {
+        "post": 636,
+        "upstream": 636,
+        "mito": 13,
+        "dark": 13
+      },
+      "PB(R7)": {
+        "post": 16,
+        "upstream": 16,
+        "mito": 1,
+        "dark": 1
+      },
+      "PB(R8)": {
+        "post": 1,
+        "upstream": 1
+      },
+      "FB": {
+        "pre": 7,
+        "post": 2548,
+        "downstream": 39,
+        "upstream": 2548,
+        "mito": 93,
+        "dark": 90,
+        "light": 3
+      },
+      "FBl6": {
+        "post": 118,
+        "upstream": 118,
+        "mito": 2,
+        "dark": 2
+      },
+      "FB-column3": {
+        "post": 208,
+        "upstream": 208,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl5": {
+        "pre": 4,
+        "post": 1323,
+        "downstream": 21,
+        "upstream": 1323,
+        "mito": 46,
+        "dark": 44,
+        "light": 2
+      },
+      "INP": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 18,
+        "dark": 18
+      },
+      "CRE(L)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 9,
+        "dark": 9
+      },
+      "CRE(-RUB)(L)": {
+        "post": 2,
+        "upstream": 2,
+        "mito": 9,
+        "dark": 9
+      },
+      "FBl4": {
+        "pre": 2,
+        "post": 639,
+        "downstream": 16,
+        "upstream": 639,
+        "mito": 23,
+        "dark": 23
+      },
+      "FBl3": {
+        "post": 38,
+        "upstream": 38,
+        "mito": 3,
+        "dark": 3
+      },
+      "FBl2": {
+        "pre": 1,
+        "post": 215,
+        "downstream": 2,
+        "upstream": 215,
+        "mito": 10,
+        "dark": 10
+      },
+      "FBl1": {
+        "post": 215,
+        "upstream": 215,
+        "mito": 9,
+        "dark": 8,
+        "light": 1
+      }
+    }
+  },
+  {
+    "bodyId": 1200032115,
+    "type": "PFL3",
+    "instance": "PFL3(PB12c)_R7_C1",
+    "side": "R",
+    "pb_column": "R7",
+    "fb_column": "C1",
+    "pre": 264,
+    "post": 4647,
+    "roiInfo": {
+      "CX": {
+        "pre": 8,
+        "post": 4583,
+        "downstream": 31,
+        "upstream": 4583,
+        "mito": 127,
+        "dark": 123,
+        "light": 2,
+        "medium": 2
+      },
+      "PB": {
+        "pre": 4,
+        "post": 663,
+        "downstream": 13,
+        "upstream": 663,
+        "mito": 9,
+        "dark": 9
+      },
+      "PB(R6)": {
+        "post": 98,
+        "upstream": 98
+      },
+      "PB(R7)": {
+        "pre": 4,
+        "post": 557,
+        "downstream": 13,
+        "upstream": 557,
+        "mito": 9,
+        "dark": 9
+      },
+      "PB(R8)": {
+        "post": 8,
+        "upstream": 8
+      },
+      "FB": {
+        "pre": 4,
+        "post": 3920,
+        "downstream": 18,
+        "upstream": 3920,
+        "mito": 118,
+        "dark": 114,
+        "light": 2,
+        "medium": 2
+      },
+      "FBl6": {
+        "post": 229,
+        "upstream": 229,
+        "mito": 4,
+        "dark": 3,
+        "medium": 1
+      },
+      "FBl5": {
+        "pre": 3,
+        "post": 2035,
+        "downstream": 12,
+        "upstream": 2035,
+        "mito": 61,
+        "dark": 58,
+        "light": 2,
+        "medium": 1
+      },
+      "FBl4": {
+        "post": 1069,
+        "upstream": 1069,
+        "mito": 28,
+        "dark": 28
+      },
+      "LX(L)": {
+        "pre": 254,
+        "post": 60,
+        "downstream": 1757,
+        "upstream": 60,
+        "mito": 39,
+        "dark": 38,
+        "light": 1
+      },
+      "LAL(L)": {
+        "pre": 254,
+        "post": 60,
+        "downstream": 1757,
+        "upstream": 60,
+        "mito": 39,
+        "dark": 38,
+        "light": 1
+      },
+      "FBl2": {
+        "post": 307,
+        "upstream": 307,
+        "mito": 15,
+        "dark": 15
+      },
+      "FBl3": {
+        "post": 57,
+        "upstream": 57,
+        "mito": 1,
+        "dark": 1
+      },
+      "FBl1": {
+        "pre": 1,
+        "post": 223,
+        "downstream": 6,
+        "upstream": 223,
+        "mito": 9,
+        "dark": 9
+      }
+    }
+  }
+]

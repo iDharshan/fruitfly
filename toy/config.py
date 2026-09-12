@@ -34,6 +34,9 @@ COLOR_SUN_AMBER: Tuple[int, int, int] = (255, 183, 3)   # #ffb703 Visual Landmar
 COLOR_FOOD_EMERALD: Tuple[int, int, int] = (50, 235, 120)  # #32eb78 Nutrient Pellet (Food)
 COLOR_FOOD_CORE: Tuple[int, int, int] = (200, 255, 220)     # Highlight core
 COLOR_ODOR_AURA: Tuple[int, int, int] = (40, 210, 110)      # Scent plume aura
+COLOR_PFL3_LEFT: Tuple[int, int, int] = (0, 195, 255)       # #00c3ff Left PFL3 (Counter-clockwise steering)
+COLOR_PFL3_RIGHT: Tuple[int, int, int] = (255, 110, 50)     # #ff6e32 Right PFL3 (Clockwise steering)
+
 
 # UI Accents & Text
 COLOR_TEXT_PRIMARY: Tuple[int, int, int] = (240, 244, 252)
@@ -69,7 +72,7 @@ BTN_MODES_Y: int = CONTENT_TOP + 12
 
 # Compact Floating Stats HUD (Placed in Flight Arena corner for clear cockpit avionics)
 STATS_HUD_W: int = 250
-STATS_HUD_H: int = 175
+STATS_HUD_H: int = 198
 STATS_HUD_RECT_ARENA_BR = (PANEL_ARENA_RECT[0] + PANEL_ARENA_RECT[2] - STATS_HUD_W - 14,
                            PANEL_ARENA_RECT[1] + PANEL_ARENA_RECT[3] - STATS_HUD_H - 14,
                            STATS_HUD_W, STATS_HUD_H)
@@ -93,6 +96,11 @@ class CircuitConfig:
     n_epg: int = 48              # E-PG compass neurons covering [0, 2pi)
     n_pen_side: int = 24         # P-EN neurons per hemisphere (24 Left + 24 Right = 48)
     n_pen_total: int = 48
+    
+    n_pfl3_side: int = 12        # PFL3 neurons per hemisphere (12 Left + 12 Right = 24)
+    n_pfl3_total: int = 24
+    tau_pfl3: float = 0.025      # PFL3 membrane integration constant: 25 ms
+    k_pfl3_drive: float = 2.8    # PFL3 differential steering sensitivity (rad/s)
     
     tau_m: float = 0.020         # Membrane integration time constant: 20 ms
     dt_ode: float = 0.002        # ODE step: 2 ms

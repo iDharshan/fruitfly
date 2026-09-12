@@ -16,6 +16,7 @@ from .config import (
     COLOR_EPG_CYAN, COLOR_PEN_MAGENTA, COLOR_PEN_LEFT, COLOR_PEN_RIGHT,
     COLOR_GOLD_FORWARD, COLOR_LIME_FEEDBACK, COLOR_SUN_AMBER,
     COLOR_FOOD_EMERALD, COLOR_FOOD_CORE, COLOR_ODOR_AURA,
+    COLOR_PFL3_LEFT, COLOR_PFL3_RIGHT,
     COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY, COLOR_TEXT_MUTED,
     COLOR_GRID, COLOR_GAUGE_BG, COLOR_ACTIVE_BORDER,
     PANEL_ARENA_RECT, PANEL_NEURAL_RECT, STATS_HUD_RECT,
@@ -63,6 +64,9 @@ class NeonDashboardRenderer:
         # View mode: 1 = BRAIN_3D, 2 = DUAL_RING, 3 = SPLIT (Default)
         self.view_mode: int = 3
 
+        # Callout badges visibility toggle
+        self.show_callouts: bool = True
+
         # Toast notification system
         self.toast_msg: Optional[str] = None
         self.toast_timer: float = 0.0
@@ -80,6 +84,13 @@ class NeonDashboardRenderer:
             (2, pygame.Rect(BTN_MODES_X + BTN_MODE_WIDTH + BTN_MODE_SPACING, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "DUAL RING"),
             (3, pygame.Rect(BTN_MODES_X + (BTN_MODE_WIDTH + BTN_MODE_SPACING) * 2, BTN_MODES_Y, BTN_MODE_WIDTH, BTN_MODE_HEIGHT), "SPLIT"),
         ]
+
+    def toggle_callouts(self) -> bool:
+        """Toggles floating anatomical 3D callout badges on/off."""
+        self.show_callouts = not self.show_callouts
+        status = "ON" if self.show_callouts else "OFF"
+        self.show_toast(f"CALLOUT BADGES: {status}")
+        return self.show_callouts
 
     def cycle_hud_position(self) -> str:
         """Cycles the floating stats HUD between Arena BR -> Arena TR -> Neural TR -> Hidden."""
@@ -127,32 +138,55 @@ class NeonDashboardRenderer:
             COLOR_PEN_MAGENTA,
             COLOR_PEN_LEFT,
             COLOR_PEN_RIGHT,
+            COLOR_PFL3_LEFT,
+            COLOR_PFL3_RIGHT,
             COLOR_LIME_FEEDBACK,
             COLOR_SUN_AMBER,
             COLOR_GOLD_FORWARD,
             COLOR_FOOD_EMERALD,
             (255, 255, 255),
         ]
-        radii = [4, 8, 12, 16, 22, 30, 42, 54]
+        radii = [4, 6, 8, 10, 12, 16]
 
         for col in colors:
             for r in radii:
                 size = r * 2
                 surf = pygame.Surface((size, size), pygame.SRCALPHA)
                 center = r
-                for rad in range(r, 0, -2):
+                for rad in range(r, 0, -1):
                     frac = 1.0 - (rad / r)
-                    alpha = int(140 * (frac ** 1.8))
+                    alpha = int(75 * (frac ** 2.2))
                     pygame.draw.circle(surf, (*col, alpha), (center, center), rad)
                 self.glow_cache[(col, r)] = surf
 
     def draw_glow(self, center_x: float, center_y: float, color: Tuple[int, int, int], radius: int):
         """Blits cached radial bloom surface centered at (center_x, center_y)."""
-        available = [4, 8, 12, 16, 22, 30, 42, 54]
+        available = [4, 6, 8, 10, 12, 16]
         closest_r = min(available, key=lambda x: abs(x - radius))
         surf = self.glow_cache.get((color, closest_r))
+        if not surf:
+            # Match nearest pre-baked color
+            cached_colors = list({k[0] for k in self.glow_cache.keys()})
+            if cached_colors:
+                closest_c = min(cached_colors, key=lambda c: (c[0]-color[0])**2 + (c[1]-color[1])**2 + (c[2]-color[2])**2)
+                surf = self.glow_cache.get((closest_c, closest_r))
         if surf:
             self.screen.blit(surf, (int(center_x - closest_r), int(center_y - closest_r)), special_flags=pygame.BLEND_ADD)
+
+    def handle_mouse_drag(self, dx: int, dy: int):
+        """Orbits 3D brain camera when dragging in neural panel."""
+        self.brain_cloud.yaw += dx * 0.007
+        self.brain_cloud.pitch = float(np.clip(self.brain_cloud.pitch + dy * 0.007, -1.2, 1.2))
+        self.brain_cloud.auto_rotate = False
+
+    def handle_mouse_scroll(self, scroll_y: int):
+        """Zooms 3D brain camera in/out."""
+        self.brain_cloud.user_scale = float(np.clip(self.brain_cloud.user_scale + scroll_y * 0.12, 0.5, 3.0))
+
+    def handle_reset_camera(self):
+        """Resets 3D brain camera view to default."""
+        self.brain_cloud.reset_camera()
+        self.show_toast("3D CAMERA: RESET")
 
     def cycle_view_mode(self):
         """Cycles between SPLIT -> BRAIN 3D -> DUAL RING."""
@@ -183,7 +217,7 @@ class NeonDashboardRenderer:
         self.anim_time += dt
 
         # Update 3D brain activities
-        self.brain_cloud.update_dynamics(circuit, agent, dt)
+        self.brain_cloud.update_dynamics(circuit, agent, dt, food_system=food_system)
 
         # Clear background
         self.screen.fill(COLOR_BG)
@@ -196,7 +230,7 @@ class NeonDashboardRenderer:
         self._render_panel_arena(agent, food_system, mode)
 
         # Render Right: Neural Activity View (3D Brain / Dual Ring / Split)
-        self._render_panel_neural(circuit, agent)
+        self._render_panel_neural(circuit, agent, food_system=food_system, mode=mode)
 
         # Render Floating Compact Stats HUD
         self._render_stats_hud(circuit, agent, food_system, mode)
@@ -228,7 +262,7 @@ class NeonDashboardRenderer:
         self.screen.blit(title_surf, (20, 8))
 
         sub_surf = self.font_tiny.render(
-            "CONNECTOMICS CANN ARCHITECTURE | 98 OF 165k NEURONS MODELED | 2.09x DRIVING TORQUE | 3D VNC MESH",
+            "CONNECTOMICS CANN ARCHITECTURE | 122 NEURONS (48 E-PG + 48 P-EN + 24 PFL3) | 2.09x TORQUE | 3D VNC MESH",
             True, COLOR_TEXT_SECONDARY
         )
         self.screen.blit(sub_surf, (22, 27))
@@ -258,6 +292,7 @@ class NeonDashboardRenderer:
             ("^ / v or W / S", "Throttle"),
             ("M", "Manual/Auto"),
             ("TAB / 1-3", "View Mode"),
+            ("L", "Labels"),
             ("H", "HUD Pos"),
             ("Right-Click", "Toggle Sun"),
             ("T", "Phototaxis"),
@@ -539,7 +574,13 @@ class NeonDashboardRenderer:
         pygame.draw.line(self.screen, COLOR_EPG_CYAN, rot(13, -2), rot(18, -6), 1)
         pygame.draw.line(self.screen, COLOR_EPG_CYAN, rot(13, 2), rot(18, 6), 1)
 
-    def _render_panel_neural(self, circuit: DualRingAttractor, agent: FlyAgent):
+    def _render_panel_neural(
+        self,
+        circuit: DualRingAttractor,
+        agent: FlyAgent,
+        food_system: Optional[FoodSystem] = None,
+        mode: str = "MANUAL",
+    ):
         """Renders Panel 2 with scientifically accurate text and clean vertical partitioning."""
         rx, ry, rw, rh = PANEL_NEURAL_RECT
         pygame.draw.rect(self.screen, COLOR_PANEL_BG, PANEL_NEURAL_RECT, border_radius=6)
@@ -557,10 +598,10 @@ class NeonDashboardRenderer:
         lbl_badge = self.font_tiny.render("CENTRAL COMPLEX NAVIGATION SUBNETWORK", True, COLOR_EPG_CYAN)
         self.screen.blit(lbl_badge, (rx + 16, header_y))
 
-        lbl_count = self.font_hero.render("98 CANN Compass Neurons", True, (255, 255, 255))
+        lbl_count = self.font_hero.render("122 Biological Neurons", True, (255, 255, 255))
         self.screen.blit(lbl_count, (rx + 16, header_y + 16))
 
-        lbl_desc = self.font_sub.render("50 E-PG Compass (EB) ⇄ 48 P-EN Velocity Shifters (PB) · 2.09x Driving Torque", True, (195, 210, 230))
+        lbl_desc = self.font_sub.render("48 E-PG Compass ⇄ 48 P-EN Shifters + 24 PFL3 Comparators (2.09x Torque)", True, (195, 210, 230))
         self.screen.blit(lbl_desc, (rx + 16, header_y + 40))
 
         lbl_context = self.font_tiny.render("(Modeled biological subnetwork extracted from 165,000 whole-brain connectome)", True, COLOR_TEXT_MUTED)
@@ -581,11 +622,20 @@ class NeonDashboardRenderer:
 
         # Render content based on mode
         if self.view_mode == 1:
-            # Full 3D Brain Mesh Mode
+            # Full 3D Brain Mesh Mode (Fills panel with rich high-definition connectome)
             center_x = rx + rw // 2
-            center_y = ry + rh // 2 + 35
-            self._render_brain_cloud(center_x, center_y, scale=2.2)
+            center_y = ry + rh // 2 + 10
+            self._render_brain_cloud(
+                center_x,
+                center_y,
+                scale=2.35 * self.brain_cloud.user_scale,
+                is_full_view=True,
+                circuit=circuit,
+                agent=agent,
+                food_system=food_system,
+            )
             self._render_activity_legend(rx + 24, ry + rh - 38)
+            self._render_camera_hud(rx + 280, ry + rh - 38)
 
         elif self.view_mode == 2:
             # Full Dual Ring Attractor Mode
@@ -596,9 +646,18 @@ class NeonDashboardRenderer:
 
         else:
             # Mode 3: SPLIT VIEW (Clean vertical partitioning)
-            self._render_split_view(circuit, agent, rx, ry, rw, rh)
+            self._render_split_view(circuit, agent, food_system, rx, ry, rw, rh)
 
-    def _render_split_view(self, circuit: DualRingAttractor, agent: FlyAgent, rx: int, ry: int, rw: int, rh: int):
+    def _render_split_view(
+        self,
+        circuit: DualRingAttractor,
+        agent: FlyAgent,
+        food_system: Optional[FoodSystem],
+        rx: int,
+        ry: int,
+        rw: int,
+        rh: int,
+    ):
         """
         Renders clean vertically partitioned split view:
           - Upper box: 3D Anatomical Brain & VNC Activity Map (Strictly clipped)
@@ -623,8 +682,16 @@ class NeonDashboardRenderer:
 
         # Center and project 3D brain with proportional scale (stays strictly inside upper box)
         cloud_cx = rx + rw // 2
-        cloud_cy = ry + 246
-        self._render_brain_cloud(cloud_cx, cloud_cy, scale=1.22)
+        cloud_cy = ry + 240
+        self._render_brain_cloud(
+            cloud_cx,
+            cloud_cy,
+            scale=1.52 * self.brain_cloud.user_scale,
+            is_full_view=False,
+            circuit=circuit,
+            agent=agent,
+            food_system=food_system,
+        )
 
         # Anatomical Callout Badges
         lbl_opt_l = self.font_tiny.render("[OPTIC L]", True, (130, 150, 175))
@@ -632,10 +699,10 @@ class NeonDashboardRenderer:
         lbl_cx = self.font_tiny.render("[CENTRAL COMPLEX (EB/PB)]", True, COLOR_EPG_CYAN)
         lbl_vnc = self.font_tiny.render("[VNC MOTOR CORD (T1-T3)]", True, (140, 170, 200))
 
-        self.screen.blit(lbl_opt_l, (cloud_cx - 165, cloud_cy - 48))
-        self.screen.blit(lbl_opt_r, (cloud_cx + 115, cloud_cy - 48))
-        self.screen.blit(lbl_cx, (cloud_cx - lbl_cx.get_width() // 2, cloud_cy - 70))
-        self.screen.blit(lbl_vnc, (cloud_cx - lbl_vnc.get_width() // 2, cloud_cy + 96))
+        self.screen.blit(lbl_opt_l, (cloud_cx - 200, cloud_cy - 48))
+        self.screen.blit(lbl_opt_r, (cloud_cx + 145, cloud_cy - 48))
+        self.screen.blit(lbl_cx, (cloud_cx - lbl_cx.get_width() // 2, cloud_cy - 105))
+        self.screen.blit(lbl_vnc, (cloud_cx - lbl_vnc.get_width() // 2, cloud_cy + 112))
 
         # Bottom activity legend inside upper box
         self._render_activity_legend(rx + 22, ry + 386)
@@ -669,21 +736,247 @@ class NeonDashboardRenderer:
 
         self.screen.set_clip(prev_clip)
 
-    def _render_brain_cloud(self, cx: float, cy: float, scale: float):
-        """Projects and renders the 3D anatomical Drosophila brain point cloud with 0-200+ Hz glow."""
-        nodes_sorted = self.brain_cloud.project_and_depth_sort(cx, cy, scale=scale)
+    def _render_brain_cloud(
+        self,
+        cx: float,
+        cy: float,
+        scale: float,
+        is_full_view: bool = False,
+        circuit: Optional[DualRingAttractor] = None,
+        agent: Optional[FlyAgent] = None,
+        food_system: Optional[FoodSystem] = None,
+    ):
+        """Projects and renders the 3D anatomical Drosophila brain & VNC with live bioluminescence, structural tracts, and pulses."""
+        valid_nodes, proj_edges, anchors, proj_pulses = self.brain_cloud.project_and_depth_sort(cx, cy, scale=scale)
 
-        for sx, sy, depth, color, hz, reg in nodes_sorted:
-            rad = 1.5
-            if hz > 60.0:
-                rad = 2.4
-            if hz > 130.0:
-                rad = 3.5
+        # 1. Structural Connectome Tracts (Axons & Dendrites)
+        for e in proj_edges:
+            x1, y1 = int(e["x1"]), int(e["y1"])
+            x2, y2 = int(e["x2"]), int(e["y2"])
+            if abs(x1 - x2) > 380 or abs(y1 - y2) > 380:
+                continue
 
-            if hz > 85.0:
-                self.draw_glow(sx, sy, color, int(rad * 2.6))
+            etype = e["type"]
+            hz = e["hz"]
+            ecol = e["color"]
 
-            pygame.draw.circle(self.screen, color, (int(sx), int(sy)), int(rad))
+            if etype.startswith("PFL3_L") or etype.startswith("PFL3_R"):
+                w = 2 if (hz > 45.0 and is_full_view) else 1
+                pygame.draw.line(self.screen, ecol, (x1, y1), (x2, y2), w)
+            elif etype in ("EB_RING", "EPG_PB", "VNC_CORD"):
+                w = 2 if (hz > 90.0 and is_full_view) else 1
+                pygame.draw.line(self.screen, ecol, (x1, y1), (x2, y2), w)
+            else:
+                pygame.draw.line(self.screen, ecol, (x1, y1), (x2, y2), 1)
+
+        # 2. Synaptic Action Potential Pulses
+        for p in proj_pulses:
+            px, py = int(p["x"]), int(p["y"])
+            pcol = p["color"]
+            glow_r = 8 if is_full_view else 6
+            self.draw_glow(px, py, pcol, glow_r)
+            pygame.draw.circle(self.screen, (255, 255, 255), (px, py), 2)
+            pygame.draw.circle(self.screen, pcol, (px, py), 3, width=1)
+
+        # 3. Neural Nodes with Clean Visual Hierarchy
+        for n in valid_nodes:
+            sx, sy = int(n["sx"]), int(n["sy"])
+            color = n["color"]
+            hz = n["hz"]
+            is_cx = n["is_cx"]
+            is_cord = n.get("is_cord", False)
+            is_scaffold = n.get("is_scaffold", False)
+
+            if is_scaffold:
+                # Translucent anatomical scaffold envelope (1px fine point, no bloom)
+                pygame.draw.circle(self.screen, color, (sx, sy), 1)
+                continue
+
+            # Functional Circuit Nodes (Central Complex & Descending Motor Cords)
+            if is_full_view:
+                if hz < 35.0:
+                    rad = 1.7
+                elif hz < 85.0:
+                    rad = 2.1
+                    self.draw_glow(sx, sy, color, 4)
+                elif hz < 140.0:
+                    rad = 2.5
+                    self.draw_glow(sx, sy, color, 6)
+                else:
+                    rad = 2.9
+                    self.draw_glow(sx, sy, color, 8)
+            else:
+                if hz < 35.0:
+                    rad = 1.2
+                elif hz < 85.0:
+                    rad = 1.6
+                elif hz < 140.0:
+                    rad = 2.0
+                    self.draw_glow(sx, sy, color, 4)
+                else:
+                    rad = 2.4
+                    self.draw_glow(sx, sy, color, 6)
+
+            pygame.draw.circle(self.screen, color, (sx, sy), int(rad))
+
+            # Specular pinpoint core for high-frequency bursting neurons
+            if hz > 110.0:
+                core_r = 1
+                pygame.draw.circle(self.screen, (255, 255, 255), (sx, sy), core_r)
+
+        # 4. Floating 3D Anatomical Callout Badges
+        if is_full_view and circuit is not None and agent is not None:
+            self._render_3d_callout_labels(anchors, circuit, agent, food_system)
+
+    def _render_3d_callout_labels(
+        self,
+        anchors: Dict[str, Tuple[float, float]],
+        circuit: DualRingAttractor,
+        agent: FlyAgent,
+        food_system: Optional[FoodSystem] = None,
+    ):
+        """Renders sleek floating 3D HUD callout cards docked cleanly along outer side rails with zero overlap."""
+        if not self.show_callouts:
+            return
+
+        rx, ry, rw, rh = PANEL_NEURAL_RECT
+        odor = food_system.get_odor_at(agent.x, agent.y, agent.heading) if food_system else None
+
+        bump_deg = math.degrees(circuit.decode_heading()[0])
+        act_l, act_r = circuit.get_shifter_activities()
+        pfl3_l, pfl3_r = circuit.get_pfl3_activities() if hasattr(circuit, "get_pfl3_activities") else (0.0, 0.0)
+        pfl3_bias = circuit.get_pfl3_directional_bias() if hasattr(circuit, "get_pfl3_directional_bias") else 0.0
+        odor_deg = math.degrees(odor.relative_bearing) if odor else 0.0
+        odor_pct = (odor.strength * 100.0) if odor else 0.0
+
+        # Structured into Left Rail and Right Rail with dedicated vertical slots aligned with brain anatomy
+        left_defs = [
+            (
+                "PB_L",
+                "[PB] PROTOCEREBRAL BRIDGE",
+                f"Shifters L:{act_l:.1f} R:{act_r:.1f} | 2.09x Torque",
+                COLOR_PEN_LEFT,
+                ry + 175,
+            ),
+            (
+                "AL_L",
+                "[AL] ANTENNAL LOBES",
+                f"Olfactory | {odor_pct:.0f}% Scent Field",
+                (80, 230, 120),
+                ry + 295,
+            ),
+            (
+                "LAL_L",
+                "[LAL] MOTOR STEERING HUBS",
+                f"Bias: {pfl3_bias:+.2f} | 24 PFL3 Axons",
+                COLOR_PFL3_LEFT if pfl3_bias <= 0 else COLOR_PFL3_RIGHT,
+                ry + 415,
+            ),
+        ]
+
+        right_defs = [
+            (
+                "EB",
+                "[EB] ELLIPSOID BODY",
+                f"Heading: {bump_deg:+.0f}° | 48 E-PG Wedges",
+                COLOR_EPG_CYAN,
+                ry + 175,
+            ),
+            (
+                "FB",
+                "[FB] FAN-SHAPED BODY",
+                f"9-Col Grid | Ψ:{odor_deg:+.0f}° Odor Goal",
+                (50, 245, 140),
+                ry + 295,
+            ),
+            (
+                "VNC_T2",
+                "[VNC] VENTRAL NERVE CORD",
+                f"T1-T3 Neuromeres | {agent.v:.0f} px/s",
+                (175, 215, 255),
+                ry + 415,
+            ),
+        ]
+
+        bw = 196
+        bh = 34
+
+        # Render Left Badges (Docked along left margin: rx + 16 to rx + 16 + bw)
+        bx_l = rx + 16
+        for akey, title, subtitle, col, slot_y in left_defs:
+            if akey not in anchors:
+                continue
+            ax, ay = anchors[akey]
+            by = slot_y
+            pin_x = bx_l + bw
+            pin_y = by + bh // 2
+
+            # Target dot on 3D structure
+            pygame.draw.circle(self.screen, col, (int(ax), int(ay)), 3)
+            pygame.draw.circle(self.screen, (255, 255, 255), (int(ax), int(ay)), 1)
+
+            # Elegant leader line: anchor -> elbow -> pin
+            elbow_x = min(ax - 10, pin_x + (ax - pin_x) * 0.45)
+            line_col = (col[0] // 2, col[1] // 2, col[2] // 2)
+            pygame.draw.line(self.screen, line_col, (int(ax), int(ay)), (int(elbow_x), int(pin_y)), 1)
+            pygame.draw.line(self.screen, line_col, (int(elbow_x), int(pin_y)), (int(pin_x), int(pin_y)), 1)
+            pygame.draw.circle(self.screen, col, (int(pin_x), int(pin_y)), 2)
+
+            # Sleek translucent badge
+            b_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
+            pygame.draw.rect(b_surf, (12, 17, 26, 225), (0, 0, bw, bh), border_radius=4)
+            pygame.draw.rect(b_surf, (col[0], col[1], col[2], 140), (0, 0, bw, bh), width=1, border_radius=4)
+            pygame.draw.rect(b_surf, col, (0, 0, 3, bh), border_top_left_radius=4, border_bottom_left_radius=4)
+            self.screen.blit(b_surf, (int(bx_l), int(by)))
+
+            t_surf = self.font_tiny.render(title, True, col)
+            s_surf = self.font_tiny.render(subtitle, True, (165, 185, 210))
+            self.screen.blit(t_surf, (int(bx_l + 8), int(by + 4)))
+            self.screen.blit(s_surf, (int(bx_l + 8), int(by + 17)))
+
+        # Render Right Badges (Docked along right margin: rx + rw - bw - 16)
+        bx_r = rx + rw - bw - 16
+        for akey, title, subtitle, col, slot_y in right_defs:
+            if akey not in anchors:
+                continue
+            ax, ay = anchors[akey]
+            by = slot_y
+            pin_x = bx_r
+            pin_y = by + bh // 2
+
+            # Target dot on 3D structure
+            pygame.draw.circle(self.screen, col, (int(ax), int(ay)), 3)
+            pygame.draw.circle(self.screen, (255, 255, 255), (int(ax), int(ay)), 1)
+
+            # Elegant leader line: anchor -> elbow -> pin
+            elbow_x = max(ax + 10, pin_x - (pin_x - ax) * 0.45)
+            line_col = (col[0] // 2, col[1] // 2, col[2] // 2)
+            pygame.draw.line(self.screen, line_col, (int(ax), int(ay)), (int(elbow_x), int(pin_y)), 1)
+            pygame.draw.line(self.screen, line_col, (int(elbow_x), int(pin_y)), (int(pin_x), int(pin_y)), 1)
+            pygame.draw.circle(self.screen, col, (int(pin_x), int(pin_y)), 2)
+
+            # Sleek translucent badge
+            b_surf = pygame.Surface((bw, bh), pygame.SRCALPHA)
+            pygame.draw.rect(b_surf, (12, 17, 26, 225), (0, 0, bw, bh), border_radius=4)
+            pygame.draw.rect(b_surf, (col[0], col[1], col[2], 140), (0, 0, bw, bh), width=1, border_radius=4)
+            pygame.draw.rect(b_surf, col, (bw - 3, 0, 3, bh), border_top_right_radius=4, border_bottom_right_radius=4)
+            self.screen.blit(b_surf, (int(bx_r), int(by)))
+
+            t_surf = self.font_tiny.render(title, True, col)
+            s_surf = self.font_tiny.render(subtitle, True, (165, 185, 210))
+            self.screen.blit(t_surf, (int(bx_r + 7), int(by + 4)))
+            self.screen.blit(s_surf, (int(bx_r + 7), int(by + 17)))
+
+    def _render_camera_hud(self, x: int, y: int):
+        """Draws interactive camera view hints and orbital angle readouts."""
+        yaw_deg = math.degrees(self.brain_cloud.yaw) % 360
+        pitch_deg = math.degrees(self.brain_cloud.pitch)
+        zoom = self.brain_cloud.user_scale
+        lbl_status = "ON" if self.show_callouts else "OFF"
+        text = f"3D CAMERA: [DRAG] Orbit ({yaw_deg:.0f}°, {pitch_deg:.0f}°) | [SCROLL] Zoom ({zoom:.1f}x) | [L] Badges ({lbl_status}) | [R-CLICK] Reset"
+        txt_surf = self.font_tiny.render(text, True, COLOR_TEXT_MUTED)
+        self.screen.blit(txt_surf, (x, y + 2))
+
 
     def _render_activity_legend(self, x: int, y: int):
         """Draws activity colorbar matching screenshot with clear Hz ticks."""
@@ -907,61 +1200,76 @@ class NeonDashboardRenderer:
         # 2. Speed & Stability Row
         sp_str = f"SPEED: {agent.v:3.0f} px/s"
         sp_surf = self.font_mono.render(sp_str, True, COLOR_TEXT_PRIMARY)
-        hud_surf.blit(sp_surf, (12, 47))
+        hud_surf.blit(sp_surf, (12, 44))
 
         coh_clamped = max(0.0, min(1.0, coh))
-        pygame.draw.rect(hud_surf, (24, 34, 48), (145, 50, 92, 9), border_radius=3)
-        pygame.draw.rect(hud_surf, COLOR_EPG_CYAN, (145, 50, int(92 * coh_clamped), 9), border_radius=3)
+        pygame.draw.rect(hud_surf, (24, 34, 48), (145, 47, 92, 9), border_radius=3)
+        pygame.draw.rect(hud_surf, COLOR_EPG_CYAN, (145, 47, int(92 * coh_clamped), 9), border_radius=3)
         coh_txt = self.font_tiny.render(f"C:{coh*100:.0f}%", True, (255, 255, 255))
-        hud_surf.blit(coh_txt, (182, 48))
+        hud_surf.blit(coh_txt, (182, 45))
 
         # 3. P-EN Shifter rates & Differential Steering Gauge
         act_l, act_r = circuit.get_shifter_activities()
         sh_str = f"P-EN: L{act_l:3.1f} | R{act_r:3.1f}"
         sh_surf = self.font_mono.render(sh_str, True, COLOR_PEN_LEFT)
-        hud_surf.blit(sh_surf, (12, 66))
+        hud_surf.blit(sh_surf, (12, 62))
 
         bar_cx = 191
-        bar_y = 71
+        bar_y = 67
         pygame.draw.line(hud_surf, (50, 64, 86), (145, bar_y + 3), (237, bar_y + 3), 1)
         pygame.draw.line(hud_surf, (255, 255, 255), (bar_cx, bar_y), (bar_cx, bar_y + 6), 1)
-        diff = (act_r - act_l) / 30.0
-        diff = max(-1.0, min(1.0, diff))
-        if diff < 0:
-            pygame.draw.rect(hud_surf, COLOR_PEN_LEFT, (int(bar_cx + diff * 42), bar_y + 1, int(-diff * 42), 5), border_radius=2)
-        elif diff > 0:
-            pygame.draw.rect(hud_surf, COLOR_PEN_RIGHT, (bar_cx, bar_y + 1, int(diff * 42), 5), border_radius=2)
+        pen_diff = (act_r - act_l) / 30.0
+        pen_diff = max(-1.0, min(1.0, pen_diff))
+        if pen_diff < 0:
+            pygame.draw.rect(hud_surf, COLOR_PEN_LEFT, (int(bar_cx + pen_diff * 42), bar_y + 1, int(-pen_diff * 42), 5), border_radius=2)
+        elif pen_diff > 0:
+            pygame.draw.rect(hud_surf, COLOR_PEN_RIGHT, (bar_cx, bar_y + 1, int(pen_diff * 42), 5), border_radius=2)
 
-        # 4. Food Score & Energy Bar Row
+        # 4. PFL3 Decision Neurons & Directional Steering Bias
+        pfl3_l, pfl3_r = circuit.get_pfl3_activities()
+        pfl3_str = f"PFL3: L{pfl3_l:3.1f} | R{pfl3_r:3.1f}"
+        pfl3_surf = self.font_mono.render(pfl3_str, True, COLOR_PFL3_LEFT)
+        hud_surf.blit(pfl3_surf, (12, 80))
+
+        bar3_y = 85
+        pygame.draw.line(hud_surf, (50, 64, 86), (145, bar3_y + 3), (237, bar3_y + 3), 1)
+        pygame.draw.line(hud_surf, (255, 255, 255), (bar_cx, bar3_y), (bar_cx, bar3_y + 6), 1)
+        pfl3_bias = circuit.get_pfl3_directional_bias()
+        if pfl3_bias < 0:
+            pygame.draw.rect(hud_surf, COLOR_PFL3_LEFT, (int(bar_cx + pfl3_bias * 42), bar3_y + 1, int(-pfl3_bias * 42), 5), border_radius=2)
+        elif pfl3_bias > 0:
+            pygame.draw.rect(hud_surf, COLOR_PFL3_RIGHT, (bar_cx, bar3_y + 1, int(pfl3_bias * 42), 5), border_radius=2)
+
+        # 5. Food Score & Energy Bar Row
         sc_str = f"FOOD: {agent.score:2d}"
         sc_surf = self.font_mono_bold.render(sc_str, True, COLOR_FOOD_EMERALD)
-        hud_surf.blit(sc_surf, (12, 86))
+        hud_surf.blit(sc_surf, (12, 100))
 
         # Energy bar
         en_frac = max(0.0, min(1.0, agent.energy / agent.max_energy))
         en_col = COLOR_FOOD_EMERALD if en_frac > 0.3 else (255, 140, 50)
-        pygame.draw.rect(hud_surf, (24, 34, 48), (120, 89, 117, 9), border_radius=3)
-        pygame.draw.rect(hud_surf, en_col, (120, 89, int(117 * en_frac), 9), border_radius=3)
+        pygame.draw.rect(hud_surf, (24, 34, 48), (120, 103, 117, 9), border_radius=3)
+        pygame.draw.rect(hud_surf, en_col, (120, 103, int(117 * en_frac), 9), border_radius=3)
         en_txt = self.font_tiny.render(f"NRG:{int(agent.energy)}%", True, (255, 255, 255))
-        hud_surf.blit(en_txt, (155, 87))
+        hud_surf.blit(en_txt, (155, 101))
 
-        # 5. Odor Sensation Row
+        # 6. Odor Sensation Row
         if food_system is not None:
             odor = food_system.get_odor_at(agent.x, agent.y, agent.heading)
             od_bearing_deg = math.degrees(odor.relative_bearing)
             od_str = f"ODOR: {int(odor.strength * 100):2d}% | Ψ:{od_bearing_deg:+.0f}°"
             od_col = COLOR_FOOD_EMERALD if odor.strength > 0.25 else COLOR_TEXT_SECONDARY
             od_surf = self.font_mono.render(od_str, True, od_col)
-            hud_surf.blit(od_surf, (12, 106))
+            hud_surf.blit(od_surf, (12, 120))
 
             dist_str = f"d:{int(odor.nearest_dist)}px"
             dist_surf = self.font_tiny.render(dist_str, True, COLOR_TEXT_MUTED)
-            hud_surf.blit(dist_surf, (rw - dist_surf.get_width() - 12, 107))
+            hud_surf.blit(dist_surf, (rw - dist_surf.get_width() - 12, 121))
         else:
             od_surf = self.font_mono.render("ODOR: NO SENSOR", True, COLOR_TEXT_MUTED)
-            hud_surf.blit(od_surf, (12, 106))
+            hud_surf.blit(od_surf, (12, 120))
 
-        # 6. Sun Landmark Status Row
+        # 7. Sun Landmark Status Row
         mark_bearing = agent.get_landmark_bearing()
         if agent.landmark_active and mark_bearing is not None:
             deg_bearing = math.degrees(mark_bearing)
@@ -976,13 +1284,19 @@ class NeonDashboardRenderer:
             sun_col = COLOR_TEXT_MUTED
 
         sun_surf = self.font_tiny.render(sun_str, True, sun_col)
-        hud_surf.blit(sun_surf, (12, 127))
+        hud_surf.blit(sun_surf, (12, 140))
 
-        # 7. Biological Ratio & Quick Keys Hints
+        # 8. Biological Torque & Autopilot Status
         ratio_surf = self.font_tiny.render("2.09x TORQUE", True, COLOR_LIME_FEEDBACK)
-        hud_surf.blit(ratio_surf, (12, 149))
+        hud_surf.blit(ratio_surf, (12, 161))
 
-        hints_surf = self.font_tiny.render("[M] Mode  [H] Move", True, COLOR_TEXT_MUTED)
-        hud_surf.blit(hints_surf, (rw - hints_surf.get_width() - 12, 149))
+        autopilot_txt = "AUTOPILOT: ON" if mode == "AUTO" else "AUTOPILOT: OFF"
+        autopilot_col = COLOR_FOOD_EMERALD if mode == "AUTO" else COLOR_TEXT_MUTED
+        auto_surf = self.font_tiny.render(autopilot_txt, True, autopilot_col)
+        hud_surf.blit(auto_surf, (rw - auto_surf.get_width() - 12, 161))
+
+        # 9. Quick Keys Hints
+        hints_surf = self.font_tiny.render("[M] Auto Mode  [H] Move HUD", True, COLOR_TEXT_MUTED)
+        hud_surf.blit(hints_surf, (12, 179))
 
         self.screen.blit(hud_surf, (rx, ry))

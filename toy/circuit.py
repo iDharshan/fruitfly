@@ -5,7 +5,8 @@ Connectomics-grounded 4-block asymmetric synaptic dynamics with 2.09x feedback r
 Features biological divisive normalization in the Ellipsoid Body (EB).
 """
 
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Any
+from pathlib import Path
 import numpy as np
 from .config import CircuitConfig, CIRCUIT_CFG
 
@@ -44,11 +45,22 @@ class DualRingAttractor:
         self.r_pen_l = np.zeros(self.n_pen_side, dtype=np.float64)
         self.r_pen_r = np.zeros(self.n_pen_side, dtype=np.float64)
 
+        # Biological PFL3 Steering Comparator Neurons (12 Left + 12 Right = 24)
+        self.n_pfl3 = getattr(cfg, "n_pfl3_total", 24)
+        self.n_pfl3_side = getattr(cfg, "n_pfl3_side", 12)
+        self.tau_pfl3 = getattr(cfg, "tau_pfl3", 0.025)
+        self.r_pfl3 = np.zeros(self.n_pfl3, dtype=np.float64)
+
+        # Fan-Shaped Body (FB) sensory columns for egocentric odor bearing
+        self.n_fb_cols = 24
+        self.fb_angles = np.linspace(-np.pi, np.pi, self.n_fb_cols, endpoint=False)
+
         # Divisive normalization parameter
         self.k_div = 0.012
 
         # Build biological connectome synaptic matrices
         self._build_synaptic_matrices()
+        self._load_pfl3_connectome()
 
         # Initialize bump with seed
         self.reset(initial_heading=0.0)
@@ -89,12 +101,58 @@ class DualRingAttractor:
         d_pe_r = ang_dist(self.theta_epg[:, None], target_r)
         self.W_pe_r = w_pe_strength * np.exp(-(d_pe_r ** 2) / two_sigma_sq)
 
+    def _load_pfl3_connectome(self):
+        """Loads biological W_ep_pfl3 and W_fb_pfl3 matrices, or builds fallback."""
+        data_path = Path(__file__).resolve().parent.parent / "data" / "pfl3_circuit.npz"
+        if data_path.exists():
+            try:
+                data = np.load(data_path)
+                w_ep = data["W_ep_pfl3"]
+                w_fb = data["W_fb_pfl3"]
+                # Normalize Left and Right blocks to maintain symmetric baseline balance
+                sum_l = np.sum(w_ep[:self.n_pfl3_side, :])
+                sum_r = np.sum(w_ep[self.n_pfl3_side:, :])
+                mean_sum = 0.5 * (sum_l + sum_r)
+                w_ep_norm = w_ep.copy()
+                if sum_l > 0:
+                    w_ep_norm[:self.n_pfl3_side, :] *= (mean_sum / sum_l)
+                if sum_r > 0:
+                    w_ep_norm[self.n_pfl3_side:, :] *= (mean_sum / sum_r)
+
+                self.W_ep_pfl3 = w_ep_norm
+                self.W_fb_pfl3 = w_fb
+                return
+            except Exception:
+                pass
+
+        # Fallback synthetic biological comparator matrices
+        n_p = self.n_pfl3
+        self.W_ep_pfl3 = np.zeros((n_p, self.n_epg), dtype=np.float64)
+        for i in range(self.n_pfl3_side):
+            th_l = (i + 0.5) * (2.0 * np.pi / self.n_pfl3_side)
+            d_l = ang_dist(self.theta_epg, th_l)
+            self.W_ep_pfl3[i, :] = np.exp(-(d_l ** 2) / (2.0 * (0.5 ** 2))) * 15.0
+
+            th_r = (i + 0.5) * (2.0 * np.pi / self.n_pfl3_side)
+            d_r = ang_dist(self.theta_epg, th_r)
+            self.W_ep_pfl3[self.n_pfl3_side + i, :] = np.exp(-(d_r ** 2) / (2.0 * (0.5 ** 2))) * 15.0
+
+        self.W_fb_pfl3 = np.zeros((n_p, self.n_fb_cols), dtype=np.float64)
+        for i in range(self.n_pfl3_side):
+            # Left prefers -90 deg
+            d_fb_l = ang_dist(self.fb_angles, -np.pi / 2.0)
+            self.W_fb_pfl3[i, :] = (np.maximum(0.0, np.cos(d_fb_l)) ** 2) * 2.5
+            # Right prefers +90 deg
+            d_fb_r = ang_dist(self.fb_angles, np.pi / 2.0)
+            self.W_fb_pfl3[self.n_pfl3_side + i, :] = (np.maximum(0.0, np.cos(d_fb_r)) ** 2) * 2.5
+
     def reset(self, initial_heading: float = 0.0):
         """Initializes the ring attractor with a cosine bump at initial_heading."""
         d = ang_dist(self.theta_epg, initial_heading)
         self.r_epg = np.maximum(0.0, np.cos(d)) * 2.0
         self.r_pen_l = np.zeros(self.n_pen_side, dtype=np.float64)
         self.r_pen_r = np.zeros(self.n_pen_side, dtype=np.float64)
+        self.r_pfl3 = np.zeros(self.n_pfl3, dtype=np.float64)
 
     def step(
         self,
@@ -244,3 +302,79 @@ class DualRingAttractor:
                 ))
 
         return arcs
+
+    def step_pfl3(
+        self,
+        odor_reading: Any = None,
+        dt: float = 0.016,
+        v_base: float = 150.0,
+    ) -> Tuple[float, float, float, float]:
+        """
+        Integrates biological PFL3 decision neurons via leaky integrator dynamics:
+          tau_PFL3 * dr_PFL3 / dt = -r_PFL3 + phi(W_EP-PFL3 @ r_EPG * 0.01 + W_FB-PFL3 @ u_odor * 0.8)
+        Computes push-pull steering drive:
+          omega_auto = k_drive * (sum(r_PFL3_R) - sum(r_PFL3_L))
+        Computes forward speed drive:
+          v_auto = v_base * (0.6 + 0.4 cos(Psi)) * (0.4 + 0.6 * strength)
+        Returns:
+          (omega_auto, target_v, pfl3_left_mean, pfl3_right_mean)
+        """
+        # Extract odor bearing and strength
+        if odor_reading is not None:
+            psi = getattr(odor_reading, "relative_bearing", 0.0)
+            strength = getattr(odor_reading, "strength", 0.0)
+        else:
+            psi = 0.0
+            strength = 0.0
+
+        # Model Odor Sensory Input array across 24 Fan-Shaped Body (FB) columns
+        d = ang_dist(self.fb_angles, psi)
+        u_odor = strength * (np.maximum(0.0, np.cos(d)) ** 2)
+
+        # Coincidence drive: compass heading (E-PG) + egocentric odor sensory goal (FB)
+        epg_drive = (self.W_ep_pfl3 @ self.r_epg) * 0.01
+        fb_drive = (self.W_fb_pfl3 @ u_odor) * 0.8
+        drive = epg_drive + fb_drive
+
+        # Leaky integrator dynamics: dr/dt = (-r + phi(drive)) / tau
+        phi = np.maximum(0.0, drive)
+        dr_pfl3 = (-self.r_pfl3 + phi) / self.tau_pfl3
+        self.r_pfl3 = np.maximum(0.0, self.r_pfl3 + dt * dr_pfl3)
+
+        # Differential steering command
+        r_l = self.r_pfl3[:self.n_pfl3_side]
+        r_r = self.r_pfl3[self.n_pfl3_side:]
+
+        # Push-pull comparator: Right - Left
+        # When odor is left (psi < 0), Left PFL3 dominates -> omega_auto < 0 (left turn)
+        # When odor is right (psi > 0), Right PFL3 dominates -> omega_auto > 0 (right turn)
+        diff = (np.sum(r_r) - np.sum(r_l)) / float(self.n_pfl3)
+        k_drive = getattr(self.cfg, "k_pfl3_drive", 2.8)
+        omega_auto = float(np.clip((k_drive * diff) / 4.5, -k_drive, k_drive))
+
+        # Forward speed modulation: slows down on sharp turns, accelerates on target lock
+        cos_psi = float(np.cos(psi))
+        target_v = float(v_base * (0.6 + 0.4 * cos_psi) * (0.4 + 0.6 * strength))
+
+        mean_l = float(np.mean(r_l))
+        mean_r = float(np.mean(r_r))
+        return omega_auto, target_v, mean_l, mean_r
+
+    def get_pfl3_activities(self) -> Tuple[float, float]:
+        """Returns average firing rates of Left and Right PFL3 populations."""
+        mean_l = float(np.mean(self.r_pfl3[:self.n_pfl3_side]))
+        mean_r = float(np.mean(self.r_pfl3[self.n_pfl3_side:]))
+        return mean_l, mean_r
+
+    def get_pfl3_directional_bias(self) -> float:
+        """
+        Returns normalized steering bias between [-1.0, 1.0].
+        -1.0 = Max left turn bias, +1.0 = Max right turn bias.
+        """
+        r_l = float(np.sum(self.r_pfl3[:self.n_pfl3_side]))
+        r_r = float(np.sum(self.r_pfl3[self.n_pfl3_side:]))
+        tot = r_l + r_r
+        if tot < 1e-4:
+            return 0.0
+        return float(np.clip((r_r - r_l) / tot, -1.0, 1.0))
+

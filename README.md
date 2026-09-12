@@ -51,7 +51,7 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
 | Mode 1: 3D Anatomical Brain Mesh (`[1]`) | Mode 2: Full Dual-Ring Attractor (`[2]`) | Mode 3: Clean Split-Screen View (`[3]`) |
 | :---: | :---: | :---: |
 | <img src="screenshots/toy_3d_brain_mode.png" width="100%" alt="Mode 1: 3D Brain Mesh"> | <img src="screenshots/toy_dual_ring_mode.png" width="100%" alt="Mode 2: Full Dual Ring"> | <img src="screenshots/toy_split_flight.png" width="100%" alt="Mode 3: Split Flight View"> |
-| *1,920+ connectome nodes across Optic Lobes, Central Complex (EB/PB), and VNC motor cord with depth-fog and 0–200+ Hz firing glow.* | *Full-screen 48-node E-PG compass ⇄ 48-node P-EN shifters with 48-bar real-time activity spectrum at 120+ FPS.* | *Clean vertical partitioning: live 3D anatomical brain activity map above and dual-ring CANN with synaptic torque arcs below.* |
+| *Clean, high-fidelity 3D Drosophila connectome: delicate 1 px translucent scaffold envelope, 122 Central Complex navigation neurons (EB compass bump, PB shifters, FB sensory grid, PFL3 comparators), twin VNC motor cords, and non-overlapping side-rail HUD badges.* | *Full-screen 48-node E-PG compass ⇄ 48-node P-EN shifters with 48-bar real-time activity spectrum at 120+ FPS.* | *Clean vertical partitioning: live 3D anatomical brain activity map above and dual-ring CANN with synaptic torque arcs below.* |
 
 ---
 
@@ -63,6 +63,9 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
 
 # High-Refresh Fullscreen Mode (120 FPS)
 ./fly_env/bin/python run_toy.py --fps 120 --fullscreen
+
+# Launch directly into 3D Brain Mesh Mode
+./fly_env/bin/python run_toy.py --view-mode 1
 
 # Automated Headless CI Verification Test
 ./fly_env/bin/python run_toy.py --headless-test
@@ -78,7 +81,11 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
 | **`⬆️ / ⬇️` or `W / S`** | **Forward Throttle:** Accelerate forward or decelerate/brake the 2D fly agent. |
 | **`M`** | **Operating Mode Toggle:** Switches between `MANUAL` (default keyboard control) and `AUTO` (mode toggle with HUD indicator). |
 | **`TAB` or `1 / 2 / 3`** | **View Mode Switcher:** Toggle Panel 2 between `[1] 3D Brain Mesh`, `[2] Dual Ring Attractor`, and `[3] Clean Split View`. |
+| **`L`** | **Toggle 3D Callout Badges:** Toggles floating anatomical HUD telemetry cards on/off for a completely clean, distraction-free view of the 3D connectome. |
 | **`H`** | **Cycle HUD Position:** Moves floating cockpit avionics HUD (*Arena Bottom-Right* $\rightarrow$ *Arena Top-Right* $\rightarrow$ *Neural Panel* $\rightarrow$ *Hidden*). |
+| **`Drag (Neural Panel)`** | **3D Camera Orbit:** Free 3D orbital camera rotation around the fruit fly brain and VNC. |
+| **`Scroll (Neural Panel)`** | **3D Camera Zoom:** Smooth interactive zoom in and out. |
+| **`Right-Click (Neural)`** | **Reset 3D Camera:** Re-centers view angle and resets zoom to default. |
 | **`Left-Click (Arena)`** | **Drop / Reposition Visual Landmark (Sun):** Places a visual beacon in the arena. |
 | **`Right-Click (Arena)`** | **Toggle Landmark Cue:** Enables/disables visual retinotopic cue locking without restricting free flight (off by default). |
 | **`T`** | **Toggle Phototaxis:** Optional autonomous beacon homing / target tracking mode. |
@@ -108,10 +115,10 @@ The simulator features three distinct, high-fidelity visualization modes for Pan
   - **Biological Torque Ratio:** Fixed $2.09\times$ connectomic driving ratio indicator
 
 #### 2. Panel 2: Central Complex Navigation Subnetwork ($780\times 794\text{ px}$)
-- **Mode 1: 3D Anatomical Brain & VNC Mesh:** 1,920+ connectome nodes covering Optic Lobes, Protocerebrum, Central Complex, and Ventral Nerve Cord (T1 foreleg, T2 wing power, T3 hindleg) with real-time firing dynamics ($0 - 200+\text{ Hz}$) and depth-fog.
+- **Mode 1: 3D Anatomical Brain & VNC Mesh:** High-fidelity, uncrowded 3D *Drosophila* connectome visualization. Features a delicate 1 px translucent anatomical scaffold envelope (~1,100 nodes for Optic Lobes, Protocerebrum volume, and thoracic neuromeres) framing the active 122-neuron Central Complex navigation subnetwork (EB compass torus, PB velocity shifter handlebar, FB 9-column sensory grid, AL olfactory glomeruli, LAL steering motor hubs, PFL3 comparator tracts, and paired descending VNC motor cords) with soft bioluminescent bloom, action potential synaptic pulses, non-overlapping side-rail HUD cards, and `[L]` badge toggle.
 - **Mode 2: Full Dual-Ring CANN Attractor:** Full-screen 48-node E-PG compass (Ellipsoid Body) $\rightleftharpoons$ 48-node P-EN shifter (Protocerebral Bridge) rings with live 48-bar activity spectrum.
 - **Mode 3: Clean Partitioned Split View:** Upper sub-panel displays the 3D anatomical brain & VNC with strict bounding box clipping; Lower sub-panel displays the live CANN dual-ring with 16 EB wedge spokes, traveling action potential spark dots, and badged color swatches.
-- **Explicit Connectomics Context:** Subnetwork header clearly identifies the **98 modeled CANN compass neurons** (50 E-PG + 48 P-EN) within the adult *Drosophila* 165,000 whole-brain connectome.
+- **Explicit Connectomics Context:** Subnetwork header clearly identifies the **122 modeled biological navigation neurons** within the adult *Drosophila* 165,000 whole-brain connectome.
 
 ---
 

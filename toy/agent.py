@@ -160,9 +160,11 @@ class FlyAgent:
         steer_gain = 3.0
         return float(np.clip(steer_gain * bearing, -self.cfg.turn_rate, self.cfg.turn_rate))
 
-    def update_velocity(self, accel_dir: float, dt: float):
-        """Updates target velocity based on user input."""
-        if accel_dir > 0:
+    def update_velocity(self, accel_dir: float, dt: float, target_v: Optional[float] = None):
+        """Updates target velocity based on user input or autonomous target velocity."""
+        if target_v is not None:
+            self.target_v = float(np.clip(target_v, self.cfg.v_min, self.cfg.v_max))
+        elif accel_dir > 0:
             self.target_v = min(self.cfg.v_max, self.target_v + self.cfg.accel * dt)
         elif accel_dir < 0:
             self.target_v = max(self.cfg.v_min, self.target_v - self.cfg.accel * dt)

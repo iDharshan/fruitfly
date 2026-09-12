@@ -22,6 +22,8 @@ class TelemetryFrame:
     agent_speed: float
     landmark_active: bool
     landmark_bearing_deg: float = 0.0
+    pfl3_left_activity: float = 0.0
+    pfl3_right_activity: float = 0.0
 
 
 class TelemetryTracker:
@@ -53,6 +55,8 @@ class TelemetryTracker:
         speed: float,
         landmark_active: bool,
         landmark_bearing_rad: float = 0.0,
+        pfl3_left: float = 0.0,
+        pfl3_right: float = 0.0,
     ):
         """Records a single simulation frame snapshot."""
         self.sim_time += dt
@@ -77,6 +81,8 @@ class TelemetryTracker:
             agent_speed=speed,
             landmark_active=landmark_active,
             landmark_bearing_deg=bearing_deg,
+            pfl3_left_activity=pfl3_left,
+            pfl3_right_activity=pfl3_right,
         )
         self.history.append(frame)
 
