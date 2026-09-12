@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/setup_godot_linux.sh
-# Automated Godot 4.3+ Linux Engine Provisioning Script
+# Automated Godot 4.7.2 Linux Engine Provisioning Script
 
 set -euo pipefail
 
@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BIN_DIR="${ROOT_DIR}/bin"
 GODOT_BIN="${BIN_DIR}/godot4"
-GODOT_VERSION="4.3-stable"
+GODOT_VERSION="4.7.2-stable"
 GODOT_ZIP="Godot_v${GODOT_VERSION}_linux.x86_64.zip"
 GODOT_URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/${GODOT_ZIP}"
 
@@ -17,19 +17,23 @@ mkdir -p "${BIN_DIR}"
 if [[ -x "${GODOT_BIN}" ]]; then
     echo "==> Existing Godot binary detected at: ${GODOT_BIN}"
     CURRENT_VER=$("${GODOT_BIN}" --headless --version 2>/dev/null || true)
-    if [[ "${CURRENT_VER}" == *"4.3"* ]]; then
+    if [[ "${CURRENT_VER}" == *"4.7.2"* ]]; then
         echo "==> Verified Godot version: ${CURRENT_VER}"
-        echo "==> Godot 4.3 is already provisioned and ready."
+        echo "==> Godot 4.7.2 is already provisioned and ready."
         exit 0
     else
-        echo "==> Existing binary reported: '${CURRENT_VER}', re-provisioning Godot ${GODOT_VERSION}..."
+        echo "==> Existing binary reported: '${CURRENT_VER}', upgrading to Godot ${GODOT_VERSION}..."
     fi
 fi
 
 echo "==> Downloading Godot Engine ${GODOT_VERSION}..."
 TMP_ZIP=$(mktemp /tmp/godot_zip.XXXXXX.zip)
 
-curl -fSL "${GODOT_URL}" -o "${TMP_ZIP}"
+if command -v wget >/dev/null 2>&1; then
+    wget --tries=5 --timeout=15 -O "${TMP_ZIP}" "${GODOT_URL}"
+else
+    curl --connect-timeout 10 --retry 5 -fSL "${GODOT_URL}" -o "${TMP_ZIP}"
+fi
 
 echo "==> Unpacking to ${BIN_DIR}..."
 unzip -q -o "${TMP_ZIP}" -d "${BIN_DIR}"
