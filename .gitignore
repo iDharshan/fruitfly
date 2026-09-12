@@ -12,6 +12,12 @@ __pycache__/
 # Temporary/test outputs
 test_*.html
 
+# Godot Engine & Build Cache
+bin/
+.godot/
+*.translation
+export_credentials.cfg
+
 # Output generated files (optional)
 # compass_circuit.graphml
 # compass_ring.png
