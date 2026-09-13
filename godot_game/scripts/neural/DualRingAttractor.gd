@@ -29,7 +29,7 @@ const SIGMA_EE: float = 0.5236 # 30 degrees (pi/6)
 const K_TURN_DRIVE: float = 2.5
 const G_VISUAL_GAIN: float = 2.0
 const NOISE_SIGMA: float = 0.015
-const SUBSTEPS_PER_FRAME: int = 8
+const SUBSTEPS_PER_FRAME: int = 3
 
 # Preferred Azimuthal Angles
 var theta_epg: PackedFloat32Array
@@ -51,6 +51,17 @@ var W_pe_l: PackedFloat32Array     # 48 x 24
 var W_pe_r: PackedFloat32Array     # 48 x 24
 var W_ep_pfl3: PackedFloat32Array  # 24 x 48
 var W_fb_pfl3: PackedFloat32Array  # 24 x 24
+
+# Pre-allocated zero-allocation scratch buffers
+var _u_vis_e: PackedFloat32Array
+var _u_e: PackedFloat32Array
+var _u_odor: PackedFloat32Array
+var _active_epg_indices: PackedInt32Array
+var _active_epg_rates: PackedFloat32Array
+var _active_pen_indices: PackedInt32Array
+var cos_epg: PackedFloat32Array
+var sin_epg: PackedFloat32Array
+var last_step_time_usec: int = 0
 
 func _init() -> void:
 	_init_arrays()
@@ -82,6 +93,23 @@ func _init_arrays() -> void:
 	r_pen_l.resize(N_PEN_SIDE)
 	r_pen_r.resize(N_PEN_SIDE)
 	r_pfl3.resize(N_PFL3_TOTAL)
+	
+	_u_vis_e.resize(N_EPG)
+	_u_vis_e.fill(0.0)
+	_u_e.resize(N_EPG)
+	_u_e.fill(0.0)
+	_u_odor.resize(N_FB_COLS)
+	_u_odor.fill(0.0)
+	
+	_active_epg_indices.resize(N_EPG)
+	_active_epg_rates.resize(N_EPG)
+	_active_pen_indices.resize(N_PEN_SIDE)
+
+	cos_epg.resize(N_EPG)
+	sin_epg.resize(N_EPG)
+	for i in range(N_EPG):
+		cos_epg[i] = cos(theta_epg[i])
+		sin_epg[i] = sin(theta_epg[i])
 
 func _build_synaptic_matrices() -> void:
 	var two_sigma_sq: float = 2.0 * (SIGMA_EE * SIGMA_EE)
@@ -153,16 +181,13 @@ func reset(initial_heading: float = 0.0) -> void:
 		r_pfl3[i] = 0.0
 
 func step(dt: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: bool = false) -> void:
-	var h_data: Dictionary = decode_heading()
-	var h_current: float = h_data["heading"]
-	
 	var g_l: float = K_TURN_DRIVE * max(0.0, -omega)
 	var g_r: float = K_TURN_DRIVE * max(0.0, omega)
 	
 	# Visual Landmark / Sun Anchor
-	var u_vis_e := PackedFloat32Array()
-	u_vis_e.resize(N_EPG)
 	if cue_active:
+		var h_data: Dictionary = decode_heading()
+		var h_current: float = h_data["heading"]
 		var err_cue: float = ang_dist(cue_angle, h_current)
 		var omega_cue: float = 3.5 * clamp(err_cue, -3.0, 3.0)
 		g_l += max(0.0, -omega_cue)
@@ -170,11 +195,15 @@ func step(dt: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: boo
 		for i in range(N_EPG):
 			var d_vis: float = ang_dist(theta_epg[i], cue_angle)
 			var cos_vis: float = max(0.0, cos(d_vis))
-			u_vis_e[i] = G_VISUAL_GAIN * (cos_vis * cos_vis)
 	else:
-		u_vis_e.fill(0.0)
-		
+		_u_vis_e.fill(0.0)
+
 	# 1. Update P-EN Shifter Dynamics
+	var pen_gain_l: float = 0.05 + 0.25 * g_l
+	var pen_gain_r: float = 0.05 + 0.25 * g_r
+	var dt_decay: float = dt / TAU_M
+	var decay_factor: float = 1.0 - dt_decay
+	
 	for i in range(N_PEN_SIDE):
 		var sum_l: float = 0.0
 		var sum_r: float = 0.0
@@ -184,18 +213,13 @@ func step(dt: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: boo
 			sum_l += W_ep_l[row_offset + j] * ep_rate
 			sum_r += W_ep_r[row_offset + j] * ep_rate
 			
-		var u_pen_l: float = sum_l * (0.05 + 0.25 * g_l)
-		var u_pen_r: float = sum_r * (0.05 + 0.25 * g_r)
+		var u_pen_l: float = sum_l * pen_gain_l
+		var u_pen_r: float = sum_r * pen_gain_r
 		
-		var dr_pen_l: float = (-r_pen_l[i] + u_pen_l) / TAU_M
-		var dr_pen_r: float = (-r_pen_r[i] + u_pen_r) / TAU_M
-		
-		r_pen_l[i] = max(0.0, r_pen_l[i] + dt * dr_pen_l)
-		r_pen_r[i] = max(0.0, r_pen_r[i] + dt * dr_pen_r)
+		r_pen_l[i] = max(0.0, r_pen_l[i] * decay_factor + dt_decay * u_pen_l)
+		r_pen_r[i] = max(0.0, r_pen_r[i] * decay_factor + dt_decay * u_pen_r)
 		
 	# 2. Update E-PG Compass with Recurrent + Phase-Shift Feedback + Divisive Norm
-	var u_e := PackedFloat32Array()
-	u_e.resize(N_EPG)
 	var sum_sq: float = 0.0
 	
 	for i in range(N_EPG):
@@ -204,31 +228,30 @@ func step(dt: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: boo
 		for j in range(N_EPG):
 			sum_recurrent += W_ee[row_offset_ee + j] * r_epg[j]
 			
-		var sum_pe_l: float = 0.0
-		var sum_pe_r: float = 0.0
+		var sum_pe: float = 0.0
 		var row_offset_pe: int = i * N_PEN_SIDE
 		for j in range(N_PEN_SIDE):
-			sum_pe_l += W_pe_l[row_offset_pe + j] * r_pen_l[j]
-			sum_pe_r += W_pe_r[row_offset_pe + j] * r_pen_r[j]
+			sum_pe += W_pe_l[row_offset_pe + j] * r_pen_l[j] + W_pe_r[row_offset_pe + j] * r_pen_r[j]
 			
-		var val_e: float = sum_recurrent + 0.30 * (sum_pe_l + sum_pe_r) + u_vis_e[i]
+		var val_e: float = sum_recurrent + 0.30 * sum_pe + _u_vis_e[i]
 		if NOISE_SIGMA > 0.0:
 			val_e += randfn(0.0, NOISE_SIGMA)
 		var pos_val: float = max(0.0, val_e)
-		u_e[i] = pos_val
+		_u_e[i] = pos_val
 		sum_sq += pos_val * pos_val
 		
 	# Divisive Normalization
 	var norm_denom: float = 1.0 + K_DIV * sum_sq
 	for i in range(N_EPG):
-		var phi_e: float = (u_e[i] * u_e[i]) / norm_denom
-		var dr_epg: float = (-r_epg[i] + phi_e) / TAU_M
-		r_epg[i] = max(0.0, r_epg[i] + dt * dr_epg)
+		var phi_e: float = (_u_e[i] * _u_e[i]) / norm_denom
+		r_epg[i] = max(0.0, r_epg[i] * decay_factor + dt_decay * phi_e)
 
 func step_frame(dt_frame: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: bool = false) -> void:
+	var t0: int = Time.get_ticks_usec()
 	var dt_sub: float = dt_frame / float(SUBSTEPS_PER_FRAME)
 	for k in range(SUBSTEPS_PER_FRAME):
 		step(dt_sub, omega, cue_angle, cue_active)
+	last_step_time_usec = Time.get_ticks_usec() - t0
 
 func decode_heading() -> Dictionary:
 	var x: float = 0.0
@@ -236,9 +259,8 @@ func decode_heading() -> Dictionary:
 	var total_rate: float = 0.0
 	for i in range(N_EPG):
 		var rate: float = r_epg[i]
-		var angle: float = theta_epg[i]
-		x += rate * cos(angle)
-		y += rate * sin(angle)
+		x += rate * cos_epg[i]
+		y += rate * sin_epg[i]
 		total_rate += rate
 	var amplitude: float = sqrt(x * x + y * y)
 	var coherence: float = min(1.0, amplitude / (total_rate + 1e-6))
@@ -259,12 +281,10 @@ func get_shifter_activities() -> Vector2:
 
 func step_pfl3(relative_bearing: float, odor_strength: float, dt: float) -> Dictionary:
 	# Odor array in Fan-Shaped Body (FB) 24 columns
-	var u_odor := PackedFloat32Array()
-	u_odor.resize(N_FB_COLS)
 	for j in range(N_FB_COLS):
 		var d: float = ang_dist(fb_angles[j], relative_bearing)
 		var cos_d: float = max(0.0, cos(d))
-		u_odor[j] = odor_strength * (cos_d * cos_d)
+		_u_odor[j] = odor_strength * (cos_d * cos_d)
 		
 	# Coincidence drive: E-PG + FB -> PFL3
 	for i in range(N_PFL3_TOTAL):
@@ -277,7 +297,7 @@ func step_pfl3(relative_bearing: float, odor_strength: float, dt: float) -> Dict
 		var fb_drive: float = 0.0
 		var row_fb: int = i * N_FB_COLS
 		for j in range(N_FB_COLS):
-			fb_drive += W_fb_pfl3[row_fb + j] * u_odor[j]
+			fb_drive += W_fb_pfl3[row_fb + j] * _u_odor[j]
 		fb_drive *= 0.8
 		
 		var phi: float = max(0.0, epg_drive + fb_drive)

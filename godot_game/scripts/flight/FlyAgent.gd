@@ -224,15 +224,22 @@ func _update_flight_inputs(delta: float) -> void:
 		if Input.is_action_pressed("fly_roll_right"):
 			roll_input += 1.0
 			
-		steer_omega = 0.0
+		var input_steer: float = 0.0
 		if Input.is_action_pressed("fly_yaw_left"):
-			steer_omega -= 2.8 # Injects leftward angular velocity into P-EN_L
+			input_steer -= 2.8 # Injects leftward angular velocity into P-EN_L
 		if Input.is_action_pressed("fly_yaw_right"):
-			steer_omega += 2.8 # Injects rightward angular velocity into P-EN_R
+			input_steer += 2.8 # Injects rightward angular velocity into P-EN_R
+		if input_steer != 0.0:
+			steer_omega = input_steer
 			
 	else:
 		# Autonomous Biological Cast-and-Surge Anemotaxis & PFL3 Chemotaxis
 		_execute_autonomous_anemotaxis(delta)
+
+func apply_flight_input(yaw_rate: float, thr: float, vert: float = 0.0) -> void:
+	steer_omega = yaw_rate
+	target_throttle = clamp(thr, 0.0, 1.0)
+	vertical_input = vert
 
 func _execute_autonomous_anemotaxis(delta: float) -> void:
 	vertical_input = 0.0

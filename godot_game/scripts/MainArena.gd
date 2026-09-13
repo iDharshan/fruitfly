@@ -16,6 +16,15 @@ var food_score: int = 0
 var metabolic_energy: float = 100.0 # 0% to 100%
 
 func _ready() -> void:
+	print("====================================================================")
+	print("       🪰 DROSOPHILA 3D: HIGH-FIDELITY NEURO-FLIGHT GAME 🪰")
+	print("  Biological CANN Heading Compass & Biomechanical Flight Engine")
+	print("  Renderer : Forward+ Clustered Vulkan | Resolution: 1920x1080")
+	print("  Controls : WASD (Throttle/Yaw) | Space/Shift (Climb/Dive)")
+	print("             Q/E (Roll) | M (Toggle Auto PFL3) | C/TAB (Camera Views)")
+	print("             F11 (Fullscreen) | R (Reset Flight) | T (Sun Beacon)")
+	print("====================================================================")
+
 	if tabletop and tabletop.food_piece:
 		tabletop.food_piece.food_consumed.connect(_on_food_consumed)
 	if sun_beacon and fly_agent:

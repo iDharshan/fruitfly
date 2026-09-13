@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Drosophila 3D: Neuro-Flight
+GenericName=Neuro-Flight Simulation Game
+Comment=High-Fidelity Closed-Loop Neuro-Flight Simulation driven by Drosophila Central Complex CANN Dynamics
+Exec=/home/rac/Projects/fruitfly/fruitfly_3d.sh
+Icon=/home/rac/Projects/fruitfly/build/fruitfly_icon.svg
+Terminal=false
+Categories=Game;Simulation;Science;
+Keywords=Drosophila;Neuroscience;Flight;Vulkan;3D;Connectome;CANN;
+StartupNotify=true
+StartupWMClass=Drosophila 3D: Neuro-Flight

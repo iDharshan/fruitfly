@@ -14,6 +14,8 @@ var _target_frequency: float = 200.0
 var _amplitude: float = 0.18
 
 func _ready() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
 	var gen := AudioStreamGenerator.new()
 	gen.mix_rate = _sample_rate
 	gen.buffer_length = 0.1
