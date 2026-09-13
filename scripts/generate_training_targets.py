@@ -139,6 +139,54 @@ def generate_all_targets(output_dir: Path = Path("data/targets")):
     draw7.ellipse([116, 116, 140, 140], fill=c_yellow)
     img7.save(output_dir / "07_crossbar_emblem.png")
 
+    # 8. Starry Spiral (Archimedean spiral vortex in Blue and Yellow)
+    img8 = Image.new("RGB", size, c_white)
+    draw8 = ImageDraw.Draw(img8)
+    cx, cy = 128, 128
+    theta_vals = np.linspace(0.5, 4.0 * np.pi, 250)
+    for idx, t in enumerate(theta_vals):
+        r = 7.5 * t
+        px = cx + int(r * np.cos(t))
+        py = cy + int(r * np.sin(t))
+        col = c_blue if idx % 2 == 0 else c_yellow
+        draw8.ellipse([px - 5, py - 5, px + 5, py + 5], fill=col)
+    img8.save(output_dir / "08_starry_spiral.png")
+
+    # 9. Circuit Microchip (Orthogonal bus tracks with pads in Green and Yellow)
+    img9 = Image.new("RGB", size, c_white)
+    draw9 = ImageDraw.Draw(img9)
+    # Central chip in Green
+    draw9.rectangle([96, 96, 160, 160], fill=c_green)
+    draw9.rectangle([112, 112, 144, 144], fill=c_yellow)
+    # North/South/East/West bus lines
+    for offset in [-30, -10, 10, 30]:
+        # Top tracks
+        draw9.rectangle([128 + offset - 2, 40, 128 + offset + 2, 96], fill=c_green)
+        draw9.ellipse([128 + offset - 5, 35, 128 + offset + 5, 45], fill=c_red)
+        # Bottom tracks
+        draw9.rectangle([128 + offset - 2, 160, 128 + offset + 2, 216], fill=c_green)
+        draw9.ellipse([128 + offset - 5, 211, 128 + offset + 5, 221], fill=c_red)
+        # Left tracks
+        draw9.rectangle([40, 128 + offset - 2, 96, 128 + offset + 2], fill=c_green)
+        draw9.ellipse([35, 128 + offset - 5, 45, 128 + offset + 5], fill=c_blue)
+        # Right tracks
+        draw9.rectangle([160, 128 + offset - 2, 216, 128 + offset + 2], fill=c_green)
+        draw9.ellipse([211, 128 + offset - 5, 221, 128 + offset + 5], fill=c_blue)
+    img9.save(output_dir / "09_circuit_microchip.png")
+
+    # 10. Sunset Horizon (Horizontal multi-band landscape in Red, Yellow, Blue)
+    img10 = Image.new("RGB", size, c_white)
+    draw10 = ImageDraw.Draw(img10)
+    # Sky bands
+    draw10.rectangle([40, 40, 216, 85], fill=c_blue)
+    draw10.rectangle([40, 85, 216, 125], fill=c_red)
+    draw10.rectangle([40, 125, 216, 160], fill=c_yellow)
+    # Sun semi-circle
+    draw10.pieslice([98, 90, 158, 150], start=180, end=360, fill=c_red)
+    # Ground terrain in Green
+    draw10.rectangle([40, 160, 216, 216], fill=c_green)
+    img10.save(output_dir / "10_sunset_horizon.png")
+
     generated_files = list(output_dir.glob("*.png"))
     print(f"Successfully generated {len(generated_files)} training targets:")
     for f in sorted(generated_files):

@@ -73,8 +73,10 @@ def train_single_image(
     print(f"Training PPO on {device.upper()} for {timesteps} steps...")
     model.learn(total_timesteps=timesteps)
 
+    stem_clean = image_path.stem.replace(" ", "_").lower()
+
     # Save model
-    model_save_path = models_dir / f"fruitfly_ppo_{image_path.stem}.zip"
+    model_save_path = models_dir / f"fruitfly_ppo_{stem_clean}.zip"
     model.save(model_save_path)
     print(f"Model saved to {model_save_path}")
 
@@ -101,7 +103,7 @@ def train_single_image(
     axes[2].axis("off")
 
     plt.tight_layout()
-    comp_save_path = results_dir / f"{image_path.stem}_comparison.png"
+    comp_save_path = results_dir / f"{stem_clean}_comparison.png"
     plt.savefig(comp_save_path, dpi=180)
     plt.close()
     print(f"Saved comparison figure to {comp_save_path}")
