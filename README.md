@@ -1,130 +1,141 @@
-# 🪰 Drosophila Closed-Loop Compass Attractor Circuit (E-PG + P-EN)
+# 🪰 Drosophila Closed-Loop Compass Attractor & 3D Neuro-Flight Suite
 
 <p align="center">
   <img src="https://img.shields.io/badge/Dataset-hemibrain%3Av1.2.1-blue.svg?style=for-the-badge&logo=dna" alt="Dataset">
   <img src="https://img.shields.io/badge/Connectome-165%2C000%20Neurons-teal.svg?style=for-the-badge" alt="Connectome">
-  <img src="https://img.shields.io/badge/Modeled%20CANN-98%20Neurons-00f5d4.svg?style=for-the-badge" alt="Modeled CANN">
+  <img src="https://img.shields.io/badge/Modeled%20CANN-122%20Neurons-00f5d4.svg?style=for-the-badge" alt="Modeled CANN">
+  <img src="https://img.shields.io/badge/3D%20Engine-Godot%204%20Vulkan%20Forward%2B-478cbf.svg?style=for-the-badge&logo=godotengine" alt="Godot 4">
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?style=for-the-badge&logo=python" alt="Python">
   <img src="https://img.shields.io/badge/Pygame-2.6%2B%20GPU%20Accel-critical.svg?style=for-the-badge&logo=gamemaker" alt="Pygame">
   <img src="https://img.shields.io/badge/Torque%20Ratio-2.09%C3%97%20Biological-lime.svg?style=for-the-badge" alt="Torque Ratio">
   <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License">
 </p>
 
-An end-to-end computational connectomics pipeline and interactive simulation suite that interfaces with Janelia Research Campus's **NeuPrint API** (`hemibrain:v1.2.1`) to extract, analyze, and simulate the complete **closed-loop heading direction attractor circuit** of the adult fruit fly (*Drosophila melanogaster*).
+An end-to-end computational connectomics pipeline, biophysical simulation engine, and real-time interactive flight suite that interfaces with Janelia Research Campus's **NeuPrint API** (`hemibrain:v1.2.1`) to extract, analyze, and simulate the complete **closed-loop heading direction continuous attractor circuit** of the adult fruit fly (*Drosophila melanogaster*).
 
-The project bridges connectomic graph analysis with real-time biophysical continuous attractor neural dynamics:
-1. **Biological Data Mining:** Extracts connectivity and 3D skeletons for the **50 E-PG Compass Neurons** (*Ellipsoid Body – Protocerebral Bridge – Gall*) and **42–48 P-EN Shifter Neurons** (*Protocerebral Bridge – Ellipsoid Body – Noduli*).
-2. **Topological Graph Analysis:** Proves $100\%$ network recurrence in linear time $O(V + E)$, characterizing four-block synaptic connectivity and the biological $2.09\times$ feedback-to-feedforward torque driving force.
-3. **Interactive 3D WebGL Viewer:** Standalone browser-based inspection of full 3D neuron skeleton morphology.
-4. **Hardware-Accelerated Closed-Loop Simulator Toy (`run_toy.py`):** Real-time 60–120 FPS Pygame simulation coupling a 98-neuron continuous attractor network (CANN) with a 2D fly agent, interactive visual landmark (Sun beacon), and a 3D anatomical Drosophila brain point cloud.
+This project bridges nanoscale connectomics data with real-time biophysical continuous attractor neural network (CANN) dynamics through two distinct simulation environments and an interactive 3D WebGL morphology viewer:
+
+1. **🎮 Drosophila 3D: Standalone Neuro-Flight Game (`./fruitfly_3d.sh`):** A high-performance 3D flight simulator built on the Godot 4 Forward+ Vulkan engine. Fly an anatomically articulated 3D fruit fly in six degrees of freedom, driven by a live 96-neuron CANN compass, volumetric odor plume chemotaxis, celestial sun navigation, and an interactive 3D holographic Central Complex connectome HUD operating at **120+ FPS**.
+2. **🔬 Hardware-Accelerated Closed-Loop Simulator Toy (`run_toy.py`):** A dual-panel 2D/3D hybrid simulator in Pygame. Couples a 2D fly agent foraging in an odor-plume arena with real-time CANN ODE integration, a 3D anatomical brain point cloud, and floating avionics HUD.
+3. **🌐 Interactive 3D WebGL Morphology Viewers ([`compass_dual_3d.html`](compass_dual_3d.html)):** Standalone Three.js browser inspection tools allowing 360° rotation and zoom of biological neuron skeletons extracted directly from the Janelia connectome.
+4. **⚡ Safe Linear-Time Connectomics Pipeline (`main.py`):** Extracts biological connectivity, generates 3D morphology projections, and proves 100% network recurrence in $O(V + E)$ linear time, quantifying the biological $2.09\times$ feedback-to-feedforward torque driving force.
 
 ---
 
-## 📸 Visual Gallery
+## 📸 Visual Showcase
 
-| 1. 2D Dual-Ring Recurrent Topology | 2. Co-Rendered 3D Neuron Morphology | 3. Real-Time Closed-Loop Simulator Toy |
+### 1. Standalone 3D Neuro-Flight Game (Godot 4 Forward+ Engine)
+
+| 3D Forward Chase Flight & Active Telemetry | Dynamic Banking Turn & Odor Chemotaxis |
+| :---: | :---: |
+| <img src="screenshots/godot_3d_flight.png" width="100%" alt="3D Forward Chase Flight"> | <img src="screenshots/godot_3d_banking_turn.png" width="100%" alt="Dynamic Banking Turn"> |
+| *High-speed 3D flight over the cybernetic grid arena. Features glassmorphism cockpit avionics (bottom-left) and the live 3D Central Complex connectome hologram (1,920 nodes @ 120 FPS, top-right).* | *Leftward banking maneuver toward a food plume: asymmetric P-EN shifter torque (+9.0) dynamically shifts the E-PG compass needle to heading 331° NW.* |
+
+---
+
+### 2. Hybrid 2D/3D Simulator Toy & Connectomics Topology
+
+| 2D/3D Pygame Closed-Loop Simulator | 3D Connectome Skeleton Morphology | 2D Recurrent Ring Circuit |
 | :---: | :---: | :---: |
-| <img src="compass_dual_ring.png" width="100%" alt="2D Dual-Ring Topology"> | <img src="compass_dual_3d_preview.png" width="100%" alt="3D Neuron Morphology"> | <img src="screenshots/toy_split_view.png" width="100%" alt="Closed-Loop Simulator"> |
-| *Concentric circular topology of 92 neurons (50 inner E-PG cyan, 42 outer P-EN magenta).* | *3D projection of matched E-PG (cyan) and P-EN (magenta) neurons across EB and PB.* | *Live continuous attractor simulation toy with 2D fly agent, sun cue, and floating avionics HUD.* |
+| <img src="screenshots/toy_split_view.png" width="100%" alt="2D/3D Split View"> | <img src="compass_dual_3d_preview.png" width="100%" alt="3D Skeleton Morphology"> | <img src="compass_dual_ring.png" width="100%" alt="2D Dual Ring Circuit"> |
+| *Split-view simulator: 2D foraging torus with Sun beacon (left) and 3D Central Complex brain mesh with CANN attractor (right).* | *High-resolution 3D morphological reconstruction of paired E-PG compass (cyan) and P-EN shifter (magenta) neurons.* | *Concentric recurrent graph topology of 92 neurons (50 inner E-PG, 42 outer P-EN) with four-block synaptic connectivity.* |
 
 > [!TIP]
-> **Interactive 3D WebGL Viewer:** Open [`compass_dual_3d.html`](compass_dual_3d.html) directly in any web browser to rotate, zoom, and inspect full 3D morphology of both populations in real-time WebGL.
->
-> **Live Closed-Loop Simulator Toy:** Launch [`run_toy.py`](run_toy.py) to fly the 2D agent and steer the biological continuous attractor in real-time at 60–120 FPS!
+> **Experience Drosophila 3D Flight:** Launch the standalone 3D engine immediately with `./fruitfly_3d.sh` (or run in Godot 4).  
+> **Explore in Browser:** Open [`compass_dual_3d.html`](compass_dual_3d.html) directly in Chrome or Firefox for full 3D orbital inspection of the neuron skeletons.
 
 ---
 
-## 🎮 Interactive Closed-Loop Compass Toy (`run_toy.py`)
+## 🕹️ Interactive Simulation Environments
 
-Bring the connectomics blueprint to life in an **interactive, real-time closed-loop simulation toy**. Rather than viewing static graphs, the simulator integrates live **continuous attractor neural dynamics (CANN)** at 60–120 FPS, translating user angular velocity commands into P-EN shifter activation, phase-shifted synaptic feedback torque ($2.09\times$), E-PG bump rotation, and physical steering of an autonomous 2D fruit fly agent leaving a bioluminescent particle wake.
+### Environment A: Drosophila 3D — Standalone Neuro-Flight (`./fruitfly_3d.sh`)
 
-<p align="center">
-  <img src="screenshots/toy_split_view.png" alt="Closed-Loop Simulator Toy Split View" width="96%">
-  <br>
-  <em>Figure: Full simulator interface showing Panel 1 (Expanded 2D Flight Arena with Sun beacon, retinotopic bearing ray, and bottom-right Avionics HUD) and Panel 2 (Partitioned Neural Section showing upper 3D anatomical brain mesh and lower CANN dual-ring attractor).</em>
-</p>
+A production-grade, 120 FPS standalone 3D flight simulator built with the **Godot 4.3+ Forward+ Vulkan** pipeline, engineered specifically for high-throughput biological flight dynamics:
 
-### 📺 View Mode Showcase (Toggle via `TAB` or `1` / `2` / `3`)
-
-The simulator features three distinct, high-fidelity visualization modes for Panel 2:
-
-| Mode 1: 3D Anatomical Brain Mesh (`[1]`) | Mode 2: Full Dual-Ring Attractor (`[2]`) | Mode 3: Clean Split-Screen View (`[3]`) |
-| :---: | :---: | :---: |
-| <img src="screenshots/toy_3d_brain_mode.png" width="100%" alt="Mode 1: 3D Brain Mesh"> | <img src="screenshots/toy_dual_ring_mode.png" width="100%" alt="Mode 2: Full Dual Ring"> | <img src="screenshots/toy_split_flight.png" width="100%" alt="Mode 3: Split Flight View"> |
-| *Clean, high-fidelity 3D Drosophila connectome: delicate 1 px translucent scaffold envelope, 122 Central Complex navigation neurons (EB compass bump, PB shifters, FB sensory grid, PFL3 comparators), twin VNC motor cords, and non-overlapping side-rail HUD badges.* | *Full-screen 48-node E-PG compass ⇄ 48-node P-EN shifters with 48-bar real-time activity spectrum at 120+ FPS.* | *Clean vertical partitioning: live 3D anatomical brain activity map above and dual-ring CANN with synaptic torque arcs below.* |
-
----
-
-### 🕹️ How to Launch
+* **Biomechanical 6-DOF Flight Kinematics:** Full pitch, yaw, roll, climb, and dive physics with speed-dependent aerodynamic drag, lift forces, and inertial banking damping.
+* **Procedural Drosophila Anatomy & PBR Shading:** Detailed multi-segment cuticle mesh with realistic chitin sheen, ruby-red compound eyes with radial bloom, fluttering iridescent wings with anisotropic light dispersion, and haltere gyroscopes.
+* **Acoustic Wingbeat Engine:** Dynamic 200 Hz harmonic wing-tone generator whose pitch and amplitude shift proportionally with flight throttle.
+* **Real-Time 3D Connectome Hologram PIP:** An interactive Picture-in-Picture display of the adult *Drosophila* Central Complex (1,920 nodes) rendering live synaptic firings, E-PG activity bump translation, and depth fog. Supports free orbit and zoom.
+* **Glassmorphism Avionics Cockpit HUD:** Displays heading azimuth with cardinal rose, digital CANN bump coherence, differential P-EN shifter torque meter, bilateral antenna odor concentration, food proximity, and metabolic battery level.
+* **Autonomous PFL3 Chemotaxis & Odor Tracking:** Toggle autonomous flight (`M`) to engage the biological PFL3 comparator circuit, navigating toward nutrient odor plumes via a bio-inspired Cast-and-Surge strategy.
 
 ```bash
-# Standard Launch (Windowed 1600x900 @ 60 FPS)
+# Launch Standalone Linux Binary (NVIDIA Prime offload & Vulkan optimized)
+./fruitfly_3d.sh
+
+# Or run via Godot 4 Editor / CLI
+godot --path godot_game
+```
+
+#### Controls for Drosophila 3D:
+| Control | Action |
+| :--- | :--- |
+| **`W` / `S`** | Forward Throttle / Brake |
+| **`A` / `D`** or **`⬅️` / `➡️`** | Yaw Left / Right (Injects biological $\pm 45^\circ$ P-EN steering torque) |
+| **`Space` / `Shift`** | 3D Altitude Climb / Dive |
+| **`Q` / `E`** | 3D Roll Left / Right (Banking) |
+| **`M`** | Toggle Operating Mode (`MANUAL [FREE 3D]` $\leftrightarrow$ `AUTO [PFL3 CHEMOTAXIS]`) |
+| **`C`** or **`TAB`** | Cycle Camera Perspective (`1: Chase` $\to$ `2: FPV Eye` $\to$ `3: Orbit` $\to$ `4: Split`) |
+| **`1` / `2` / `3` / `4`** | Jump directly to specific Camera Mode |
+| **`T`** | Toggle Celestial Sun Beacon (Visual landmark cue) |
+| **`LMB Drag (PIP)`** | Orbit 3D Connectome Hologram camera |
+| **`Scroll Wheel`** | Zoom in / out on Connectome Hologram |
+| **`R`** | Reset Flight Position & Compass Heading |
+| **`F11`** | Toggle Fullscreen Mode |
+
+---
+
+### Environment B: Closed-Loop Compass Toy (`run_toy.py`)
+
+A lightweight, hardware-accelerated 2D/3D hybrid simulator in Pygame and NumPy designed for rapid parameter exploration and algorithmic verification:
+
+* **Panel 1 — 2D Flight Arena ($780\times 794\text{ px}$):** Vector fly agent navigating a continuous toroidal arena with Gaussian odor plumes, nutrient food pellets, and solar landmark tracking.
+* **Panel 2 — Central Complex Subnetwork ($780\times 794\text{ px}$):** Three selectable modes:
+  * **Mode 1 (`Key 1`):** High-fidelity 3D Central Complex point cloud (~1,920 nodes) with depth-fog shading, orbital camera controls, and anatomical callout tags.
+  * **Mode 2 (`Key 2`):** Full-screen 48-node E-PG $\rightleftharpoons$ 48-node P-EN dual-ring continuous attractor with real-time 48-bar activity spectrum.
+  * **Mode 3 (`Key 3`):** Synchronized split view showing the 3D anatomical brain above and the CANN dual-ring below.
+
+```bash
+# Standard Launch
 ./fly_env/bin/python run_toy.py
 
-# High-Refresh Fullscreen Mode (120 FPS)
+# High-Refresh 120 FPS Fullscreen
 ./fly_env/bin/python run_toy.py --fps 120 --fullscreen
 
-# Launch directly into 3D Brain Mesh Mode
+# Direct 3D Brain Mesh Mode
 ./fly_env/bin/python run_toy.py --view-mode 1
 
-# Automated Headless CI Verification Test
+# Headless CI Verification Test
 ./fly_env/bin/python run_toy.py --headless-test
 ```
 
----
-
-### 🎮 Simulator Controls & Keybindings
-
-| Key / Mouse Action | Biological / Simulation Function |
+#### Controls for Closed-Loop Toy:
+| Control | Action |
 | :--- | :--- |
-| **`⬅️ / ➡️` or `A / D`** | **Motor Angular Velocity ($\dot{\theta}$):** Injects asymmetric drive into Left ($P\text{-}EN_L$) or Right ($P\text{-}EN_R$) shifter banks, causing $\pm 45^\circ$ shifted feedback torque to rotate the E-PG bump. |
-| **`⬆️ / ⬇️` or `W / S`** | **Forward Throttle:** Accelerate forward or decelerate/brake the 2D fly agent. |
-| **`M`** | **Operating Mode Toggle:** Switches between `MANUAL` (default keyboard control) and `AUTO` (mode toggle with HUD indicator). |
-| **`TAB` or `1 / 2 / 3`** | **View Mode Switcher:** Toggle Panel 2 between `[1] 3D Brain Mesh`, `[2] Dual Ring Attractor`, and `[3] Clean Split View`. |
-| **`L`** | **Toggle 3D Callout Badges:** Toggles floating anatomical HUD telemetry cards on/off for a completely clean, distraction-free view of the 3D connectome. |
-| **`H`** | **Cycle HUD Position:** Moves floating cockpit avionics HUD (*Arena Bottom-Right* $\rightarrow$ *Arena Top-Right* $\rightarrow$ *Neural Panel* $\rightarrow$ *Hidden*). |
-| **`Drag (Neural Panel)`** | **3D Camera Orbit:** Free 3D orbital camera rotation around the fruit fly brain and VNC. |
-| **`Scroll (Neural Panel)`** | **3D Camera Zoom:** Smooth interactive zoom in and out. |
-| **`Right-Click (Neural)`** | **Reset 3D Camera:** Re-centers view angle and resets zoom to default. |
-| **`Left-Click (Arena)`** | **Drop / Reposition Visual Landmark (Sun):** Places a visual beacon in the arena. |
-| **`Right-Click (Arena)`** | **Toggle Landmark Cue:** Enables/disables visual retinotopic cue locking without restricting free flight (off by default). |
-| **`T`** | **Toggle Phototaxis:** Optional autonomous beacon homing / target tracking mode. |
-| **`P` / `F12`** | **Direct Screenshot Capture:** Saves high-resolution PNG to `screenshots/` with an on-screen confirmation toast. |
-| **`Space`** | **Pause / Resume:** Freezes ODE integration and kinematics. |
-| **`R`** | **Reset System:** Re-initializes bump to $0^\circ$, centers the fly agent, resets score/energy, and respawns a fresh food pellet. |
-| **`C`** | **Clear Cue:** Removes the visual landmark from the arena. |
-| **`ESC` / `Q`** | **Quit:** Cleanly closes simulator window. |
+| **`A` / `D`** or **`⬅️` / `➡️`** | Asymmetric Angular Velocity ($\dot{\theta}$) injected into P-EN shifters |
+| **`W` / `S`** or **`⬆️` / `⬇️`** | Forward Throttle / Brake |
+| **`TAB`** or **`1` / `2` / `3`** | Switch Panel 2 (`1: 3D Brain Mesh`, `2: Dual Ring`, `3: Split View`) |
+| **`M`** | Toggle `MANUAL` / `AUTO` flight |
+| **`L`** | Toggle 3D anatomical callout badges on/off |
+| **`H`** | Cycle Cockpit HUD position |
+| **`LMB Drag (Neural)`** | Free 3D orbital camera rotation around brain point cloud |
+| **`Scroll (Neural)`** | Interactive 3D zoom in / out |
+| **`LMB (Arena)`** | Drop / Reposition celestial Sun beacon |
+| **`RMB (Arena)`** | Toggle Sun beacon retinotopic cue locking |
+| **`P`** or **`F12`** | Save high-resolution PNG screenshot to `screenshots/` |
+| **`Space`** | Pause / Resume ODE physics integration |
+| **`R`** | Reset CANN bump to $0^\circ$ and respawn agent/food |
+| **`ESC` / `Q`** | Quit application |
 
 ---
 
-### 🔬 Architecture & Real-Time Dashboard Panels
+## 🧠 Scientific & Biological Foundation
 
-#### 1. Panel 1: 2-D Flight Arena (Expanded $780\times 794\text{ px}$ Torus)
-- **Vector Drosophila Anatomy:** Rendered with ruby-red compound eyes (radial bloom), segmented thorax and abdomen tergites, delicate fluttering iridescent wings with primary and secondary veins, vibrating halteres (gyroscopic balance organs), and directional laser guidance beam.
-- **Dynamic Food System & Radial Odor Plumes:** Discrete nutrient pellets spawn with continuous Gaussian radial odor fields ($C(d) = \exp(-d^2 / 2\sigma^2)$). Analytical spatial gradients determine local odor concentration and relative heading bearing ($\Psi$).
-- **Foraging & Eating Mechanics:** When the fly approaches within 22 px of a food pellet, it consumes it, triggering a bioluminescent expanding halo ring, outward sparkle particles, a floating `+1` score popup, metabolic energy boost (`+25%`), and immediate pellet respawn at a random distance.
-- **Torus Boundary Wrapping & Particle Wake:** Smooth toroidal edge wrapping with aerodynamic bioluminescent particle exhaust.
-- **Visual Landmark (Sun Beacon):** Multi-layer golden solar corona with 12 radiant flares, pulsing core, and dashed retinotopic sensory beam connecting the Sun to the fly's eye with live egocentric bearing readout ($\Psi$). Completely optional and off by default.
-- **Floating Avionics Cockpit HUD ($250\times 175\text{ px}$):** Glassmorphism semi-transparent HUD card displaying:
-  - **Operating Mode Badge:** `[MANUAL]` (Cyan) or `[AUTO]` (Emerald)
-  - **Digital Heading:** Decoded azimuth $\hat{\theta}$ in degrees with cardinal direction
-  - **Flight Speedometer & Stability:** Current speed with digital CANN bump coherence bar
-  - **P-EN Differential Steering:** Live Left/Right shifter rates with balance deflection meter
-  - **Metabolism & Score:** Consumed food counter with live dynamic energy bar (`NRG: %`)
-  - **Odor Sensor:** Live concentration percentage, egocentric relative bearing ($\Psi$), and distance to nearest pellet
-  - **Biological Torque Ratio:** Fixed $2.09\times$ connectomic driving ratio indicator
+### 1. The E-PG ⇄ P-EN Continuous Ring Attractor
 
-#### 2. Panel 2: Central Complex Navigation Subnetwork ($780\times 794\text{ px}$)
-- **Mode 1: 3D Anatomical Brain & VNC Mesh:** High-fidelity, uncrowded 3D *Drosophila* connectome visualization. Features a delicate 1 px translucent anatomical scaffold envelope (~1,100 nodes for Optic Lobes, Protocerebrum volume, and thoracic neuromeres) framing the active 122-neuron Central Complex navigation subnetwork (EB compass torus, PB velocity shifter handlebar, FB 9-column sensory grid, AL olfactory glomeruli, LAL steering motor hubs, PFL3 comparator tracts, and paired descending VNC motor cords) with soft bioluminescent bloom, action potential synaptic pulses, non-overlapping side-rail HUD cards, and `[L]` badge toggle.
-- **Mode 2: Full Dual-Ring CANN Attractor:** Full-screen 48-node E-PG compass (Ellipsoid Body) $\rightleftharpoons$ 48-node P-EN shifter (Protocerebral Bridge) rings with live 48-bar activity spectrum.
-- **Mode 3: Clean Partitioned Split View:** Upper sub-panel displays the 3D anatomical brain & VNC with strict bounding box clipping; Lower sub-panel displays the live CANN dual-ring with 16 EB wedge spokes, traveling action potential spark dots, and badged color swatches.
-- **Explicit Connectomics Context:** Subnetwork header clearly identifies the **122 modeled biological navigation neurons** within the adult *Drosophila* 165,000 whole-brain connectome.
+In the central complex of *Drosophila*, the animal's internal heading azimuth is represented by a single, self-sustaining localized bump of action potentials in **E-PG neurons** (the fruit fly's "internal compass needle") within the donut-shaped **Ellipsoid Body (EB)**.
 
----
-
-## 🧠 Scientific & Biological Background: The E-PG ⇄ P-EN Shifter Loop
-
-In the central complex of *Drosophila*, internal heading direction is maintained as a localized bump of excitation within a continuous ring attractor network. During turns, this activity bump must shift around the ring to faithfully reflect physical head rotation. This is accomplished via an anatomically phase-shifted recurrent feedback loop between **E-PG** and **P-EN** neurons:
+When the fly turns, asymmetric motor angular velocity signals from the lateral accessory lobes are transmitted to **P-EN shifter neurons** in the **Protocerebral Bridge (PB)**. Crucially, the axonal wiring between the PB and EB features an **anatomical phase shift of $\pm 1$ column ($\pm 45^\circ$)**:
 
 ```text
                   ┌────────────────────────────────────────────────────────┐
@@ -148,58 +159,153 @@ In the central complex of *Drosophila*, internal heading direction is maintained
                   └────────────────────────────────────────────────────────┘
 ```
 
-### Key Anatomical Principles:
-1. **Compass Needle (E-PG):** Each E-PG neuron extends dendrites in an Ellipsoid Body wedge and sends axonal projections to a specific Protocerebral Bridge glomerulus (e.g., PB column L3 or R3), encoding current heading azimuth ($\theta$).
-2. **Angular Velocity Modulation (P-EN):** P-EN neurons in the PB receive excitation from E-PGs as well as asymmetrical turn-rate signals from the lateral accessory lobes / noduli representing angular velocity ($\dot{\theta}$).
-3. **Anatomical Phase Shift ($\pm 1$ PB Column / $\pm 45^\circ$ EB Offset):**
-   - P-EN neurons originating in the **Left PB** project back to the EB shifted by **1 wedge counter-clockwise** ($\Delta \theta = -45^\circ$).
-   - P-EN neurons originating in the **Right PB** project back to the EB shifted by **1 wedge clockwise** ($\Delta \theta = +45^\circ$).
-4. **Closed-Loop Dynamic Steering:** When the fly rotates to the left, left-hemisphere P-EN neurons fire more vigorously, injecting phase-shifted feedback into the EB that pulls the activity bump leftward. Asymmetric motor input thus dynamically rotates the compass needle!
-5. **Asymmetric Synaptic Weight Driving Force:** Feedback from P-EN to E-PG (**21,937 synapses**) is more than **2.09× stronger** than feedforward E-PG to P-EN excitation (**10,479 synapses**), ensuring strong driving torque to lock and translate the activity bump.
+* **Left turns ($\dot{\theta} < 0$):** Excite left-hemisphere $P\text{-}EN_L$ neurons, which project feedback shifted **counter-clockwise ($-45^\circ$)**, pulling the E-PG excitation bump leftward.
+* **Right turns ($\dot{\theta} > 0$):** Excite right-hemisphere $P\text{-}EN_R$ neurons, projecting feedback shifted **clockwise ($+45^\circ$)**, rotating the bump rightward.
+* **The Biological $2.09\times$ Torque Ratio:** Connectomic data mining reveals that P-EN $\to$ E-PG feedback consists of **21,937 synapses**, whereas feedforward E-PG $\to$ P-EN connectivity comprises **10,479 synapses**. This biological asymmetric ratio ($2.09\times$) provides the physical driving torque necessary to swiftly overcome local attractor inertia and translate the heading bump during evasive flight maneuvers.
+
+### 2. Mathematical Continuous Attractor Formulation
+
+The continuous attractor neural network dynamics are integrated in real time using the following non-linear differential rate equations:
+
+$$\tau \frac{d u_i}{dt} = -u_i + \sum_{j} W_{ij}^{\text{rec}} \, r_j + W^{\text{PEN}\to\text{EPG}} \left( v_{i - \delta} \cdot \max(0, -\dot{\theta}) + v_{i + \delta} \cdot \max(0, \dot{\theta}) \right) + I_i^{\text{ext}}$$
+
+$$r_i = \frac{\left[ \max(0, u_i) \right]^2}{1 + \gamma \sum_k \left[ \max(0, u_k) \right]^2}$$
+
+Where:
+* $u_i, r_i$: Membrane potential and firing rate of E-PG neuron $i$.
+* $W_{ij}^{\text{rec}}$: Gaussian recurrent excitatory connectivity kernel around the Ellipsoid Body.
+* $\delta = 1$ column ($\pm 45^\circ$): Anatomical phase shift.
+* $\gamma$: Divisive normalization factor providing global inhibitory stability without runaway excitation.
+* $\dot{\theta}$: Angular velocity command from steering motor commands or autonomous PFL3 guidance.
 
 ---
 
-## ⚡ Safe Graph Topology & Cycle Analysis: $O(V + E)$ Linear Time
+## ⚡ Safe Connectomics Graph Analysis: $O(V + E)$ Linear Time
 
-The full closed-loop attractor network extracted from NeuPrint consists of **92 neurons and 2,650 directed synaptic connections** (with total synaptic weight $\ge 3$).
+Extracting the full attractor subnetwork from Janelia NeuPrint yields **92 neurons and 2,650 directed synaptic connections** (with total synaptic weight $\ge 3$).
 
 > [!CAUTION]
-> **CRITICAL SAFETY CONSTRAINT: Why `nx.algorithms.cycles.simple_cycles(G)` Freezes Systems:**  
-> In dense recurrent connectomics graphs with ~90 nodes and >2,600 edges, enumerating elementary directed cycles via Johnson's algorithm encounters a factorial combinatorial explosion ($> 10^{14}$ cycles). Cycle enumeration will consume dozens of gigabytes of RAM in seconds, thrash swap space, and hard-freeze the operating system.
-
-### Safe Linear-Time $O(V + E)$ Verification:
-To verify recurrence with zero risk of memory exhaustion, this pipeline employs mathematically sound linear-time graph theory checks:
-- **Directed Acyclic Graph Check (`nx.is_directed_acyclic_graph`):** Runs topological sort in $O(V + E)$ (~2 ms). Returns `False`, formally proving the existence of recurrent directed loops.
-- **Strongly Connected Components (`nx.strongly_connected_components`):** Identifies recurrent modules in $O(V + E)$ (~2 ms). Proves that **all 92 of 92 neurons (100%)** form a single, unified recurrent core.
-- **Directed Reciprocity (`nx.reciprocity`):** Computes bidirectional symmetry in $O(E)$ time, revealing an exceptional **85.43%** combined network reciprocity (and E-PG subnetwork reciprocity: **83.78%**), with **488** inter-population mutual pairs (79.41% inter-population reciprocity).
-- **Exemplar Cycle Extraction (`nx.find_cycle`):** Isolates specific directed feedback loops (e.g., `387364605 ⇄ 387023620`) in linear time without exponential state-space traversal.
+> **Safety Constraint on Dense Recurrent Graphs:**  
+> In dense cyclic connectomics graphs with $\sim 90$ nodes and $>2,600$ edges, running naive cycle enumeration (such as `nx.algorithms.cycles.simple_cycles`) triggers a combinatorial explosion ($> 10^{14}$ paths), consuming gigabytes of memory within seconds.
+>
+> This pipeline exclusively utilizes **strictly linear-time $O(V + E)$ graph algorithms**:
+> * **DAG Check (`nx.is_directed_acyclic_graph`):** Runs in $\sim 2\text{ ms}$, returns `False` (proving recurrence).
+> * **Strongly Connected Components (`nx.strongly_connected_components`):** Demonstrates that **100% (92 of 92 neurons)** form a single unified recurrent core.
+> * **Reciprocity Calculation (`nx.reciprocity`):** Evaluates bidirectional symmetry in $O(E)$ time, finding an extraordinary **85.43%** combined network reciprocity.
+> * **Targeted Cycle Extraction (`nx.find_cycle`):** Isolates representative feedback loops (e.g. `387364605 ⇄ 387023620`) in $O(V + E)$ time.
 
 ---
 
-## 📊 Measured Network & Attractor Dynamics Metrics
+## 📊 Measured Network & Connectome Metrics
 
-### 1. Four-Block Functional Connectivity Breakdown
+### 1. Four-Block Functional Connectivity Matrix
 
-| Functional Block | Biological / Circuit Role | Directed Edges | Connection Density | Total Synapses | Mean Synapse Weight |
+| Functional Block | Circuit Role | Directed Edges | Connection Density | Total Synapses | Mean Synapse Weight |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **`E-PG -> E-PG`** | Local Compass Recurrent Excitation | `487` | `19.9%` | `7,706` | `15.82` |
-| **`E-PG -> P-EN`** | Ascending Compass Signal to Motor Shifter | `548` | `26.1%` | `10,479` | `19.12` |
+| **`E-PG -> P-EN`** | Ascending Compass Signal to Shifter | `548` | `26.1%` | `10,479` | `19.12` |
 | **`P-EN -> E-PG`** | Phase-Shifted Angular Velocity Feedback | `681` | `32.4%` | `21,937` | `32.21` |
 | **`P-EN -> P-EN`** | Lateral Shifter Coordination | `934` | `54.2%` | `11,252` | `12.05` |
-| **Total Circuit** | **Closed-Loop Ring Attractor** | **`2,650`** | **`31.6%`** | **`51,374`** | **`19.39`** |
+| **Total Circuit** | **Complete Closed-Loop Attractor** | **`2,650`** | **`31.6%`** | **`51,374`** | **`19.39`** |
 
 ### 2. Recurrent Topology & Dynamical Indicators
 
-| Metric | Single E-PG Circuit | Full E-PG + P-EN Attractor | Biological Interpretation |
+| Metric | E-PG Compass Subnetwork | Full E-PG + P-EN Attractor | Biological Interpretation |
 | :--- | :---: | :---: | :--- |
-| **Neuron Population (Nodes)** | `50` | `92` (50 E-PG + 42 P-EN) | Complete heading maintenance + steering system |
-| **Directed Synaptic Edges** | `487` | `2,650` (weight $\ge 3$) | Full cross-population connectivity matrix |
-| **Total Synapses** | `7,706` | `51,374` | Comprehensive synaptic substrate |
-| **Average Degree (In / Out)** | `9.74` | `28.80` | Dense interconnectivity across columns and wedges |
-| **Combined Reciprocity** | `83.78%` | `85.43%` | High bidirectional coupling reinforcing state stability |
-| **Inter-Population Reciprocity** | — | `79.41%` (488 mutual pairs) | Tight feedback coupling between needle and shifters |
-| **Unified Recurrent Core Size** | `48 / 50` (96.0%) | **`92 / 92` (100.0%)** | Unbroken closed-loop recurrent core across all neurons |
-| **$\frac{\text{Feedback}}{\text{Feedforward}}$ Ratio** | — | **`2.09×`** ($21,937 / 10,479$) | Motor shifter feedback exerts dominant driving torque |
+| **Neuron Count (Nodes)** | `50` | `92` (50 E-PG + 42 P-EN) | Complete heading maintenance & steering subnetwork |
+| **Directed Synaptic Edges** | `487` | `2,650` (weight $\ge 3$) | Dense cross-population recurrent connectivity |
+| **Total Synapses** | `7,706` | `51,374` | Nanoscale synaptic wiring substrate |
+| **Average Degree (In / Out)** | `9.74` | `28.80` | High degree supporting robust bump formation |
+| **Network Reciprocity** | `83.78%` | `85.43%` | High bidirectional coupling preserving attractor stability |
+| **Inter-Population Reciprocity** | — | `79.41%` (488 mutual pairs) | Tightly coupled feedback loop between needle and shifters |
+| **Unified Recurrent Core** | `48 / 50` (96.0%) | **`92 / 92` (100.0%)** | Fully unified closed-loop recurrent core |
+| **Feedback / Feedforward Ratio** | — | **`2.09×`** ($21,937 / 10,479$) | Motor shifter feedback provides dominant driving torque |
+
+---
+
+## 🚀 Quickstart & Installation
+
+### 1. Launch Drosophila 3D Flight Game (Standalone)
+
+The standalone 3D flight game can be executed directly without setting up a Python environment:
+
+```bash
+# Clone the repository
+git clone https://github.com/iDharshan/fruitfly.git
+cd fruitfly
+
+# Launch standalone 3D game
+./fruitfly_3d.sh
+```
+
+*(Note: Precompiled Linux executable and data pack reside in [`build/`](build/). Target system: Linux x86_64 with Vulkan-compatible GPU).*
+
+---
+
+### 2. Setup Python Environment & Launch Closed-Loop Toy
+
+```bash
+# Create and activate virtual environment
+python3 -m venv fly_env
+source fly_env/bin/activate
+
+# Install required dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Launch interactive 2D/3D Pygame simulator
+./fly_env/bin/python run_toy.py
+```
+
+---
+
+### 3. Open Standalone 3D WebGL Neuron Viewer
+
+Open [`compass_dual_3d.html`](compass_dual_3d.html) in any modern web browser:
+
+```bash
+# Linux
+xdg-open compass_dual_3d.html
+
+# or
+google-chrome compass_dual_3d.html
+# or
+firefox compass_dual_3d.html
+```
+
+---
+
+### 4. Run NeuPrint Connectomics Extraction Pipeline
+
+To query Janelia's NeuPrint servers and regenerate the connectomics topology:
+
+1. Obtain a free access token from [neuprint.janelia.org](https://neuprint.janelia.org) (*Sign In $\to$ Account $\to$ Copy Token*).
+2. Save your token in a `.env` file:
+   ```bash
+   echo 'NEUPRINT_APPLICATION_CREDENTIALS="your_actual_token_here"' > .env
+   ```
+3. Run the pipeline:
+   ```bash
+   ./fly_env/bin/python main.py
+   ```
+
+---
+
+### 5. Automated Verification & Test Suite
+
+```bash
+# Verify CANN ODE integration and 2.09x torque dynamics
+./fly_env/bin/python tests/test_circuit.py
+
+# Verify 2D agent kinematics and sensory bearing calculations
+./fly_env/bin/python tests/test_agent.py
+
+# Verify food system spawning and odor gradient plume logic
+./fly_env/bin/python tests/test_food.py
+
+# Run headless simulator frame-render smoke test
+./fly_env/bin/python run_toy.py --headless-test
+```
 
 ---
 
@@ -207,130 +313,66 @@ To verify recurrence with zero risk of memory exhaustion, this pipeline employs 
 
 ```text
 fruitfly/
+├── fruitfly_3d.sh                   # Standalone Linux launcher for Drosophila 3D (RTX/Vulkan optimized)
+├── build/                           # Precompiled standalone game binaries & packages
+│   ├── fruitfly_3d.x86_64           # Standalone Godot 4 Forward+ Linux binary
+│   └── fruitfly_3d.pck              # Packaged game assets, shaders, and scenes
+│
+├── godot_game/                      # Complete Godot 4 3D Neuro-Flight Project
+│   ├── project.godot                # Godot project configuration (Forward+ Vulkan)
+│   ├── scenes/                      # 3D scenes (MainArena, FlyAgent, AvionicsHUD, Hologram)
+│   ├── scripts/                     # GDScript modules (CANN port, 6-DOF flight, PFL3 chemotaxis)
+│   ├── shaders/                     # High-performance spatial shaders (chitin, wings, dark grid)
+│   └── assets/                      # Audio SFX, icons, and textures
+│
+├── run_toy.py                       # Executable launcher for 2D/3D Pygame simulator
 ├── main.py                          # NeuPrint closed-loop attractor extraction & analysis pipeline
-├── run_toy.py                       # Executable launcher for interactive real-time simulator
 ├── requirements.txt                 # Python dependencies (neuprint, navis, pygame, scipy, etc.)
-├── .gitignore                       # Excludes virtual environments, cache, and sensitive tokens
-├── README.md                        # Project documentation, scientific theory, and visual gallery
+├── README.md                        # Documentation, scientific theory, and visual gallery
 │
-├── screenshots/                     # Verified high-resolution simulator captures
-│   ├── toy_split_view.png           # Split view: 3D brain mesh + dual ring CANN + avionics HUD
-│   ├── toy_eat_event.png            # Foraging eat event: expanding halo, sparkles, +1 score
-│   ├── toy_3d_brain_mode.png        # Full-panel 3D Drosophila brain & VNC mesh (0-200+ Hz)
-│   ├── toy_dual_ring_mode.png       # Full-panel dual ring attractor with 48-bar activity spectrum
-│   └── toy_split_flight.png         # Split view during active manual steering flight
+├── screenshots/                     # High-resolution simulator and game captures
+│   ├── godot_3d_flight.png          # 3D chase flight over grid arena with HUD & connectome PIP
+│   ├── godot_3d_banking_turn.png    # 3D banking turn toward food plume with P-EN torque deflection
+│   ├── toy_split_view.png           # Pygame simulator: 2D flight arena + 3D Central Complex
+│   ├── toy_3d_brain_mode.png        # Pygame Mode 1: 3D Drosophila brain & VNC mesh
+│   └── toy_dual_ring_mode.png       # Pygame Mode 2: Full-panel dual-ring CANN attractor
 │
-├── toy/                             # Modular interactive simulator engine
-│   ├── __init__.py                  # Package exports
-│   ├── config.py                    # Display geometry, CANN parameters, colors, and layout
+├── toy/                             # Modular Pygame simulation engine
 │   ├── circuit.py                   # Continuous attractor (CANN) ODE engine (divisive norm, 2.09x torque)
-│   ├── agent.py                     # 2D FlyAgent kinematics, boundary wrapping, and particle wake
-│   ├── food.py                      # FoodSystem, continuous radial odor plumes, & eating collision
-│   ├── brain_cloud.py               # 3D Drosophila CNS point cloud (1,920 nodes, depth-fog, 0-200+ Hz)
+│   ├── agent.py                     # 2D FlyAgent kinematics, boundary wrapping, particle wake
+│   ├── food.py                      # FoodSystem, continuous radial odor plumes, eating detection
+│   ├── brain_cloud.py               # 3D Drosophila CNS point cloud (1,920 nodes, depth-fog)
 │   ├── renderer.py                  # Hardware-accelerated Pygame renderer with cached bloom glow
-│   └── telemetry.py                 # Real-time telemetry history tracking
+│   └── config.py                    # Display geometry, CANN parameters, color themes
 │
 ├── tests/                           # Automated test suite
-│   ├── test_circuit.py              # Mathematical CANN bump stability, torque, & cue locking tests
-│   ├── test_agent.py                # FlyAgent translation, boundary wrap, & sensory bearing tests
-│   └── test_food.py                 # FoodSystem spawning, odor field gradient, & eating mechanics
+│   ├── test_circuit.py              # CANN bump stability, torque response, and cue locking tests
+│   ├── test_agent.py                # Kinematics and sensory bearing tests
+│   └── test_food.py                 # Food spawning, odor gradient, and eating mechanics
 │
-├── compass_dual_ring.png            # High-DPI (300 DPI) 2D dual concentric ring topology
+├── compass_dual_ring.png            # High-DPI 2D dual concentric ring topology
 ├── compass_dual_3d.html             # Standalone interactive 3D WebGL dual skeleton viewer
-├── compass_dual_3d_preview.png     # High-DPI 2D projection preview of dual 3D skeletons
-└── compass_epg_pen_circuit.graphml  # Full E-PG + P-EN directed graph export with metadata
+├── compass_dual_3d_preview.png     # High-DPI 2D projection preview of 3D skeletons
+└── compass_epg_pen_circuit.graphml  # Full directed connectome graph export with synaptic metadata
 ```
 
 ---
 
-## 🚀 Getting Started
+## 📚 References & Scientific Literature
 
-### 1. Environment Setup
-
-```bash
-# Clone repository
-git clone https://github.com/iDharshan/fruitfly.git
-cd fruitfly
-
-# Create and activate virtual environment
-python3 -m venv fly_env
-source fly_env/bin/activate
-
-# Install required packages
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 2. Configure Credentials (for NeuPrint Pipeline)
-
-Obtain an access token from [neuprint.janelia.org](https://neuprint.janelia.org) (*Sign In $\to$ Account $\to$ Copy Token*).
-
-Add your token to `.env` in the repository root (this file is excluded by `.gitignore`):
-
-```bash
-echo 'NEUPRINT_APPLICATION_CREDENTIALS="your_actual_token_here"' > .env
-```
-
-### 3. Execute Connectomics Analysis Pipeline
-
-```bash
-./fly_env/bin/python main.py
-```
-
-### 4. Launch Interactive Closed-Loop Simulator Toy
-
-```bash
-# Interactive flight simulator with real-time CANN attractor
-./fly_env/bin/python run_toy.py
-```
-
-### 5. Run Automated Unit Tests
-
-```bash
-# Verify CANN ODE integration, 2.09x torque ratio, and visual cue locking
-./fly_env/bin/python tests/test_circuit.py
-
-# Verify 2D agent kinematics, sensory bearing, and particle wake
-./fly_env/bin/python tests/test_agent.py
-
-# Verify food system spawning, continuous odor fields, and eating logic
-./fly_env/bin/python tests/test_food.py
-
-# Headless rendering & frame verification test
-./fly_env/bin/python run_toy.py --headless-test
-```
+1. **E-PG and P-EN Ring Attractor Dynamics:**  
+   Turner-Evans, D. et al. (2020). *The neuroanatomical ultrastructure and function of a heading direction circuit.* **Neuron**, 108(1), 145-163. [doi:10.1016/j.neuron.2020.08.006](https://doi.org/10.1016/j.neuron.2020.08.006).
+2. **Neural Mechanism for Heading Computation:**  
+   Green, J. et al. (2017). *A neural circuit architecture for angular velocity integration in Drosophila.* **Nature**, 546(7656), 101-106. [doi:10.1038/nature22343](https://doi.org/10.1038/nature22343).
+3. **Connectomics of the Adult Drosophila Central Complex:**  
+   Hulse, B.K. et al. (2021). *A connectome of the Drosophila central complex reveals network motifs suitable for flexible navigation and motor control.* **eLife**, 10:e66039. [doi:10.7554/eLife.66039](https://doi.org/10.7554/eLife.66039).
+4. **Janelia Hemibrain Connectome Dataset:**  
+   Scheffer, L.K. et al. (2020). *A connectome and analysis of the adult Drosophila central brain.* **eLife**, 9:e57443. [doi:10.7554/eLife.57443](https://doi.org/10.7554/eLife.57443).
+5. **Morphology and Skeleton Analysis:**  
+   Bates, A.S. et al. (2020). *navis: Morphology and connectivity analysis of neuronal data.* [navis.readthedocs.io](https://navis.readthedocs.io/).
 
 ---
 
-## 🕹️ Inspecting the Interactive 3D Model
+## 📄 License
 
-Open [`compass_dual_3d.html`](compass_dual_3d.html) in any modern browser:
-
-```bash
-# Linux
-xdg-open compass_dual_3d.html
-# or
-google-chrome compass_dual_3d.html
-# or
-firefox compass_dual_3d.html
-```
-
-### Navigation Controls:
-- **Left-Click + Drag:** Full 360° 3D orbital camera rotation.
-- **Scroll Wheel:** Smooth zooming into individual dendritic arborizations in the EB and PB.
-- **Right-Click + Drag:** Pan across the central brain coordinate space.
-
----
-
-## 📚 References & Literature
-
-- **E-PG and P-EN Ring Attractor Dynamics:**  
-  Turner-Evans, D. et al. (2020). *The neuroanatomical ultrastructure and function of a heading direction circuit.* **Neuron**, 108(1), 145-163. [doi:10.1016/j.neuron.2020.08.006](https://doi.org/10.1016/j.neuron.2020.08.006).
-- **Neural Mechanism for Heading Computation:**  
-  Green, J. et al. (2017). *A neural circuit architecture for angular velocity integration in Drosophila.* **Nature**, 546(7656), 101-106. [doi:10.1038/nature22343](https://doi.org/10.1038/nature22343).
-- **Connectomics of the Adult Drosophila Central Complex:**  
-  Hulse, B.K. et al. (2021). *A connectome of the Drosophila central complex reveals network motifs suitable for flexible navigation and motor control.* **eLife**, 10:e66039. [doi:10.7554/eLife.66039](https://doi.org/10.7554/eLife.66039).
-- **Janelia Hemibrain Connectome Dataset:**  
-  Scheffer, L.K. et al. (2020). *A connectome and analysis of the adult Drosophila central brain.* **eLife**, 9:e57443. [doi:10.7554/eLife.57443](https://doi.org/10.7554/eLife.57443).
-- **Navis Connectomics Framework:**  
-  Bates, A.S. et al. (2020). *navis: Morphology and connectivity analysis of neuronal data.* [navis.readthedocs.io](https://navis.readthedocs.io/).
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
