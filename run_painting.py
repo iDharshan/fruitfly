@@ -24,13 +24,15 @@ class PaintingDashboard:
     Real-time Pygame visualization dashboard with live biological telemetry.
     """
 
-    def __init__(self, headless: bool = False, target_shape: str = "square"):
+    def __init__(self, headless: bool = False, target_shape: str = "square", image_path: Optional[str] = None):
         self.headless = headless
         self.width = 1240
         self.height = 720
         self.fps = 60
 
-        if target_shape == "disc":
+        if image_path is not None:
+            self.target = PaintingTarget.from_image(image_path)
+        elif target_shape == "disc":
             self.target = PaintingTarget.create_disc()
         elif target_shape == "two_tone":
             self.target = PaintingTarget.create_two_tone()
@@ -278,8 +280,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fruitfly V2 Painting Dashboard")
     parser.add_argument("--headless", action="store_true", help="Run without graphical display")
     parser.add_argument("--target", type=str, default="square", choices=["square", "disc", "two_tone", "quadrants"])
+    parser.add_argument("--image", type=str, default=None, help="Path to custom image to paint")
     parser.add_argument("--frames", type=int, default=1000, help="Max simulation frames")
     args = parser.parse_args()
 
-    dashboard = PaintingDashboard(headless=args.headless, target_shape=args.target)
+    dashboard = PaintingDashboard(headless=args.headless, target_shape=args.target, image_path=args.image)
     dashboard.run(max_frames=args.frames)

@@ -14,7 +14,7 @@ from painting.target import PaintingTarget
 from biology.interfaces import BiologyConfig
 
 
-def create_env_for_stage(stage: int = 4, seed: int = 42, **kwargs) -> FruitFlyPaintEnv:
+def create_env_for_stage(stage: int = 4, seed: int = 42, target_image: Optional[str] = None, **kwargs) -> FruitFlyPaintEnv:
     """
     Factory creating FruitFlyPaintEnv configured for the specified curriculum stage:
       - Stage 0: Navigation
@@ -23,7 +23,10 @@ def create_env_for_stage(stage: int = 4, seed: int = 42, **kwargs) -> FruitFlyPa
       - Stage 3: Canvas Delivery
       - Stage 4: Full Painting
     """
-    if stage == 0:
+    if target_image is not None:
+        target = PaintingTarget.from_image(target_image)
+        env = FruitFlyPaintEnv(target=target, max_episode_steps=1000, **kwargs)
+    elif stage == 0:
         # Simple navigation to beacon
         target = PaintingTarget.create_solid_square(width=64, height=64)
         env = FruitFlyPaintEnv(target=target, max_episode_steps=300, **kwargs)
@@ -52,6 +55,7 @@ def train(
     stage: int = 4,
     total_timesteps: int = 10000,
     seed: int = 42,
+    target_image: Optional[str] = None,
     save_dir: str = "models",
     log_dir: str = "logs",
     device: str = "auto",
@@ -64,7 +68,7 @@ def train(
     Path(log_dir).mkdir(parents=True, exist_ok=True)
 
     def env_fn():
-        return create_env_for_stage(stage=stage, seed=seed)
+        return create_env_for_stage(stage=stage, seed=seed, target_image=target_image)
 
     vec_env = DummyVecEnv([env_fn])
 
@@ -95,7 +99,8 @@ def train(
     print(f"Starting Fruitfly V2 PPO Training (Stage {stage}) for {total_timesteps} timesteps...")
     model.learn(total_timesteps=total_timesteps)
 
-    save_path = Path(save_dir) / f"fruitfly_ppo_stage_{stage}.zip"
+    save_name = f"fruitfly_ppo_stage_{stage}.zip" if target_image is None else f"fruitfly_ppo_custom.zip"
+    save_path = Path(save_dir) / save_name
     model.save(save_path)
     print(f"Model saved successfully to {save_path}!")
     return model
@@ -105,6 +110,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Fruitfly V2 PPO Agent")
     parser.add_argument("--stage", type=int, default=4, help="Curriculum stage (0-4)")
     parser.add_argument("--timesteps", type=int, default=2000, help="Total environment steps")
+    parser.add_argument("--image", type=str, default=None, help="Path to custom image to paint")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--device", type=str, default="auto", help="Device (cpu, cuda, auto)")
     args = parser.parse_args()
@@ -113,5 +119,6 @@ if __name__ == "__main__":
         stage=args.stage,
         total_timesteps=args.timesteps,
         seed=args.seed,
+        target_image=args.image,
         device=args.device,
     )

@@ -193,3 +193,23 @@ class PaintingTarget:
                 buf[mask] = np.array(col, dtype=np.float32)
 
         return cls(high_res_rgb=buf, name=name)
+
+    @classmethod
+    def from_image(cls, image_path: str | Path, name: Optional[str] = None) -> "PaintingTarget":
+        """Loads any external PNG/JPEG image, resizes to 256x256 RGB with white background."""
+        from PIL import Image
+
+        path = Path(image_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Target image file not found: {path}")
+
+        img = Image.open(path).convert("RGBA")
+        # Resize to 256x256
+        img = img.resize((256, 256), Image.Resampling.BILINEAR)
+
+        # Composite onto white background in case image has transparency
+        background = Image.new("RGB", (256, 256), (255, 255, 255))
+        background.paste(img, mask=img.split()[3])
+
+        arr = np.asarray(background, dtype=np.float32) / 255.0
+        return cls(high_res_rgb=arr, name=name or path.stem)
