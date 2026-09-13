@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/MainArena.gd" id="1_main_arena"]
 [ext_resource type="Environment" path="res://scenes/default_env.tres" id="2_default_env"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/SunBeacon3D.tscn" id="4_sun_beacon"]
 [ext_resource type="PackedScene" path="res://scenes/fly_agent.tscn" id="5_fly_agent"]
 [ext_resource type="Script" path="res://scripts/flight/FlightCameraController.gd" id="6_camera_controller"]
+[ext_resource type="PackedScene" path="res://scenes/avionics_hud.tscn" id="7_avionics_hud"]
 
 [node name="MainArena" type="Node3D"]
 script = ExtResource("1_main_arena")
@@ -34,3 +35,7 @@ transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 
 current = true
 script = ExtResource("6_camera_controller")
 target_agent = NodePath("../FlyAgent")
+
+[node name="AvionicsHUD" parent="." node_paths=PackedStringArray("fly_agent", "camera_controller") instance=ExtResource("7_avionics_hud")]
+fly_agent = NodePath("../FlyAgent")
+camera_controller = NodePath("../FlightCamera")
