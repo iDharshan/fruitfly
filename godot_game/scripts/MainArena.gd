@@ -15,6 +15,8 @@ var metabolic_energy: float = 100.0 # 0% to 100%
 func _ready() -> void:
 	if tabletop and tabletop.food_piece:
 		tabletop.food_piece.food_consumed.connect(_on_food_consumed)
+	if sun_beacon and fly_agent:
+		sun_beacon.target_fly = fly_agent
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_fullscreen"):
@@ -28,7 +30,7 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(fly_agent):
 		return
 		
-	# 1. Stream 3D Bilateral Odor Gradient to Fly Antennae
+	# 1. Stream 3D Bilateral Odor Gradient & Ambient Wind to Fly
 	if tabletop and tabletop.odor_field:
 		var odor_data: Dictionary = tabletop.odor_field.sample_antennae(
 			fly_agent.global_position,
@@ -36,6 +38,7 @@ func _physics_process(delta: float) -> void:
 		)
 		fly_agent.odor_bearing = odor_data["relative_bearing"]
 		fly_agent.odor_strength = odor_data["concentration"]
+		fly_agent.ambient_wind = odor_data["wind_vector"]
 		
 	# 2. Stream Celestial Sun Azimuth to Fly Compound Eyes
 	if sun_beacon:
