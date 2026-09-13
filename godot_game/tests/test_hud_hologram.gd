@@ -102,4 +102,5 @@ func _run_test() -> void:
 	print("\n===========================================================")
 	print("   ALL PHASE 6 TESTS PASSED SUCCESSFULLY! (100% GREEN)")
 	print("===========================================================")
+	arena.queue_free()
 	quit(0)

@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scripts/flight/FlyAgent.gd" id="1_fly_agent"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
-radius = 0.22
-height = 1.1
+radius = 0.08
+height = 0.50
 
 [node name="FlyAgent" type="CharacterBody3D"]
 collision_layer = 2
@@ -12,11 +12,11 @@ collision_mask = 1
 script = ExtResource("1_fly_agent")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.05)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.02)
 shape = SubResource("CapsuleShape3D_body")
 
 [node name="ChaseCamMount" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.55, 1.35)
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.28, 0.70)
 
 [node name="CockpitCamMount" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.19)

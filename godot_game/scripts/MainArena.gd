@@ -2,7 +2,7 @@ class_name MainArena
 extends Node3D
 
 ## Main Arena Game Director
-## Coordinates real-time sensory streams between the macro environment,
+## Coordinates real-time sensory streams between the 3D grid arena,
 ## celestial sun beacon, and the biological CANN-driven Drosophila agent,
 ## and connects avionics HUD and 3D connectome telemetry.
 
@@ -19,8 +19,8 @@ func _ready() -> void:
 	print("====================================================================")
 	print("       🪰 DROSOPHILA 3D: HIGH-FIDELITY NEURO-FLIGHT GAME 🪰")
 	print("  Biological CANN Heading Compass & Biomechanical Flight Engine")
-	print("  Renderer : Forward+ Clustered Vulkan | Resolution: 1920x1080")
-	print("  Controls : WASD (Throttle/Yaw) | Space/Shift (Climb/Dive)")
+	print("  Renderer : Forward+ Clustered Vulkan | Minimalist Dark Grid Arena")
+	print("  Controls : WASD (Throttle/Yaw) | Space/Shift (3D Climb/Dive)")
 	print("             Q/E (Roll) | M (Toggle Auto PFL3) | C/TAB (Camera Views)")
 	print("             F11 (Fullscreen) | R (Reset Flight) | T (Sun Beacon)")
 	print("====================================================================")
@@ -48,19 +48,32 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(fly_agent):
 		return
 
-	# 1. Stream 3D Bilateral Odor Gradient & Ambient Wind to Fly
+	# 1. Stream 3D Bilateral Odor Gradient, Elevation & Ambient Wind to Fly
 	if tabletop and tabletop.odor_field:
 		var odor_data: Dictionary = tabletop.odor_field.sample_antennae(
 			fly_agent.global_position,
 			fly_agent.global_transform.basis
 		)
 		fly_agent.odor_bearing = odor_data["relative_bearing"]
+		fly_agent.odor_elevation = odor_data.get("relative_elevation", 0.0)
 		fly_agent.odor_strength = odor_data["concentration"]
 		fly_agent.ambient_wind = odor_data["wind_vector"]
+		
+		# Synchronize target food position and distance directly with physical food piece
+		if tabletop.food_piece:
+			fly_agent.target_food_pos = tabletop.food_piece.global_position
+			fly_agent.food_distance = fly_agent.global_position.distance_to(tabletop.food_piece.global_position)
+		else:
+			fly_agent.target_food_pos = odor_data.get("food_position", tabletop.odor_field.food_position)
+			fly_agent.food_distance = odor_data.get("distance", 5.0)
+		
+		# Proximity 3D eating trigger
+		if fly_agent.food_distance < 1.3 and tabletop.food_piece:
+			tabletop.food_piece._on_body_entered(fly_agent)
 
 	# 2. Stream Celestial Sun Azimuth to Fly Compound Eyes
 	if sun_beacon:
-		fly_agent.sun_active = sun_beacon.is_active
+		fly_agent.sun_active = false
 		fly_agent.sun_azimuth = sun_beacon.get_sun_azimuth()
 
 	# 3. Metabolic Energy Depletion

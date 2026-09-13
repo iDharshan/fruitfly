@@ -184,17 +184,12 @@ func step(dt: float, omega: float = 0.0, cue_angle: float = 0.0, cue_active: boo
 	var g_l: float = K_TURN_DRIVE * max(0.0, -omega)
 	var g_r: float = K_TURN_DRIVE * max(0.0, omega)
 	
-	# Visual Landmark / Sun Anchor
+	# Visual Landmark / Sun Anchor: Provides allocentric visual bias to E-PG ring
 	if cue_active:
-		var h_data: Dictionary = decode_heading()
-		var h_current: float = h_data["heading"]
-		var err_cue: float = ang_dist(cue_angle, h_current)
-		var omega_cue: float = 3.5 * clamp(err_cue, -3.0, 3.0)
-		g_l += max(0.0, -omega_cue)
-		g_r += max(0.0, omega_cue)
 		for i in range(N_EPG):
 			var d_vis: float = ang_dist(theta_epg[i], cue_angle)
 			var cos_vis: float = max(0.0, cos(d_vis))
+			_u_vis_e[i] = G_VISUAL_GAIN * (cos_vis * cos_vis)
 	else:
 		_u_vis_e.fill(0.0)
 
@@ -311,9 +306,9 @@ func step_pfl3(relative_bearing: float, odor_strength: float, dt: float) -> Dict
 		sum_r += r_pfl3[N_PFL3_SIDE + i]
 		
 	# In Godot 3D, turning LEFT is +Y rotation, turning RIGHT is -Y rotation
-	var diff: float = (sum_l - sum_r) / float(N_PFL3_TOTAL)
-	var k_drive: float = 2.8
-	var omega_auto: float = clamp((k_drive * diff) / 4.5, -k_drive, k_drive)
+	var diff: float = (sum_l - sum_r) / float(N_PFL3_SIDE)
+	var k_drive: float = 3.2
+	var omega_auto: float = clamp(k_drive * diff, -k_drive, k_drive)
 	
 	var tot: float = sum_l + sum_r
 	var bias: float = (sum_l - sum_r) / tot if tot > 1e-4 else 0.0

@@ -1,64 +1,83 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/environment/MacroTabletop.gd" id="1_macro_tabletop"]
 [ext_resource type="Script" path="res://scripts/environment/FoodPiece.gd" id="2_food_piece"]
 [ext_resource type="Script" path="res://scripts/environment/VolumetricOdorField.gd" id="3_odor_field"]
+[ext_resource type="Shader" path="res://shaders/dark_grid.gdshader" id="4_dark_grid"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_table"]
-albedo_color = Color(0.28, 0.18, 0.11, 1.0)
-roughness = 0.28
-metallic = 0.04
-clearcoat_enabled = true
-clearcoat = 0.8
-clearcoat_roughness = 0.12
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grid"]
+render_priority = 0
+shader = ExtResource("4_dark_grid")
+shader_parameter/background_color = Color(0.018, 0.018, 0.022, 1)
+shader_parameter/minor_line_color = Color(0.14, 0.15, 0.17, 1)
+shader_parameter/major_line_color = Color(0.26, 0.28, 0.32, 1)
+shader_parameter/axis_x_color = Color(0.45, 0.18, 0.20, 1)
+shader_parameter/axis_z_color = Color(0.18, 0.32, 0.48, 1)
+shader_parameter/minor_grid_size = 1.0
+shader_parameter/major_grid_mult = 5.0
+shader_parameter/line_thickness = 0.025
+shader_parameter/fade_start = 45.0
+shader_parameter/fade_end = 120.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_table"]
-material = SubResource("StandardMaterial3D_table")
-size = Vector3(4.0, 0.1, 4.0)
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("ShaderMaterial_grid")
+size = Vector3(200.0, 0.2, 200.0)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_table"]
-size = Vector3(4.0, 0.1, 4.0)
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(200.0, 0.2, 200.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_z"]
+size = Vector3(80.0, 36.0, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wall_x"]
-size = Vector3(4.0, 1.5, 0.1)
+size = Vector3(0.5, 36.0, 80.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ceiling"]
+size = Vector3(80.0, 0.5, 80.0)
 
 [node name="MacroTabletop" type="Node3D"]
 script = ExtResource("1_macro_tabletop")
 
-[node name="TableSurface" type="StaticBody3D" parent="."]
+[node name="GridFloor" type="StaticBody3D" parent="."]
 collision_mask = 2
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="TableSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
-mesh = SubResource("BoxMesh_table")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GridFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("BoxMesh_floor")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TableSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
-shape = SubResource("BoxShape3D_table")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GridFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_floor")
 
 [node name="BoundaryWalls" type="StaticBody3D" parent="."]
 collision_mask = 2
 
 [node name="WallNorth" type="CollisionShape3D" parent="BoundaryWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -2.0)
-shape = SubResource("BoxShape3D_wall_x")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.0, -40.0)
+shape = SubResource("BoxShape3D_wall_z")
 
 [node name="WallSouth" type="CollisionShape3D" parent="BoundaryWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 2.0)
-shape = SubResource("BoxShape3D_wall_x")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.0, 40.0)
+shape = SubResource("BoxShape3D_wall_z")
 
 [node name="WallEast" type="CollisionShape3D" parent="BoundaryWalls"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 2.0, 0.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.0, 18.0, 0)
 shape = SubResource("BoxShape3D_wall_x")
 
 [node name="WallWest" type="CollisionShape3D" parent="BoundaryWalls"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -2.0, 0.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40.0, 18.0, 0)
 shape = SubResource("BoxShape3D_wall_x")
 
+[node name="Ceiling" type="CollisionShape3D" parent="BoundaryWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 36.0, 0)
+shape = SubResource("BoxShape3D_ceiling")
+
 [node name="FoodPiece" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.08, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, -8.0)
 script = ExtResource("2_food_piece")
+arena_bounds = Rect2(-30, -30, 60, 60)
 
 [node name="VolumetricOdorField" type="Node3D" parent="."]
 script = ExtResource("3_odor_field")
-food_position = Vector3(1.2, 0.08, -0.8)
+food_position = Vector3(0, 6.0, -8.0)
+plume_radius = 24.0

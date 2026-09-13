@@ -15,9 +15,9 @@ script = ExtResource("1_main_arena")
 environment = ExtResource("2_default_env")
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 5, 0)
-light_color = Color(1.0, 0.96, 0.88, 1.0)
-light_energy = 2.5
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+light_color = Color(0.95, 0.96, 1.0, 1.0)
+light_energy = 0.75
 shadow_enabled = true
 directional_shadow_mode = 1
 directional_shadow_split_1 = 0.1
@@ -28,10 +28,10 @@ directional_shadow_blend_splits = true
 [node name="MacroTabletop" parent="." instance=ExtResource("3_macro_tabletop")]
 
 [node name="FlyAgent" parent="." instance=ExtResource("5_fly_agent")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0, 10.0)
 
 [node name="FlightCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target_agent")]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.05, 1.35)
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 5.28, 10.70)
 current = true
 script = ExtResource("6_camera_controller")
 target_agent = NodePath("../FlyAgent")

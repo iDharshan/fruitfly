@@ -15,13 +15,13 @@ enum CameraMode { CHASE = 0, FPV = 1, ORBIT = 2, SPLIT = 3 }
 @export var target_agent: FlyAgent
 @export var current_mode: CameraMode = CameraMode.CHASE
 @export var follow_smoothness: float = 8.5
-@export var spring_arm_radius: float = 0.08 # Collision sphere radius
-@export var default_chase_offset: Vector3 = Vector3(0, 0.45, 1.35)
+@export var spring_arm_radius: float = 0.04 # Collision sphere radius
+@export var default_chase_offset: Vector3 = Vector3(0, 0.28, 0.70)
 
 # Orbit Camera State
 var _orbit_pitch: float = -12.0
 var _orbit_yaw: float = 0.0
-var _orbit_distance: float = 1.85
+var _orbit_distance: float = 0.95
 var _is_right_dragging: bool = false
 var _last_mouse_pos: Vector2 = Vector2.ZERO
 
@@ -65,9 +65,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_is_right_dragging = event.pressed
 			_last_mouse_pos = event.position
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and current_mode == CameraMode.ORBIT:
-			_orbit_distance = clamp(_orbit_distance - 0.15, 0.4, 4.5)
+			_orbit_distance = clamp(_orbit_distance - 0.10, 0.25, 2.5)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and current_mode == CameraMode.ORBIT:
-			_orbit_distance = clamp(_orbit_distance + 0.15, 0.4, 4.5)
+			_orbit_distance = clamp(_orbit_distance + 0.10, 0.25, 2.5)
 
 	elif event is InputEventMouseMotion and _is_right_dragging:
 		var delta_mouse: Vector2 = event.position - _last_mouse_pos
@@ -121,12 +121,15 @@ func _process_chase_camera(delta: float) -> void:
 	var final_pos: Vector3 = _resolve_spring_arm_collision(agent_pos, ideal_pos)
 	global_position = global_position.lerp(final_pos, delta * follow_smoothness)
 
-	look_at(look_target, _damped_up)
+	if global_position.distance_to(look_target) > 0.08:
+		var target_trans := global_transform.looking_at(look_target, _damped_up)
+		global_transform.basis = global_transform.basis.slerp(target_trans.basis, clamp(delta * follow_smoothness * 1.5, 0.0, 1.0))
 
 func _process_fpv_camera(delta: float) -> void:
 	var mount: Marker3D = target_agent.cockpit_cam_mount
 	if mount:
-		global_transform = mount.global_transform
+		global_position = mount.global_position
+		global_transform.basis = global_transform.basis.slerp(mount.global_transform.basis, delta * 24.0)
 	else:
 		# Fallback to anterior fly head position
 		var head_pos: Vector3 = target_agent.global_position - target_agent.global_transform.basis.z * 0.12 + target_agent.global_transform.basis.y * 0.04
@@ -158,8 +161,8 @@ func _resolve_spring_arm_collision(from_pos: Vector3, to_pos: Vector3) -> Vector
 
 	if not result.is_empty():
 		var hit_pos: Vector3 = result.get("position", to_pos)
-		var hit_normal: Vector3 = result.get("normal", Vector3.UP)
-		# Pull slightly away from collision obstacle
-		return hit_pos + hit_normal * spring_arm_radius
+		var hit_dist: float = (hit_pos - from_pos).length()
+		var ray_dir: Vector3 = (to_pos - from_pos).normalized()
+		return from_pos + ray_dir * max(0.20, hit_dist - spring_arm_radius)
 
 	return to_pos
