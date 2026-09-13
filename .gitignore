@@ -24,3 +24,9 @@ export_credentials.cfg
 # compass_ring.png
 # compass_3d.html
 
+# Custom images, results, and model weights
+data/*.jpg
+data/*.jpeg
+data/results/
+models/
+

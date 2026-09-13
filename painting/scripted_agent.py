@@ -31,15 +31,26 @@ class ScriptedPaintingFly:
     def __init__(
         self,
         world: PaintingWorld,
-        target_color_id: int = 0,
+        target_color_id: Optional[int] = None,
+        color_sequence: Optional[List[int]] = None,
         stroke_step_y: float = 12.0,
     ):
         self.world = world
-        self.target_color_id = target_color_id
-        self.state = AgentState.SEEK_POT
         self.stroke_step_y = stroke_step_y
 
-        self.pot = self.world.pot_manager.get_pot_by_id(target_color_id)
+        if color_sequence is not None:
+            self.color_sequence = list(color_sequence)
+        elif target_color_id is not None:
+            self.color_sequence = [target_color_id]
+        else:
+            # Multi-color auto sequence: Yellow (3) -> Red (0) -> Green (1) -> Blue (2)
+            self.color_sequence = [3, 0, 1, 2]
+
+        self.current_pass_idx = 0
+        self.target_color_id = self.color_sequence[self.current_pass_idx]
+        self.state = AgentState.SEEK_POT
+
+        self.pot = self.world.pot_manager.get_pot_by_id(self.target_color_id)
         if self.pot is None:
             self.pot = self.world.pot_manager[0]
 
@@ -85,6 +96,11 @@ class ScriptedPaintingFly:
 
     def reset(self):
         """Resets the scripted state machine."""
+        self.current_pass_idx = 0
+        self.target_color_id = self.color_sequence[self.current_pass_idx]
+        self.pot = self.world.pot_manager.get_pot_by_id(self.target_color_id)
+        if self.pot is None:
+            self.pot = self.world.pot_manager[0]
         self.state = AgentState.SEEK_POT
         self.current_wp_idx = 0
         self.reload_timer = 0.0
@@ -134,8 +150,16 @@ class ScriptedPaintingFly:
 
         elif self.state == AgentState.SEEK_CANVAS:
             if self.current_wp_idx >= len(self.waypoints):
-                self.state = AgentState.FINISH
-                return 0.0, 0.0, 30.0, False, 0.0
+                self.current_pass_idx += 1
+                if self.current_pass_idx < len(self.color_sequence):
+                    self.target_color_id = self.color_sequence[self.current_pass_idx]
+                    self.pot = self.world.pot_manager.get_pot_by_id(self.target_color_id)
+                    self.current_wp_idx = 0
+                    self.state = AgentState.SEEK_POT
+                    return 60.0, 0.0, 30.0, False, 0.0
+                else:
+                    self.state = AgentState.FINISH
+                    return 0.0, 0.0, 30.0, False, 0.0
 
             tx, ty = self.waypoints[self.current_wp_idx]
             target_z = 30.0  # Cruise over to waypoint
@@ -152,24 +176,60 @@ class ScriptedPaintingFly:
             if brush.pigment_volume <= 0.05:
                 # Need reload!
                 self.state = AgentState.SEEK_POT
-                return 60.0, 0.0, 30.0, False, 0.0
+                return 70.0, 0.0, 30.0, False, 0.0
 
             if self.current_wp_idx >= len(self.waypoints):
-                self.state = AgentState.FINISH
-                return 0.0, 0.0, 30.0, False, 0.0
+                self.current_pass_idx += 1
+                if self.current_pass_idx < len(self.color_sequence):
+                    self.target_color_id = self.color_sequence[self.current_pass_idx]
+                    self.pot = self.world.pot_manager.get_pot_by_id(self.target_color_id)
+                    self.current_wp_idx = 0
+                    self.state = AgentState.SEEK_POT
+                    return 70.0, 0.0, 30.0, False, 0.0
+                else:
+                    self.state = AgentState.FINISH
+                    return 0.0, 0.0, 30.0, False, 0.0
 
             tx, ty = self.waypoints[self.current_wp_idx]
-            target_z = 0.0  # Pen in physical contact
-            pen_down = True
-            pressure = 1.0
-            omega, dist = steer_toward(tx, ty)
-            v = 80.0
 
-            if dist < 12.0:
-                # Reached waypoint
+            # Selective brush contact:
+            # Check if current canvas pixel under fly benefits from active pigment
+            u, v = self.world.canvas.world_to_canvas(fx, fy)
+            ix, iy = int(round(u)), int(round(v))
+            needs_paint = False
+
+            if 0 <= ix < self.world.canvas.size and 0 <= iy < self.world.canvas.size:
+                curr_c = self.world.canvas.buffer[iy, ix]
+                targ_c = self.world.target.high_res[iy, ix]
+                cand_c = 0.65 * curr_c + 0.35 * self.pot.color_rgb
+                # Active color reduces L1 discrepancy:
+                if np.sum(np.abs(cand_c - targ_c)) < np.sum(np.abs(curr_c - targ_c)) - 0.015:
+                    needs_paint = True
+
+            if needs_paint:
+                target_z = 0.0
+                pen_down = True
+                pressure = 1.0
+            else:
+                target_z = 25.0
+                pen_down = False
+                pressure = 0.0
+
+            omega, dist = steer_toward(tx, ty)
+            v = 85.0
+
+            if dist < 14.0:
                 self.current_wp_idx += 1
                 if self.current_wp_idx >= len(self.waypoints):
-                    self.state = AgentState.FINISH
+                    self.current_pass_idx += 1
+                    if self.current_pass_idx < len(self.color_sequence):
+                        self.target_color_id = self.color_sequence[self.current_pass_idx]
+                        self.pot = self.world.pot_manager.get_pot_by_id(self.target_color_id)
+                        self.current_wp_idx = 0
+                        self.state = AgentState.SEEK_POT
+                    else:
+                        self.state = AgentState.FINISH
+
             return v, omega, target_z, pen_down, pressure
 
         elif self.state == AgentState.FINISH:

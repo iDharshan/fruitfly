@@ -8,6 +8,8 @@ import sys
 import os
 import argparse
 import time
+from typing import Optional
+from pathlib import Path
 import numpy as np
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
@@ -17,6 +19,7 @@ from rl.env import FruitFlyPaintEnv
 from painting.target import PaintingTarget
 from painting.scripted_agent import ScriptedPaintingFly, AgentState
 from evaluation.metrics import compute_ssim, compute_psnr
+from stable_baselines3 import PPO
 
 
 class PaintingDashboard:
@@ -24,7 +27,7 @@ class PaintingDashboard:
     Real-time Pygame visualization dashboard with live biological telemetry.
     """
 
-    def __init__(self, headless: bool = False, target_shape: str = "square", image_path: Optional[str] = None):
+    def __init__(self, headless: bool = False, target_shape: str = "square", image_path: Optional[str] = None, model_path: Optional[str] = None, mode: Optional[str] = None):
         self.headless = headless
         self.width = 1240
         self.height = 720
@@ -42,9 +45,25 @@ class PaintingDashboard:
             self.target = PaintingTarget.create_solid_square(u0=48, v0=48, width=160, height=160)
 
         self.env = FruitFlyPaintEnv(target=self.target, substeps=8)
-        self.scripted_agent = ScriptedPaintingFly(world=self.env.world, target_color_id=0, stroke_step_y=10.0)
+        self.scripted_agent = ScriptedPaintingFly(world=self.env.world, target_color_id=None, stroke_step_y=8.0)
 
-        self.mode = "SCRIPTED"  # "SCRIPTED", "POLICY", "MANUAL"
+        # Attempt to load trained model if specified or auto-detect based on image stem
+        self.model = None
+        if model_path is None and image_path is not None:
+            stem_clean = Path(image_path).stem.replace(" ", "_").lower()
+            candidate_model = Path("models") / f"fruitfly_ppo_{stem_clean}.zip"
+            if candidate_model.exists():
+                model_path = str(candidate_model)
+
+        if model_path is not None and os.path.exists(model_path):
+            print(f"Loading trained RL policy from: {model_path}")
+            self.model = PPO.load(model_path)
+
+        if mode is not None:
+            self.mode = mode.upper()
+        else:
+            self.mode = "SCRIPTED"  # Default to SCRIPTED multi-color agent
+
         self.running = True
 
         if not self.headless:
@@ -74,14 +93,17 @@ class PaintingDashboard:
                             self.running = False
                         elif event.key == pygame.K_m:
                             # Toggle mode
-                            modes = ["SCRIPTED", "MANUAL"]
+                            modes = ["POLICY", "SCRIPTED", "MANUAL"] if self.model is not None else ["SCRIPTED", "MANUAL"]
                             self.mode = modes[(modes.index(self.mode) + 1) % len(modes)]
                         elif event.key == pygame.K_r:
                             obs, info = self.env.reset()
                             self.scripted_agent.reset()
 
             # Compute actions based on active mode
-            if self.mode == "SCRIPTED":
+            if self.mode == "POLICY" and self.model is not None:
+                action, _ = self.model.predict(obs, deterministic=True)
+            elif self.mode == "SCRIPTED":
+                self.env.current_target_pot_id = self.scripted_agent.target_color_id
                 v, omega, target_z, pen_down, pressure = self.scripted_agent.step(dt=0.016)
                 # Map to normalized env action: [steer_bias, throttle, alt, pen]
                 steer_bias = float(np.clip(omega / self.env.bio_cfg.omega_bias_max, -1.0, 1.0))
@@ -119,6 +141,15 @@ class PaintingDashboard:
 
         if not self.headless:
             pygame.quit()
+
+        ssim_val = compute_ssim(self.env.world.canvas.buffer, self.target.high_res)
+        psnr_val = compute_psnr(self.env.world.canvas.buffer, self.target.high_res)
+        print(f"\n[Fruitfly V2 Headless Run Finished]")
+        print(f"Frames executed: {frame_idx}")
+        print(f"Agent mode: {self.mode}")
+        print(f"Final Canvas Similarity: {self.env.world.current_similarity:.4f}")
+        print(f"Final SSIM: {ssim_val:.4f}")
+        print(f"Final PSNR: {psnr_val:.2f} dB")
 
         return self.env.world.current_similarity
 
@@ -281,8 +312,10 @@ if __name__ == "__main__":
     parser.add_argument("--headless", action="store_true", help="Run without graphical display")
     parser.add_argument("--target", type=str, default="square", choices=["square", "disc", "two_tone", "quadrants"])
     parser.add_argument("--image", type=str, default=None, help="Path to custom image to paint")
+    parser.add_argument("--model", type=str, default=None, help="Path to trained PPO model .zip")
+    parser.add_argument("--mode", type=str, default="scripted", choices=["scripted", "policy", "manual"], help="Initial control mode")
     parser.add_argument("--frames", type=int, default=1000, help="Max simulation frames")
     args = parser.parse_args()
 
-    dashboard = PaintingDashboard(headless=args.headless, target_shape=args.target, image_path=args.image)
+    dashboard = PaintingDashboard(headless=args.headless, target_shape=args.target, image_path=args.image, model_path=args.model, mode=args.mode)
     dashboard.run(max_frames=args.frames)

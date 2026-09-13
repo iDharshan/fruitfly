@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import torch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -108,14 +109,42 @@ def train_single_image(
     plt.close()
     print(f"Saved comparison figure to {comp_save_path}")
 
+    del model
+    del vec_env
+    del eval_env
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     return {
         "image": image_path.name,
+        "stem": stem_clean,
         "ssim": eval_metrics["mean_ssim"],
         "psnr": eval_metrics["mean_psnr"],
         "similarity": eval_metrics["mean_similarity"],
         "model_path": str(model_save_path),
         "comparison_image": str(comp_save_path),
     }
+
+
+def write_report(results: list, report_path: Path, device: str, timesteps: int):
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(report_path, "w") as f:
+        f.write("# 🎨 Custom Images Painting Benchmark Report\n\n")
+        f.write(f"Trained on {len(results)} image(s) using device `{device}` for {timesteps} timesteps each.\n\n")
+        f.write("| Image | SSIM | PSNR (dB) | Canvas Similarity | Model File | Visual Comparison |\n")
+        f.write("| :--- | :---: | :---: | :---: | :--- | :--- |\n")
+        for r in results:
+            comp_name = Path(r['comparison_image']).name
+            rel_comp = f"../{r['comparison_image']}"
+            f.write(f"| **{r['image']}** | {r['ssim']:.4f} | {r['psnr']:.2f} | {r['similarity']:.4f} | `{r['model_path']}` | [{comp_name}]({rel_comp}) |\n")
+
+        f.write("\n## 🖼️ Comparison Cards Gallery\n\n")
+        for r in results:
+            rel_comp = f"../{r['comparison_image']}"
+            f.write(f"### {r['image']}\n\n")
+            f.write(f"- **SSIM**: {r['ssim']:.4f} | **PSNR**: {r['psnr']:.2f} dB | **Canvas Similarity**: {r['similarity']:.4f}\n")
+            f.write(f"- Model: `{r['model_path']}`\n\n")
+            f.write(f"![{r['image']}]({rel_comp})\n\n---\n\n")
 
 
 def main():
@@ -143,8 +172,10 @@ def main():
 
     print(f"Found {len(images)} target image(s) in {data_path}: {[str(img.relative_to(data_path)) for img in images]}")
 
+    report_path = Path("docs/custom_paintings_report.md")
     results = []
-    for img in sorted(images):
+    for idx, img in enumerate(sorted(images), 1):
+        print(f"\n[{idx}/{len(images)}] Starting training for: {img.name}")
         res = train_single_image(
             image_path=img,
             timesteps=args.timesteps,
@@ -152,19 +183,9 @@ def main():
             seed=args.seed,
         )
         results.append(res)
+        write_report(results, report_path, args.device, args.timesteps)
 
-    # Output Markdown summary table
-    report_path = Path("docs/custom_paintings_report.md")
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(report_path, "w") as f:
-        f.write("# 🎨 Custom Images Painting Benchmark Report\n\n")
-        f.write(f"Trained on {len(results)} image(s) using device `{args.device}` for {args.timesteps} timesteps each.\n\n")
-        f.write("| Image | SSIM | PSNR (dB) | Canvas Similarity | Model File | Visual Comparison |\n")
-        f.write("| :--- | :---: | :---: | :---: | :--- | :--- |\n")
-        for r in results:
-            f.write(f"| **{r['image']}** | {r['ssim']:.4f} | {r['psnr']:.2f} | {r['similarity']:.4f} | `{r['model_path']}` | `![]({r['comparison_image']})` |\n")
-
-    print(f"\n✅ All images trained and evaluated! Report written to {report_path.resolve()}")
+    print(f"\n✅ All {len(results)} images trained and evaluated! Report written to {report_path.resolve()}")
 
 
 if __name__ == "__main__":
