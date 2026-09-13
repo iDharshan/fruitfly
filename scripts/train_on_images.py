@@ -126,13 +126,20 @@ def main():
 
     data_path = Path(args.data_dir)
     image_extensions = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
-    images = [f for f in data_path.iterdir() if f.is_file() and f.suffix.lower() in image_extensions]
+    # Discover images in data_dir and any subdirectories (excluding results / comparisons)
+    images = [
+        f for f in data_path.glob("**/*")
+        if f.is_file()
+        and f.suffix.lower() in image_extensions
+        and "results" not in f.parts
+        and not f.name.endswith("_comparison.png")
+    ]
 
     if not images:
         print(f"No image files found in {data_path.resolve()}. Supported: {image_extensions}")
         return
 
-    print(f"Found {len(images)} target image(s) in {data_path}: {[img.name for img in images]}")
+    print(f"Found {len(images)} target image(s) in {data_path}: {[str(img.relative_to(data_path)) for img in images]}")
 
     results = []
     for img in sorted(images):
